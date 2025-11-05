@@ -1,9 +1,9 @@
 import express from "express";
-import * as authService from '../middleware/authMiddleware.js';
-import * as controller from "../controllers/quizController.js";
-import {questionRouter} from "./questionRouter.js";
-import {Roles} from "../utils/quizTypes.js";
-import * as userController from "../controllers/userController.js";
+import * as authService from '../middleware/authMiddleware';
+import * as controller from "../controllers/quizController";
+import {questionRouter} from "./questionRouter";
+import {Roles} from "../utils/quizTypes";
+import * as userController from "../controllers/userController";
 
 export const quizRouter = express.Router()
 

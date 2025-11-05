@@ -1,7 +1,7 @@
 import express from 'express';
-import * as questionController from '../controllers/questionController.js';
-import * as authService from '../middleware/authMiddleware.js';
-import {Roles} from "../utils/quizTypes.js";
+import * as questionController from '../controllers/questionController';
+import * as authService from '../middleware/authMiddleware';
+import {Roles} from "../utils/quizTypes";
 
 export const questionRouter= express.Router({mergeParams: true});
 

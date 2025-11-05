@@ -1,22 +1,19 @@
 import fs from 'node:fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import {QuizDbModel, quizSchema} from "../../validators/quiz.schema.js";
-import {UserDbModel} from "../../validators/user.schema.js";
-import {QuestionModel} from "../../validators/question.schema.js";
-import {Question} from "../../model/Quiz.js";
+import {QuizDbModel} from "../../schemas/quiz.schema";
+import {Question} from "../../model/Quiz";
+import {QuestionModel} from "../../schemas/question.schema";
 
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = path.resolve();
 // console.log(process.env)
 dotenv.config();
 const DB = process.env.DATABASE!.replace('<PASSWORD>', process.env.DATABASE_PASSWORD!);
 
-await mongoose.connect(DB).then(() => console.log('DB Connected'));
-
+(async () => {
+  await mongoose.connect(DB).then(() => console.log('DB Connected'));
+})();
 
 const quizzesPath = path.join(__dirname, 'quizzes.json');
 const questionsDir = path.join(__dirname, 'questions-data');

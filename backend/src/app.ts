@@ -1,9 +1,9 @@
 import dotenv from 'dotenv';
 dotenv.config();
 import mongoose from "mongoose";
-import {db} from "./config/quizConfig.js";
-import {launchServer} from "./server.js";
-import './schemas/testResult.schema.js';
+import {db} from "./config/quizConfig";
+import {launchServer} from "./server";
+import './schemas/testResult.schema';
 
 process.on('uncaughtException', (err) => {
     console.error('💣 UNCAUGHT EXCEPTION! Shutting down...');
@@ -13,6 +13,7 @@ process.on('uncaughtException', (err) => {
 
 console.log('🚧 Starting server initialization...');
 
+(async () => {
 await mongoose.connect(db)
     .then(() => {
         console.log('🟢 Database connected successfully');
@@ -22,6 +23,7 @@ await mongoose.connect(db)
         console.error('❌ MongoDB connection error:', err);
         process.exit(1);
     });
+})();
 
 const shutdown = async (signal: string) => {
     console.log(`👋 ${signal} received. Shutting down gracefully...`);

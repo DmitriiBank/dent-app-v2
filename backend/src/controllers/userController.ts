@@ -1,6 +1,6 @@
-import {UserDbModel} from '../schemas/user.schema.js';
-import {HttpError} from '../errorHandler/HttpError.js';
-import * as factory from './handlerFactory.js';
+import {UserDbModel} from '../schemas/user.schema';
+import {HttpError} from '../errorHandler/HttpError';
+import * as factory from './handlerFactory';
 import {NextFunction, Request, Response} from 'express';
 
 

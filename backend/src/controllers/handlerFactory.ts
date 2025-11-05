@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { Model, Document } from 'mongoose';
-import { HttpError } from '../errorHandler/HttpError.js';
-import { APIFeatures } from '../utils/apiFeatures.js';
+import { HttpError } from '../errorHandler/HttpError';
+import { APIFeatures } from '../utils/apiFeatures';
 
 const catchAsync = (fn: any) => (req: Request, res: Response, next: NextFunction) => {
   fn(req, res, next).catch(next);

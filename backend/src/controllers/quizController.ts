@@ -1,7 +1,7 @@
 import {Request, Response} from "express";
-import * as factory from "./handlerFactory.js";
-import {QuizDbModel} from "../schemas/quiz.schema.js";
-import {TestResult} from "../schemas/testResult.schema.js";
+import * as factory from "./handlerFactory";
+import {QuizDbModel} from "../schemas/quiz.schema";
+import {TestResult} from "../schemas/testResult.schema";
 
 
 export const getAllQuizzes = factory.getAll(QuizDbModel);

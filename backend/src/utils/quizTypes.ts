@@ -1,6 +1,6 @@
 
 import { Request } from "express";
-import {User} from "../model/User.js";
+import {User} from "../model/User";
 
 export interface AuthRequest extends Request {
     user: User;

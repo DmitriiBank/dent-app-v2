@@ -1,6 +1,6 @@
 import 'express-async-errors';
 import express, {NextFunction, Request, Response} from 'express'
-import {errorHandler} from "./errorHandler/errorHandler.js";
+import {errorHandler} from "./errorHandler/errorHandler";
 import morgan from "morgan";
 import * as fs from "node:fs";
 // import dotenv from 'dotenv'
@@ -8,8 +8,8 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 // import {sanitize} from 'express-mongo-sanitize';
 // import hpp from 'hpp';
-import {userRouter} from "./routes/userRouter.js";
-import {quizRouter} from "./routes/quizRouter.js";
+import {userRouter} from "./routes/userRouter";
+import {quizRouter} from "./routes/quizRouter";
 // import swaggerUi from "swagger-ui-express"
 import path from "node:path";
 import {sanitize} from "express-mongo-sanitize";
@@ -18,12 +18,12 @@ import qs from 'qs';
 import {fileURLToPath} from "url";
 // import swaggerDoc from "../docs/openapi.json" with {type: "json"};
 import cors from "cors";
-import {baseUrl} from "./config/quizConfig.js";
+import {baseUrl} from "./config/quizConfig";
 
 export const launchServer = () => {
     //=======load environment=====
-    const __filename = fileURLToPath(import.meta.url);
-    const __dirname = path.dirname(__filename);
+
+    const __dirname = path.resolve();
     const app = express();
 
     app.use(

@@ -1,7 +1,7 @@
 import {Request, Response} from "express";
-import {QuestionModel} from "../schemas/question.schema.js";
-import * as factory from './handlerFactory.js';
-import {APIFeatures} from "../utils/apiFeatures.js";
+import {QuestionModel} from "../schemas/question.schema";
+import * as factory from './handlerFactory';
+import {APIFeatures} from "../utils/apiFeatures";
 
 export const getQuizQuestions = async (req: Request, res: Response) => {
     const { quizId } = req.params;

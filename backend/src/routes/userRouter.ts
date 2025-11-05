@@ -1,8 +1,8 @@
 import express from "express";
-import * as userController from '../controllers/userController.js';
-import * as authController from '../controllers/authController.js';
-import * as authService from '../middleware/authMiddleware.js';
-import {Roles} from "../utils/quizTypes.js";
+import * as userController from '../controllers/userController';
+import * as authController from '../controllers/authController';
+import * as authService from '../middleware/authMiddleware';
+import {Roles} from "../utils/quizTypes";
 
 export const userRouter = express.Router()
 

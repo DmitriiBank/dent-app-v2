@@ -1,9 +1,9 @@
 import mongoose, {Schema, Query} from "mongoose";
-import {Roles} from "../utils/quizTypes.js";
+import {Roles} from "../utils/quizTypes";
 import crypto from 'crypto';
 import validator from 'validator';
 import bcrypt from 'bcryptjs';
-import {User} from "../model/User.js";
+import {User} from "../model/User";
 
 
 export const userSchema = new Schema<User>(

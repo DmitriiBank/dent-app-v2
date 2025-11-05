@@ -1,10 +1,10 @@
-import {UserDbModel} from '../schemas/user.schema.js';
+import {UserDbModel} from '../schemas/user.schema';
 import jwt, {Secret, SignOptions} from 'jsonwebtoken';
-import {HttpError} from '../errorHandler/HttpError.js';
-import {sendEmail} from '../utils/email.js';
+import {HttpError} from '../errorHandler/HttpError';
+import {sendEmail} from '../utils/email';
 import crypto from 'crypto';
 import {NextFunction, Request, Response} from "express";
-import {User} from "../model/User.js";
+import {User} from "../model/User";
 import mongoose from "mongoose";
 
 const validateEnv = () => {

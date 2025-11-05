@@ -1,9 +1,9 @@
 import {NextFunction, Request, Response} from "express";
-import {UserDbModel} from "../schemas/user.schema.js";
-import {HttpError} from "../errorHandler/HttpError.js";
-import {sendEmail} from "../utils/email.js";
+import {UserDbModel} from "../schemas/user.schema";
+import {HttpError} from "../errorHandler/HttpError";
+import {sendEmail} from "../utils/email";
 import jwt from "jsonwebtoken";
-import {Roles} from "../utils/quizTypes.js";
+import {Roles} from "../utils/quizTypes";
 
 // ---- JWT Payload interface ----
 interface JWTPayload {
