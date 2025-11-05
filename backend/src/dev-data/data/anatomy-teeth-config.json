@@ -1,0 +1,57 @@
+[
+  {
+    "id": "tooth-1.1-2",
+    "title": "Резцы верхней челюсти",
+    "icon": "./image/tooth/icon_tooth_1.png",
+    "videoUrl": "https://www.youtube.com/watch?v=sNdkrBf7NPw",
+    "imagesUrl": [
+      "./image/tooth/tooth-1.1-B.png",
+      "./image/tooth/tooth-1.1-M.png",
+      "./image/tooth/tooth-1.1-P.png",
+      "./image/tooth/tooth-1.1-D.png",
+      "./image/tooth/tooth-1.1-I.png"
+    ]
+  },
+  {
+    "id": "tooth-3.1-2",
+    "title": "Резцы нижней челюсти",
+    "icon": "./image/soon.png",
+    "videoUrl": "",
+    "imagesUrl": []
+  },
+  {
+    "id": "tooth-3",
+    "title": "Клыки",
+    "icon": "./image/soon.png",
+    "videoUrl": "",
+    "imagesUrl": []
+  },
+  {
+    "id": "tooth-1.4-5",
+    "title": "Премоляры верхней челюсти",
+    "icon": "./image/soon.png",
+    "videoUrl": "",
+    "imagesUrl": []
+  },
+  {
+    "id": "tooth-3.4-5",
+    "title": "Премоляры нижней челюсти",
+    "icon": "./image/soon.png",
+    "videoUrl": "",
+    "imagesUrl": []
+  },
+  {
+    "id": "tooth-1.6-8",
+    "title": "Моляры верхней челюсти",
+    "icon": "./image/soon.png",
+    "videoUrl": "",
+    "imagesUrl": []
+  },
+  {
+    "id": "tooth-3.6-8",
+    "title": "Моляры нижней челюсти",
+    "icon": "./image/soon.png",
+    "videoUrl": "",
+    "imagesUrl": []
+  }
+]

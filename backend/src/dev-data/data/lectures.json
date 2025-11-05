@@ -1,0 +1,66 @@
+[
+  {
+    "_id": "lecture-1",
+    "title": "Лекция 1",
+    "subtitle": "Введение в стоматологию",
+    "iconUrl": "./image/icon_1.svg",
+    "status": "done",
+    "pdfUrl": "./lectures/lecture-1.pdf"
+  },
+  {
+    "_id": "lecture-2",
+    "title": "Лекция 2",
+    "subtitle": "Анатомия",
+    "iconUrl": "./image/icon_2.svg",
+    "status": "done",
+    "pdfUrl": "./lectures/lecture-2.pdf"
+  },
+  {
+    "_id": "lecture-3",
+    "title": "Лекция 3",
+    "subtitle": "Кариес, его осложнения. Виды ортопедических конструкций",
+    "iconUrl": "./image/icon_3.svg",
+    "status": "done",
+    "pdfUrl": "./lectures/lecture-3.pdf"
+  },
+  {
+    "id": "lecture-4",
+    "title": "Лекция 4",
+    "subtitle": "Клинико-лабораторные этапы несъемного протезирования",
+    "iconUrl": "./image/icon_4.svg",
+    "status": "done",
+    "pdfUrl": "./lectures/lecture-4.pdf"
+  },
+  {
+    "id": "lecture-5",
+    "title": "Лекция 5",
+    "subtitle": "Окклюзия, прикус, артикуляция",
+    "iconUrl": "./image/icon_5.svg",
+    "status": "done",
+    "pdfUrl": "./lectures/lecture-5.pdf"
+  },
+  {
+    "id": "lecture-6",
+    "title": "Лекция 6",
+    "subtitle": "Клинико-лабораторные этапы съемного протезирования",
+    "iconUrl": "./image/icon_6.svg",
+    "status": "done",
+    "pdfUrl": "./lectures/lecture-6.pdf"
+  },
+  {
+    "id": "lecture-7",
+    "title": "Лекция 7",
+    "subtitle": "Импланты",
+    "iconUrl": "./image/icon_7.svg",
+    "status": "done",
+    "pdfUrl": "./lectures/lecture-7.pdf"
+  },
+  {
+    "id": "lecture-8",
+    "title": "Лекция 8",
+    "subtitle": "Введение в Cad/Cam",
+    "iconUrl": "./image/icon_8.svg",
+    "status": "done",
+    "pdfUrl": "./lectures/lecture-8.pdf"
+  }
+]

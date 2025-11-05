@@ -1,0 +1,11 @@
+import express from "express";
+import { bodyValidation } from "../validators/bodyValidation.js";
+import * as controller from "../controllers/AccountController.js";
+import { ChangeDataDtoSchema, ChangePassDtoSchema, UserDtoSchema } from "../validators/joi.schema.js";
+export const accountRouter = express.Router();
+accountRouter.post('/register', bodyValidation(UserDtoSchema), controller.addAccount);
+accountRouter.get('/user', controller.getAccount);
+accountRouter.delete('/', controller.removeAccount);
+accountRouter.patch('/password', bodyValidation(ChangePassDtoSchema), controller.changePassword);
+accountRouter.patch('/changes', bodyValidation(ChangeDataDtoSchema), controller.changeUserData);
+accountRouter.patch('/role', bodyValidation(ChangeDataDtoSchema), controller.changeUserRole);
