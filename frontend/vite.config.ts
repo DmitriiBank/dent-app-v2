@@ -5,5 +5,5 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   // base: '/react-redux-quiz-dent/',
   plugins: [react()],
-  base: "/dent-app/"
+  base: "/"
 })
