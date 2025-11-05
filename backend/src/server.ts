@@ -15,7 +15,6 @@ import path from "node:path";
 import {sanitize} from "express-mongo-sanitize";
 import hpp from 'hpp';
 import qs from 'qs';
-import {fileURLToPath} from "url";
 // import swaggerDoc from "../docs/openapi.json" with {type: "json"};
 import cors from "cors";
 import {baseUrl} from "./config/quizConfig";
@@ -30,7 +29,7 @@ export const launchServer = () => {
         cors({
             origin: [
                 "http://localhost:5173",
-                "https://dmitriibank.github.io",
+                "https://dent-app-v2.vercel.app",
             ],
             credentials: true,
             methods: ["GET", "POST", "PATCH", "DELETE"],
