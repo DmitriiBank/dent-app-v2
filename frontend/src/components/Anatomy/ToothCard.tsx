@@ -2,7 +2,8 @@
 
 import { Card, CardActionArea, CardContent, Box, Typography } from '@mui/material';
 import { styled, alpha } from '@mui/material/styles';
-import type { Tooth } from '../../utils/lecture-types.ts';
+import type {Tooth} from "../../types/tooth-types.ts";
+
 
 const Root = styled(Card)(({ theme }) => ({
     height: 260,

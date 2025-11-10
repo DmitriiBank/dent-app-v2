@@ -1,7 +1,8 @@
 import {Box, Chip} from "@mui/material";
-import {TEETH} from "../../utils/lecture-types.ts";
+
 import {useParams} from "react-router-dom";
 import ImageGallery from "../gallery/ImageGallery.tsx";
+import {TEETH} from "../../types/tooth-types.ts";
 
 export const ToothPage = () => {
     const { id } = useParams();
