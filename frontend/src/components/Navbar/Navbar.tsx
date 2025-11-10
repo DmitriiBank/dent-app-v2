@@ -23,6 +23,11 @@ export const Navbar = () => {
                 {lang === 'ru' ? 'Лекции' : 'רצאות'}
             </button>
             <button
+                onClick={() => navigate('/anatomy')}
+            >
+                {lang === 'ru' ? 'Анатомия' : 'אנטומיה'}
+            </button>
+            <button
                 onClick={() => navigate('/options')}
             >
                 {lang === 'ru' ? 'Настройки' : 'רצאות'}
