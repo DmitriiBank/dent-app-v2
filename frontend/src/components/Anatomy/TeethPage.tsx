@@ -1,7 +1,7 @@
 import {Container, Typography} from '@mui/material';
 import ToothCard from './ToothCard.tsx';
-import {TEETH} from "../../utils/lecture-types.ts";
 import {useNavigate} from "react-router-dom";
+import {TEETH} from "../../types/tooth-types.ts";
 
 const TeethPage = () => {
     const navigate = useNavigate();
