@@ -19,5 +19,4 @@ export const LECTURES: Lecture[] = [
         status: 'done',
         pdfUrl: './lectures/lecture-1.pdf',
     }
-    // ...добавляй дальше
 ];

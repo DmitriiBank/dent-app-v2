@@ -42,7 +42,7 @@ export async function saveTestResult(quizId: string, points: number, totalQuesti
     // стандартный вариант: POST /attempt
     const token = localStorage.getItem('token');
     console.log(token);
-    return authFetch(`/api/v1/quizzes/${quizId}`, {
+    return authFetch(`/quizzes/${quizId}`, {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         ...(token ? { Authorization: `Bearer ${token}` } : {}),

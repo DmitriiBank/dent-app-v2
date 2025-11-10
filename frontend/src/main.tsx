@@ -5,7 +5,8 @@ import './index.css';
 import App from './App.tsx';
 import { HashRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import { store } from './redux/store.ts';
+import {PersistGate} from 'redux-persist/integration/react';
+import {store, persistor} from './redux/store.ts';
 import { Navbar } from './components/Navbar/Navbar.tsx';
 import { Header } from './components/Navbar/Header.tsx';
 
@@ -29,7 +30,9 @@ function Root() {
                 <HashRouter>
                     <Header />
                     <div className="main">
-                        <Navbar />
+                        <div className="navbar--static">
+                            <Navbar />
+                        </div>
                         <div className={"main __right-block"}>
                             <App />
                         </div>
@@ -42,6 +45,11 @@ function Root() {
 
 createRoot(document.getElementById('root')!).render(
     <Provider store={store}>
-        <Root />
+        <PersistGate
+            loading={true}
+            persistor={persistor}
+        >
+            <Root />
+        </PersistGate>
     </Provider>,
 );

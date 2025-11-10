@@ -9,13 +9,14 @@ import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import MuiCard from '@mui/material/Card';
 import InputAdornment from '@mui/material/InputAdornment';
-import { styled, alpha } from '@mui/material/styles';
-import { Mail, Lock, ArrowRight, Sparkles } from 'lucide-react';
-import { GoogleIcon } from './CustomIcons.tsx';
-import { type LoginData, Paths } from "../types/quiz-types.ts";
-import { NavLink } from "react-router-dom";
+import {styled, alpha} from '@mui/material/styles';
+import {Mail, Lock, ArrowRight, Sparkles} from 'lucide-react';
+import {GoogleIcon} from './CustomIcons.tsx';
+import {type LoginData, Paths} from "../types/quiz-types.ts";
+import {NavLink} from "react-router-dom";
+import {CircularProgress} from "@mui/material";
 
-export const Card = styled(MuiCard)(({ theme }) => ({
+export const Card = styled(MuiCard)(({theme}) => ({
     display: 'flex',
     flexDirection: 'column',
     alignSelf: 'center',
@@ -38,12 +39,12 @@ export const Card = styled(MuiCard)(({ theme }) => ({
         theme.palette.mode === 'dark'
             ? '0 20px 60px rgba(0,0,0,0.45), inset 0 1px 0 rgba(21,26,33,0.04)'
             : '0 20px 60px rgba(25,118,210,0.20), inset 0 1px 0 rgba(255,255,255,0.5)',
-    [theme.breakpoints.up('sm')]: { maxWidth: 520 },
+    [theme.breakpoints.up('sm')]: {maxWidth: 520},
 }));
 
 type Props = { submitFn: (loginData: LoginData) => void };
 
-export const SignInContainer = styled(Stack)(({ theme }) => ({
+export const SignInContainer = styled(Stack)(({theme}) => ({
     position: 'relative',
     minHeight: '350px',
     minWidth: '450px',
@@ -51,7 +52,7 @@ export const SignInContainer = styled(Stack)(({ theme }) => ({
     justifyContent: 'center',
     alignItems: 'center',
     padding: theme.spacing(2),
-    [theme.breakpoints.up('sm')]: { padding: theme.spacing(4) },
+    [theme.breakpoints.up('sm')]: {padding: theme.spacing(4)},
     '&::before': {
         content: '""',
         position: 'fixed',
@@ -75,7 +76,7 @@ export const SignInContainer = styled(Stack)(({ theme }) => ({
     },
 }));
 
-const PrimaryButton = styled(Button)(({ theme }) => ({
+const PrimaryButton = styled(Button)(({theme}) => ({
     height: 52,
     borderRadius: 14,
     fontWeight: 800,
@@ -99,7 +100,7 @@ const PrimaryButton = styled(Button)(({ theme }) => ({
     transition: 'all .18s ease',
 }));
 
-const OutlineButton = styled(Button)(({ theme }) => ({
+const OutlineButton = styled(Button)(({theme}) => ({
     height: 48,
     borderRadius: 14,
     textTransform: 'none',
@@ -125,16 +126,26 @@ export default function SignIn(props: Props) {
     const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
     const [passwordError, setPasswordError] = React.useState(false);
     const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
+    const [isLoading, setIsLoading] = React.useState(false);
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        if (emailError || passwordError) return;
-        if (!validateInputs()) return;
-        const data = new FormData(event.currentTarget);
-        props.submitFn({
-            email: data.get('email') as string,
-            password: data.get('password') as string,
-        });
+        setIsLoading(true);
+        try {
+            if (emailError || passwordError) return;
+            if (!validateInputs()) return;
+
+            const data = new FormData(event.currentTarget);
+
+            await props.submitFn({
+                email: data.get("email") as string,
+                password: data.get("password") as string,
+            });
+        } catch (error) {
+            console.error("Login error:", error);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const validateInputs = () => {
@@ -163,9 +174,20 @@ export default function SignIn(props: Props) {
     };
 
     return (
-        <SignInContainer direction="column" justifyContent="center" alignItems="center">
-            <Stack spacing={2} alignItems="center" sx={{ mb: 3 }}>
-                <Sparkles size={28} color="#6ea8fe" />
+        <SignInContainer
+            direction="column"
+            justifyContent="center"
+            alignItems="center"
+        >
+            <Stack
+                spacing={2}
+                alignItems="center"
+                sx={{mb: 3}}
+            >
+                <Sparkles
+                    size={28}
+                    color="#6ea8fe"
+                />
                 <Typography
                     component="h1"
                     variant="h4"
@@ -179,7 +201,7 @@ export default function SignIn(props: Props) {
                 >
                     Welcome back
                 </Typography>
-                <Typography sx={{ color: '#E5E7EB',  textAlign: 'center' }}>
+                <Typography sx={{color: '#E5E7EB', textAlign: 'center'}}>
                     Sign in to continue to your quizzes
                 </Typography>
             </Stack>
@@ -189,10 +211,18 @@ export default function SignIn(props: Props) {
                     component="form"
                     onSubmit={handleSubmit}
                     noValidate
-                    sx={{ display: 'flex', flexDirection: 'column', width: '100%', gap: 2.25 }}
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        width: '100%',
+                        gap: 2.25
+                    }}
                 >
                     <FormControl>
-                        <FormLabel htmlFor="email" sx={{ color: '#E5E7EB' }}>Email</FormLabel>
+                        <FormLabel
+                            htmlFor="email"
+                            sx={{color: '#E5E7EB'}}
+                        >Email</FormLabel>
                         <TextField
                             error={emailError}
                             helperText={emailErrorMessage}
@@ -208,7 +238,10 @@ export default function SignIn(props: Props) {
                             InputProps={{
                                 startAdornment: (
                                     <InputAdornment position="start">
-                                        <Mail size={18} color = '#E5E7EB'/>
+                                        <Mail
+                                            size={18}
+                                            color='#E5E7EB'
+                                        />
                                     </InputAdornment>
                                 ),
                             }}
@@ -216,8 +249,8 @@ export default function SignIn(props: Props) {
                                 '& .MuiOutlinedInput-root': {
                                     borderRadius: 14,
                                     transition: 'box-shadow .18s ease, transform .18s ease',
-                                    '& fieldset': { borderColor: alpha(theme.palette.primary.main, 0.25) },
-                                    '&:hover fieldset': { borderColor: theme.palette.primary.main },
+                                    '& fieldset': {borderColor: alpha(theme.palette.primary.main, 0.25)},
+                                    '&:hover fieldset': {borderColor: theme.palette.primary.main},
                                     '&.Mui-focused': {
                                         boxShadow: `0 0 0 4px ${alpha(theme.palette.primary.main, 0.15)}`,
                                     },
@@ -227,7 +260,10 @@ export default function SignIn(props: Props) {
                     </FormControl>
 
                     <FormControl>
-                        <FormLabel htmlFor="password" sx={{ color: '#E5E7EB' }}>Password</FormLabel>
+                        <FormLabel
+                            htmlFor="password"
+                            sx={{color: '#E5E7EB'}}
+                        >Password</FormLabel>
                         <TextField
                             error={passwordError}
                             helperText={passwordErrorMessage}
@@ -243,7 +279,10 @@ export default function SignIn(props: Props) {
                             InputProps={{
                                 startAdornment: (
                                     <InputAdornment position="start">
-                                        <Lock size={18} color = '#E5E7EB'/>
+                                        <Lock
+                                            size={18}
+                                            color='#E5E7EB'
+                                        />
                                     </InputAdornment>
                                 ),
                             }}
@@ -251,8 +290,8 @@ export default function SignIn(props: Props) {
                                 '& .MuiOutlinedInput-root': {
                                     borderRadius: 14,
                                     transition: 'box-shadow .18s ease, transform .18s ease',
-                                    '& fieldset': { borderColor: alpha(theme.palette.primary.main, 0.25) },
-                                    '&:hover fieldset': { borderColor: theme.palette.primary.main },
+                                    '& fieldset': {borderColor: alpha(theme.palette.primary.main, 0.25)},
+                                    '&:hover fieldset': {borderColor: theme.palette.primary.main},
                                     '&.Mui-focused': {
                                         boxShadow: `0 0 0 4px ${alpha(theme.palette.primary.main, 0.15)}`,
                                     },
@@ -261,26 +300,58 @@ export default function SignIn(props: Props) {
                         />
                     </FormControl>
 
-                    <PrimaryButton type="submit" fullWidth endIcon={<ArrowRight size={18} color = '#E5E7EB'/>} sx={{ color: '#E5E7EB' }}>
-                        Sign in
+                    <PrimaryButton
+                        type="submit"
+                        fullWidth
+                        disabled={isLoading}
+                        endIcon={
+                            isLoading ? null : (
+                                <ArrowRight size={18} color="#E5E7EB" />
+                            )
+                        }
+                        sx={{color: '#E5E7EB'}}
+                    >
+                        {isLoading ? (
+                            <CircularProgress size={24} color="inherit" />
+                        ) : (
+                            'Sign in'
+                        )}
                     </PrimaryButton>
                 </Box>
 
-                <Divider sx={{ my: 1.5, opacity: 0.6, color: '#E5E7EB' }}>or</Divider>
+                <Divider
+                    sx={{
+                        my: 1.5,
+                        opacity: 0.6,
+                        color: '#E5E7EB'
+                    }}
+                >or</Divider>
 
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.25 }}>
+                <Box sx={{display: 'flex', flexDirection: 'column', gap: 1.25}}>
                     <OutlineButton
                         fullWidth
                         startIcon={<GoogleIcon />}
-                        onClick={() => props.submitFn({ email: 'GOOGLE', password: '' })}
+                        onClick={() => props.submitFn({
+                            email: 'GOOGLE',
+                            password: ''
+                        })}
                     >
                         Sign in with Google
                     </OutlineButton>
 
-                    <Typography sx={{ textAlign: 'center', mt: 1, color: '#E5E7EB' }}>
+                    <Typography
+                        sx={{
+                            textAlign: 'center',
+                            mt: 1,
+                            color: '#E5E7EB'
+                        }}
+                    >
                         Don&apos;t have an account?{' '}
-                        <NavLink to={Paths.REGISTER} style={{ color: '#6ea8fe', fontWeight: 700 }}>
-                            Sign up
+                        <NavLink
+                            to={Paths.REGISTER}
+                            style={{color: '#6ea8fe', fontWeight: 700}}
+                        >
+                           Sign up
                         </NavLink>
                     </Typography>
                 </Box>

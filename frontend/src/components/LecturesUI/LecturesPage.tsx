@@ -24,9 +24,11 @@ const LecturesPage= () =>  {
 
             <Grid container spacing={3}>
                 {LECTURES.map((lec) => (
-
-                        <LectureCard lecture={lec} onOpen={handleOpen} />
-
+                    <LectureCard
+                        key={lec.id}
+                        lecture={lec}
+                        onOpen={handleOpen}
+                    />
                 ))}
             </Grid>
 

@@ -16,7 +16,7 @@ const PrivateRoute = () => {
             </div>
         );
     }
-    return email ? <Outlet /> : <Navigate to="/api/v1/users/login" replace />;
+    return email ? <Outlet /> : <Navigate to="/users/login" replace />;
 };
 
 export default PrivateRoute;

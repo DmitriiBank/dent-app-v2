@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "start": "node ./build/src/app.js",
+    "start": "node ./build/app.js",
     "start-server-dev": "tsx watch src/app.ts dev",
     "import-data": "tsx src/dev-data/data/import-dev-data.ts --import",
     "delete-data": "tsx src/dev-data/data/import-dev-data.ts --delete"

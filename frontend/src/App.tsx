@@ -19,13 +19,6 @@ function App() {
     }, [dispatch]);
 
     return (
-        // <div className={'app'}>
-        //     <Routes>
-        //         {routes.map(({ path, element}) =>
-        //             <Route key={path} path={path} element={element} />
-        //         )}
-        //     </Routes>
-        // </div>
         <div className={'app'}>
             <Routes>
                 {routes.map(({path, element, role}) =>

@@ -12,6 +12,8 @@ import {useAppSelector} from '../../redux/hooks.ts';
 import {ImageItem} from "./ImageItem.tsx";
 import {saveTestResult} from "../../services/quizApi.ts";
 import type {RootState} from "../../redux/store.ts";
+import {CircularProgress} from "@mui/material";
+
 
 
 const QuizAppLang = ({questions}: {
@@ -24,6 +26,7 @@ const QuizAppLang = ({questions}: {
         // const testResults = user?.testResults ?? [];
 
         const [current, setCurrent] = useState(0);
+        const [imgLoading, setImgLoading] = useState(true);
         const [score, setScore] = useState(0);
         const [selected, setSelected] = useState<number | null>(null);
         const [finished, setFinished] = useState(false);
@@ -58,7 +61,8 @@ const QuizAppLang = ({questions}: {
 
         const handleNext = async () => {
             const isCorrect = selected === questions[current].answer;
-            if (isCorrect) setScore((prev) => prev + 1);
+            const newScore = isCorrect ? score + 1 : score;
+            setScore(newScore);
 
             const newAnswers = [...answers, selected];
             setAnswers(newAnswers);
@@ -174,7 +178,19 @@ const QuizAppLang = ({questions}: {
                     <div className="question-text">
                         {q.question}
                     </div>
-                    {q.image && <ImageItem image={q.image} />}
+                    {q.image && (
+                        <>
+                            {imgLoading && (
+                                <div style={{ textAlign: 'center', margin: '20px 0' }}>
+                                    <CircularProgress size={32} color="inherit" />
+                                </div>
+                            )}
+                            <ImageItem
+                                image={q.image}
+                                onLoad={() => setImgLoading(false)}
+                            />
+                        </>
+                    )}
                     <AnswersList
                         options={q.options}
                         selected={selected}

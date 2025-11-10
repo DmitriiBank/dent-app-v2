@@ -17,17 +17,17 @@ export const routes = [
     {
         path: `${Paths.HOME}/:quizId`,
         element: <QuizPage_lang />,
-        role: ''
+        role: 'user'
     },
     {
         path: `${Paths.HOME}/:quizId/result`,
         element: <ScorePageLang questions={[]} score={0} answers={[]} onClick={function(): void {
             throw new Error("Function not implemented.");
         } } />,
-        role: ''
+        role: 'user'
     },
     {path: Paths.LOGIN, element: <Login />, role: ''},
-    {path: Paths.LOGOUT, element: <Logout />, role: ''},
+    {path: Paths.LOGOUT, element: <Logout />, role: 'user'},
     {path: Paths.REGISTER, element: <Registration />, role: ''},
     {path: Paths.LECTURES, element: <LecturesPage />, role: ''},
     {path: Paths.OPTIONS, element: <Options />, role: ''},

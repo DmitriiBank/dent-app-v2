@@ -1,30 +1,43 @@
-// components/lectures/LectureViewerDialog.tsx
+
 import * as React from 'react';
 import { Dialog, DialogContent, IconButton, Box, Typography } from '@mui/material';
-import { X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { X } from 'lucide-react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import pdfWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 
 pdfjs.GlobalWorkerOptions.workerSrc = pdfWorker;
-// pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 type Props = {
     open: boolean;
     title: string;
-    src: string;
+    src?: string;         // PDF-URL (опционально)
+    images?: string[];    // Массив URL картинок (опционально)
     onClose: () => void;
 };
 
-export default function LectureViewerDialog({ open, title, src, onClose }: Props) {
+export default function LectureViewerDialog({ open, title, src, images = [], onClose }: Props) {
     const [numPages, setNumPages] = React.useState(0);
-    const [page, setPage] = React.useState(1);
+    const [containerWidth, setContainerWidth] = React.useState(
+        Math.min(1000, Math.floor(window.innerWidth * 0.85))
+    );
 
     React.useEffect(() => {
-        if (open) setPage(1);
-    }, [open]);
+        const onResize = () =>
+            setContainerWidth(Math.min(1000, Math.floor(window.innerWidth * 0.85)));
+        window.addEventListener('resize', onResize);
+        return () => window.removeEventListener('resize', onResize);
+    }, []);
+
+    const isImagesMode = images.length > 0;
 
     return (
-        <Dialog open={open} onClose={onClose} fullWidth maxWidth="lg" PaperProps={{ sx: { borderRadius: 3 } }}>
+        <Dialog
+            open={open}
+            onClose={onClose}
+            fullWidth
+            maxWidth="lg"
+            PaperProps={{ sx: { borderRadius: 3 } }}
+        >
             <Box sx={{ display: 'flex', px: 2, pt: 1.5 }}>
                 <Typography variant="h6" fontWeight={800} sx={{ flexGrow: 1 }}>
                     {title}
@@ -34,28 +47,73 @@ export default function LectureViewerDialog({ open, title, src, onClose }: Props
                 </IconButton>
             </Box>
 
-            <DialogContent sx={{ pt: 1, pb: 2 }}>
-                <Box sx={{ display: 'grid', placeItems: 'center', gap: 2 }}>
-                    <Document file={src} onLoadSuccess={({ numPages }) => setNumPages(numPages)}>
-                        <Page
-                            pageNumber={page}
-                            width={Math.min(1000, Math.floor(window.innerWidth * 0.85))}
-                            renderAnnotationLayer={false}
-                            renderTextLayer={false}
-                        />
-                    </Document>
-
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <IconButton disabled={page <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>
-                            <ChevronLeft />
-                        </IconButton>
-                        <Typography variant="body2">
-                            {page} / {numPages || '…'}
+            <DialogContent
+                dividers
+                sx={{ pt: 1, pb: 2, maxHeight: '85vh' }} // скроллим контент
+            >
+                <Box
+                    sx={{
+                        mx: 'auto',
+                        width: '100%',
+                        maxWidth: containerWidth,
+                        display: 'grid',
+                        gap: 2,              // расстояние между элементами колонки
+                    }}
+                >
+                    {isImagesMode ? (
+                        // Режим с картинками: всё в колонку
+                        images.map((url, idx) => (
+                            <Box
+                                key={`${url}-${idx}`}
+                                sx={{
+                                    borderRadius: 2,
+                                    overflow: 'hidden',
+                                    bgcolor: 'background.paper',
+                                    border: '1px solid',
+                                    borderColor: 'divider',
+                                }}
+                            >
+                                <img
+                                    src={url}
+                                    alt={`${title} ${idx + 1}/${images.length}`}
+                                    loading="lazy"
+                                    style={{ width: '100%', height: 'auto', display: 'block' }}
+                                />
+                            </Box>
+                        ))
+                    ) : src ? (
+                        // Режим PDF: все страницы в колонку
+                        <Document
+                            file={src}
+                            onLoadSuccess={({ numPages }) => setNumPages(numPages)}
+                            loading={<Typography variant="body2">Загрузка PDF…</Typography>}
+                        >
+                            {Array.from({ length: numPages }, (_, i) => (
+                                <Box
+                                    key={`page-${i + 1}`}
+                                    sx={{
+                                        borderRadius: 2,
+                                        overflow: 'hidden',
+                                        bgcolor: 'background.paper',
+                                        border: '1px solid',
+                                        borderColor: 'divider',
+                                    }}
+                                >
+                                    <Page
+                                        pageNumber={i + 1}
+                                        width={containerWidth}
+                                        renderAnnotationLayer={false}
+                                        renderTextLayer={false}
+                                        loading=""
+                                    />
+                                </Box>
+                            ))}
+                        </Document>
+                    ) : (
+                        <Typography variant="body2" color="text.secondary">
+                            Нет данных для отображения.
                         </Typography>
-                        <IconButton disabled={page >= numPages} onClick={() => setPage((p) => Math.min(numPages, p + 1))}>
-                            <ChevronRight />
-                        </IconButton>
-                    </Box>
+                    )}
                 </Box>
             </DialogContent>
         </Dialog>

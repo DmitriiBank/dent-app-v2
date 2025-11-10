@@ -1,9 +1,8 @@
 
 
-
-import { Card, CardActionArea, CardContent, Box, Typography} from '@mui/material';
+import { Card, CardActionArea, CardContent, Box, Typography } from '@mui/material';
 import { styled, alpha } from '@mui/material/styles';
-import type { Lecture } from '../../types/lecture.ts';
+import type { Tooth } from '../../utils/lecture-types.ts';
 
 const Root = styled(Card)(({ theme }) => ({
     height: 260,
@@ -25,18 +24,18 @@ const Root = styled(Card)(({ theme }) => ({
 }));
 
 type Props = {
-    lecture: Lecture;
-    onOpen: (lecture: Lecture) => void;
+    tooth: Tooth;
+    onClick: (id: string) => void;
 };
 
-export default function LectureCard({ lecture, onOpen }: Props) {
-    const status = lecture.status;
-    // const statusColor =
-    //     status === 'done' ? 'success' : status === 'available' ? 'default' : 'warning';
+export default function ToothCard({ tooth, onClick }: Props) {
 
     return (
         <Root>
-            <CardActionArea sx={{ height: '100%', p: 2.5 }} onClick={() => status !== 'locked' && onOpen(lecture)}>
+            <CardActionArea
+                sx={{ height: '100%', p: 2.5, alignContent: 'start' }}
+                onClick={() => onClick(tooth.id)}
+            >
                 <Box sx={{ display: 'grid', gridTemplateColumns: '96px 1fr', gap: 2 }}>
                     <Box
                         sx={{
@@ -45,14 +44,14 @@ export default function LectureCard({ lecture, onOpen }: Props) {
                             borderRadius: '50%',
                             display: 'grid',
                             placeItems: 'center',
-                            bgcolor:'rgba(248,246,241,0.95)',
+                            bgcolor: 'background.paper',
                             border: '1px solid',
                             borderColor: 'divider',
                             overflow: 'hidden',
                         }}
                     >
                         <img
-                            src={lecture.iconUrl}
+                            src={tooth.icon}
                             alt=""
                             style={{
                                 width: '100%',
@@ -64,26 +63,8 @@ export default function LectureCard({ lecture, onOpen }: Props) {
 
                     <CardContent sx={{ p: 0, display: 'grid', alignContent: 'start', gap: 0.5 }}>
                         <Typography variant="h5" fontWeight={800}>
-                            {lecture.title}
+                            {tooth.title}
                         </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                            {lecture.subtitle}
-                        </Typography>
-
-                        {/*<Box sx={{ mt: 1.5, display: 'flex', alignItems: 'center', gap: 1 }}>*/}
-                        {/*    <Chip*/}
-                        {/*        label={*/}
-                        {/*            status === 'done'*/}
-                        {/*                ? 'Уже пройдён'*/}
-                        {/*                : status === 'available'*/}
-                        {/*                    ? 'Доступен'*/}
-                        {/*                    : 'Заблокирован'*/}
-                        {/*        }*/}
-                        {/*        color={status === 'done' ? 'success' : status === 'locked' ? 'warning' : 'default'}*/}
-                        {/*        variant={status === 'available' ? 'outlined' : 'filled'}*/}
-                        {/*        size="small"*/}
-                        {/*    />*/}
-                        {/*</Box>*/}
                     </CardContent>
                 </Box>
             </CardActionArea>

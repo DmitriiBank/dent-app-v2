@@ -4,7 +4,6 @@ export enum Paths {
     HOME = "/quizzes",
     ERROR = "/error",
     LOGOUT = "/logout",
-    USERSCORES = "/userscores",
     REGISTER = '/users/signup',
     OPTIONS = '/options',
     LECTURES = '/lectures'
@@ -13,7 +12,7 @@ export enum Paths {
 export enum Roles {
     USER = 'user',
     ADMIN = 'admin',
-    SUPERVISOR = 'supervisor'
+    GUEST = 'guest'
 }
 
 export type RouteType = {

@@ -1303,3 +1303,5 @@
 ::1 - - [05/Nov/2025:08:47:21 +0000] "GET /api/v1/quizzes/6900b332c6aa4bfb8808d3dc HTTP/1.1" 304 - "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
 ::1 - - [05/Nov/2025:08:47:29 +0000] "POST /api/v1/users/login HTTP/1.1" 200 598 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
 ::1 - - [05/Nov/2025:08:47:37 +0000] "GET /api/v1/quizzes/5c8a1dfa2f8fb814b56fa180 HTTP/1.1" 200 7266 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+::1 - - [05/Nov/2025:22:26:08 +0000] "GET /api/v1/quizzes HTTP/1.1" 304 - "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
+::1 - - [05/Nov/2025:22:27:42 +0000] "GET /api/v1/quizzes HTTP/1.1" 304 - "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36"
