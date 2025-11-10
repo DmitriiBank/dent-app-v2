@@ -6,7 +6,8 @@ export enum Paths {
     LOGOUT = "/logout",
     REGISTER = '/users/signup',
     OPTIONS = '/options',
-    LECTURES = '/lectures'
+    LECTURES = '/lectures',
+    ANATOMY = '/anatomy',
 }
 
 export enum Roles {

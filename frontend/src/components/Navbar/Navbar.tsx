@@ -18,17 +18,17 @@ export const Navbar = () => {
                 {lang === 'ru' ? 'Тесты' : 'מבחנים'}
             </button>
             <button
-                onClick={() => navigate('/lectures')}
+                onClick={() => navigate(Paths.LECTURES)}
             >
                 {lang === 'ru' ? 'Лекции' : 'רצאות'}
             </button>
             <button
-                onClick={() => navigate('/anatomy')}
+                onClick={() => navigate(Paths.ANATOMY)}
             >
                 {lang === 'ru' ? 'Анатомия' : 'אנטומיה'}
             </button>
             <button
-                onClick={() => navigate('/options')}
+                onClick={() => navigate(Paths.OPTIONS)}
             >
                 {lang === 'ru' ? 'Настройки' : 'רצאות'}
             </button>
