@@ -23,8 +23,10 @@ userRouter.use(authService.restrictTo(<Roles>'admin'));
 
 userRouter
     .route('/')
-    .get(userController.getAllUsers)
+    // .get(userController.getAllUsers)
     .post(userController.createUser);
+
+userRouter.get('/users_list', userController.getAllUsers);
 
 userRouter
     .route('/:id')

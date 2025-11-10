@@ -32,7 +32,7 @@ export const createOne = <T extends Document>(Model: Model<T>) =>
 
 export const getOne = <T extends Document>(Model: Model<T>, popOptions?: any) =>
     catchAsync(async (req: Request, res: Response) => {
-      let query = Model.findById(req.params.quizId);
+      let query = Model.findById(req.params.id);
       if (popOptions) query = query.populate(popOptions);
       const doc = await query;
       if (!doc) throw new HttpError(404, 'Document not found');

@@ -2,12 +2,15 @@
 export enum Paths {
     LOGIN = "/users/login",
     HOME = "/quizzes",
+    QUIZ_RESULT = "/quizzes/:id/results",
     ERROR = "/error",
     LOGOUT = "/logout",
     REGISTER = '/users/signup',
     OPTIONS = '/options',
     LECTURES = '/lectures',
     ANATOMY = '/anatomy',
+    MY_PAGE = "users/me",
+    ALL_USERS = "users/users_list",
 }
 
 export enum Roles {

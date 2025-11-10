@@ -12,7 +12,7 @@ import {Navbar} from "./Navbar.tsx";
 import {MenuIcon} from "lucide-react";
 
 export const Header = () => {
-    const {email, name} = useAppSelector(state => state.auth);
+    const {email, name, role} = useAppSelector(state => state.auth);
     console.log(email, name)
     const navigate = useNavigate();
     const [open, setOpen] = useState(false);
@@ -56,9 +56,16 @@ export const Header = () => {
                     }}
                 >
                     <Avatar sx={{m: "3px"}}>{(name || email)?.[0]?.toUpperCase()}</Avatar>
-                    <Typography
-                        sx={{color: "#E5E7EB", mr: 3}}
-                    >
+                        <Typography
+                            sx={{color: "#E5E7EB", mr: 3, fontSize: 20, cursor: "pointer",
+                                "&:hover": {
+                                    textDecoration: "underline",
+                                },}}
+                            onClick={() =>{
+                                role == 'admin' ?  navigate(Paths.ALL_USERS) :
+                                navigate(Paths.MY_PAGE)
+                            }}
+                        >
                         {name || email}
                     </Typography>
                     <Logout />

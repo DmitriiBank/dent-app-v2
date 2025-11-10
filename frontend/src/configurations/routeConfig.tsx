@@ -1,6 +1,5 @@
 import {Paths, Roles, type RouteType} from "../types/quiz-types.ts";
 
-// страницы/экраны
 import QuizSelectionPage_lang
     from "../components/TestsUI/QuizSelectionPage_lang";
 import QuizPage_lang from "../components/TestsUI/QuizPage_lang";
@@ -13,6 +12,7 @@ import LecturesPage from "../components/LecturesUI/LecturesPage";
 import {ScorePageLang} from "../components/TestsUI/ScorePage_lang";
 import TeethPage from "../components/Anatomy/TeethPage.tsx";
 import {ToothPage} from "../components/Anatomy/ToothPage.tsx";
+import {ScoreTable} from "../components/StudentInfo/ScoreTable.tsx";
 
 export const routes = [
     {path: Paths.HOME, element: <QuizSelectionPage_lang />, role: ''},
@@ -22,7 +22,7 @@ export const routes = [
         role: Roles.USER
     },
     {
-        path: `${Paths.HOME}/:quizId/result`,
+        path: `${Paths.HOME}/:quizId/results`,
         element: <ScorePageLang questions={[]} score={0} answers={[]} onClick={function(): void {
             throw new Error("Function not implemented.");
         } } />,
@@ -38,7 +38,10 @@ export const routes = [
         element: <ToothPage />,
         role: Roles.USER
     },
+
     {path: Paths.OPTIONS, element: <Options />, role: ''},
+    {path: Paths.MY_PAGE, element: <ScoreTable />, role: Roles.USER},
+    {path: Paths.ALL_USERS, element: <ScoreTable />, role: Roles.USER},
     {path: Paths.ERROR, element: <ErrorPage />, role: ''},
 ] as const;
 

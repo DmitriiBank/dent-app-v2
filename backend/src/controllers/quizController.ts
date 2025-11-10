@@ -12,11 +12,11 @@ export const addQuiz = factory.createOne(QuizDbModel)
 
 
 export const saveQuizResult = async (req: Request, res: Response) => {
+
     const {points, totalQuestions} = req.body
-
-    const quiz = req.body.quiz || req.params.quizId;
+    console.log(req.params, req.body)
+    const quiz = req.body.quiz || req.params.id;
     const user = req.body.user || req.user._id;
-
     if (!quiz || !user) {
         return res.status(400).json({ status: 'fail', message: 'Missing quiz or user ID' });
     }

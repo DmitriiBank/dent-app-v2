@@ -25,7 +25,7 @@ const QuizPageLang = () => {
             <h2>
                 {currentQuiz.title}: {currentQuiz.description}
             </h2>
-            <QuizAppLang questions={currentQuiz.questions ?? []} />
+            <QuizAppLang questions={currentQuiz.questions ?? []}  />
         </div>
     );
 };

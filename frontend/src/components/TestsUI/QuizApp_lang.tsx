@@ -15,15 +15,12 @@ import type {RootState} from "../../redux/store.ts";
 import {CircularProgress} from "@mui/material";
 
 
-
 const QuizAppLang = ({questions}: {
         questions: Question[],
     }) => {
-        const { quizId } = useParams<{ quizId: string }>();
+        const {quizId} = useParams<{ quizId: string }>();
         const userId = useAppSelector((state: RootState) => state.auth._id);
         const navigate = useNavigate();
-
-        // const testResults = user?.testResults ?? [];
 
         const [current, setCurrent] = useState(0);
         const [imgLoading, setImgLoading] = useState(true);
@@ -33,25 +30,10 @@ const QuizAppLang = ({questions}: {
         const [answers, setAnswers] = useState<(number | null)[]>([]);
         const [saving, setSaving] = useState(false);
 
-        // Получаем название теста из массива testList (закомментировано, если не используется)
-        // const currentTest = testList?.find(test => test.idTest === quizId);
-        // const testTitle = currentTest?.title || `${quizId}`;
-
         useEffect(() => {
             if (!questions || questions.length === 0) {
                 console.warn("⚠️ Нет вопросов для теста");
             }
-
-
-            // try {
-            //     const canTakeResult = await canTakeTest(quizId, testResults);
-            //     setCanTake(canTakeResult);
-            // } catch (error) {
-            //     console.error("Ошибка при проверке доступности теста:", error);
-            //     setCanTake(true);
-            // } finally {
-            //     setLoading(false);
-            // }
         }, [questions]);
 
 
@@ -76,13 +58,16 @@ const QuizAppLang = ({questions}: {
                     try {
                         const finalScore = isCorrect ? score + 1 : score;
                         await saveTestResult(quizId, finalScore, questions.length);
+
                         console.log("✅ Результат сохранён:", finalScore);
+
                     } catch (e) {
                         console.error("❌ Ошибка при сохранении результата:", e);
                     } finally {
                         setSaving(false);
                     }
                 }
+
             } else {
                 setCurrent((prev) => prev + 1);
             }
@@ -93,32 +78,6 @@ const QuizAppLang = ({questions}: {
         const handleBackToSelection = () => {
             navigate(Paths.HOME);
         };
-
-
-// if (userId && canTake === false) {
-//     const completedTest = testResults?.find(test => test.quiz === quizId);
-//     return (
-//         <div className="test-already-completed">
-//             <div className="completed-message">
-//                 <h2>Тест уже пройден!</h2>
-//                 <div className="test-info">
-//                     {completedTest && (
-//                         <p className="result">
-//                             Ваш результат
-//                             <strong>{completedTest.points}/{completedTest.totalQuestions}</strong>
-//                         </p>
-//                     )}
-//                 </div>
-//                 <button
-//                     className="back-button"
-//                     onClick={handleBackToSelection}
-//                 >
-//                    Вернуться к выбору тестов
-//                 </button>
-//             </div>
-//         </div>
-//     );
-// }
 
 
 
@@ -181,8 +140,16 @@ const QuizAppLang = ({questions}: {
                     {q.image && (
                         <>
                             {imgLoading && (
-                                <div style={{ textAlign: 'center', margin: '20px 0' }}>
-                                    <CircularProgress size={32} color="inherit" />
+                                <div
+                                    style={{
+                                        textAlign: 'center',
+                                        margin: '20px 0'
+                                    }}
+                                >
+                                    <CircularProgress
+                                        size={32}
+                                        color="inherit"
+                                    />
                                 </div>
                             )}
                             <ImageItem

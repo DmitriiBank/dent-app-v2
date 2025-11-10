@@ -62,7 +62,7 @@ export function exit() {
 }
 
 export async function getMe() {
-    return authFetch(`${API}/api/v1/users/me`, { method: "GET" });
+    return authFetch(`/api/v1/users/me`, { method: "GET" });
 }
 
 // utils

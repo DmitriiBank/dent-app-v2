@@ -13,13 +13,14 @@ quizRouter
     .get(controller.getAllQuizzes)
     .post(authService.protect, authService.restrictTo(<Roles>"admin"), controller.addQuiz);
 
-quizRouter.use('/:quizId/questions', questionRouter);
+quizRouter.use('/:id/questions', questionRouter);
 
 
 quizRouter
-    .route('/:quizId')
+    .route('/:id')
     .get(controller.getQuizById)
     .patch(authService.protect, authService.restrictTo(<Roles>"admin"), controller.updateQuiz)
-    .delete(authService.protect, authService.restrictTo(<Roles>"admin"), controller.deleteQuiz)
-    .post(authService.protect, userController.getMe, controller.saveQuizResult);
+    .delete(authService.protect, authService.restrictTo(<Roles>"admin"), controller.deleteQuiz);
+
+quizRouter.post('/:id/results', authService.protect, controller.saveQuizResult);
 
