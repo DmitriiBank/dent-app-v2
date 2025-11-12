@@ -3,6 +3,7 @@ import * as factory from "./handlerFactory";
 import {QuizDbModel} from "../schemas/quiz.schema";
 import {TestResult} from "../schemas/testResult.schema";
 import {AuthRequest} from "../utils/quizTypes";
+import {asAuth} from "../utils/tools";
 
 
 export const getAllQuizzes = factory.getAll(QuizDbModel);
@@ -12,7 +13,7 @@ export const deleteQuiz = factory.deleteOne(QuizDbModel)
 export const addQuiz = factory.createOne(QuizDbModel)
 
 
-export const saveQuizResult = async (req: AuthRequest, res: Response) => {
+export const saveQuizResult = asAuth(async (req: AuthRequest, res: Response) => {
 
     const {points, totalQuestions} = req.body
     console.log(req.params, req.body)
@@ -43,5 +44,5 @@ export const saveQuizResult = async (req: AuthRequest, res: Response) => {
             testResult
         },
     });
-};
+});
 
