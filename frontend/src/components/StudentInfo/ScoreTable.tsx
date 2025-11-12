@@ -61,7 +61,7 @@ export const ScoreTable = () => {
                 }));
 
                 setTestScore(results);
-                console.log('Финальный статус тестов:', results);
+                console.log('Финальный статус тестов:', testScore);
                 if (currentUser.role === "admin") {
                     const {data: users} = await getAllUsers();
                     const allRows = users.map(u => ({
@@ -79,7 +79,7 @@ export const ScoreTable = () => {
                     id: currentUser._id,
                     studentName: currentUser.name ?? "",
                     lessons: Object.fromEntries(
-                        Object.entries(results).map(([quizId, r]) => [
+                        Object.entries(testScore).map(([quizId, r]) => [
                             quizId,
                             { score: r.score ?? "0" },
                         ])
