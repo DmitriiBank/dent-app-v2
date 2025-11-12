@@ -10,6 +10,7 @@ import {useNavigate} from "react-router-dom";
 import {useState} from "react";
 import {Navbar} from "./Navbar.tsx";
 import {MenuIcon} from "lucide-react";
+import {getAllUsers} from "../../services/accountApi.ts";
 
 export const Header = () => {
     const {email, name, role} = useAppSelector(state => state.auth);
@@ -68,6 +69,13 @@ export const Header = () => {
                         >
                         {name || email}
                     </Typography>
+                    <Button variant={'contained'}
+                            style={{backgroundColor: 'red', fontWeight: 'bold'}}
+                            onClick={() => {
+                              const users =  getAllUsers()
+                                console.log(users)
+                            }}
+                        >Users</Button>
                     <Logout />
                 </Box>
             )}

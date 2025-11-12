@@ -61,9 +61,7 @@ export function exit() {
     return true
 }
 
-export async function getMe() {
-    return authFetch(`/api/v1/users/me`, { method: "GET" });
-}
+
 
 // utils
 async function safeText(res: Response) {

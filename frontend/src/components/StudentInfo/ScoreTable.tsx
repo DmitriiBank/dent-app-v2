@@ -6,6 +6,7 @@ import type {RootState} from "../../redux/store.ts";
 import type {TestRecord} from "../../types/User.ts";
 import type {GridColDef} from "@mui/x-data-grid";
 import {DataGrid} from "@mui/x-data-grid";
+import {deleteUser, getAllUsers} from "../../services/accountApi.ts";
 
 
 type Row = {
@@ -21,9 +22,9 @@ export const ScoreTable = () => {
     // const navigate = useNavigate();
     const allQuizzes = useAppSelector((state: RootState) => state.quiz.list)
     // const dispatch = useAppDispatch();
-    // const [testScore, setTestScore] = useState<Record<string, {
-    //     score?: string | null
-    // }>>({});
+    const [testScore, setTestScore] = useState<Record<string, {
+        score?: string | null
+    }>>({});
 
     useEffect(() => {
         const loadTestStatus = async () => {
@@ -32,14 +33,12 @@ export const ScoreTable = () => {
                 // navigate(Paths.LOGIN, {replace: true});
                 return;
             }
-
             setLoading(true);
 
             try {
                 const results: Record<string, {
                     score?: string
                 }> = {};
-
 
                 await Promise.all(allQuizzes.map(async (quiz) => {
                     try {
@@ -61,9 +60,22 @@ export const ScoreTable = () => {
                     }
                 }));
 
-                // setTestScore(results);
+                setTestScore(results);
                 console.log('Финальный статус тестов:', results);
-                const allRows: Row[] = [{
+                if (currentUser.role === "admin") {
+                    const {data: users} = await getAllUsers();
+                    const allRows = users.map(u => ({
+                        id: u._id,
+                        studentName: u.name,
+                        lessons: Object.fromEntries(
+                            allQuizzes.map(q => {
+                                const res = u.testResults?.find(t => t.quiz === q.id);
+                                return [q.id, { score: res ? `${res.points}/${res.totalQuestions}` : "0" }];
+                            })
+                        )
+                    }));
+                    setRows(allRows);
+                } else { const allRows: Row[] = [{
                     id: currentUser._id,
                     studentName: currentUser.name ?? "",
                     lessons: Object.fromEntries(
@@ -73,14 +85,10 @@ export const ScoreTable = () => {
                         ])
                     )
                 }];
-                setRows(allRows);
+                setRows(allRows);}
                 setLoading(false);
             } catch (error) {
                 console.error('Ошибка при загрузке статуса тестов:', error);
-                // const fallbackStatus: Record<string, {
-                //     score?: string
-                // }> = {};
-                // setTestScore(fallbackStatus);
             } finally {
                 setLoading(false);
             }
@@ -139,14 +147,15 @@ const columns: GridColDef<Row>[] = currentUser.role == "admin" ? [
     },
 ] : lessonCols;
 
-const handleEdit = (id: string) => {
+const handleEdit = async (id: string) => {
     console.log("Редактировать", id);
-    // TODO  модалку с редактированием
+   //TODO
 };
 
-const handleDelete = (id: string) => {
+const handleDelete = async (id: string) => {
     console.log("Удалить", id);
-    //TODO запрос на удаление
+    await deleteUser(id)
+    alert("User removed successfully")
 };
 
 // if (!initialLoadDone) {
