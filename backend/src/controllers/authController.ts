@@ -158,7 +158,7 @@ export const googleCallback =  asAuth((req: AuthRequest, res: Response, next: Ne
         // createSendToken(req.user as any, 200, res);
         const token = signToken((req.user as any)._id);
 
-        const frontendUrl = process.env.GOOGLE_CLIENT_URL || 'http://localhost:5173';
+        const frontendUrl = process.env.GOOGLE_CLIENT_URL || 'https://dent-app-v2.onrender.com';
         res.redirect(`${frontendUrl}/auth/success?token=${token}`);
     } catch (error) {
         next(error);
