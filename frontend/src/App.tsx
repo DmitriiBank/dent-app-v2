@@ -10,12 +10,15 @@ import PrivateRoute from "./redux/PrivateRoute.tsx";
 import {Roles} from "./types/quiz-types.ts";
 
 
+
 function App() {
     const dispatch = useAppDispatch()
 
     useEffect(() => {
         const token = localStorage.getItem('token');
-        if (token) dispatch(fetchCurrentUser());
+        if (token) {
+            dispatch(fetchCurrentUser());
+        }
     }, [dispatch]);
 
     return (

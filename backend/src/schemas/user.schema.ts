@@ -36,13 +36,19 @@ export const userSchema = new Schema<User>(
         },
         password: {
             type: String,
-            required: [true, 'Please provide a password'],
+            required: function () {
+                console.log('Please provide a password')
+                return this.provider !== 'google';
+            },
             minlength: [8, 'Password must be more or equal then 8 characters'],
             select: false
         },
         passwordConfirm: {
             type: String,
-            required: [true, 'Please confirm your a password'],
+            required: function () {
+                console.log('Please confirm your a password')
+                return this.provider !== 'google';
+            },
             validate: {
                 validator: function (el: string) {
                     return el === this.password;

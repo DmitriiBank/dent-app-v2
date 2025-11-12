@@ -9,12 +9,14 @@ import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import MuiCard from '@mui/material/Card';
 import InputAdornment from '@mui/material/InputAdornment';
-import {styled, alpha} from '@mui/material/styles';
-import {Mail, Lock, ArrowRight, Sparkles} from 'lucide-react';
+import {alpha, styled} from '@mui/material/styles';
+import {ArrowRight, Lock, Mail, Sparkles} from 'lucide-react';
 import {GoogleIcon} from './CustomIcons.tsx';
 import {type LoginData, Paths} from "../types/quiz-types.ts";
 import {NavLink} from "react-router-dom";
 import {CircularProgress} from "@mui/material";
+
+
 
 export const Card = styled(MuiCard)(({theme}) => ({
     display: 'flex',
@@ -306,13 +308,19 @@ export default function SignIn(props: Props) {
                         disabled={isLoading}
                         endIcon={
                             isLoading ? null : (
-                                <ArrowRight size={18} color="#E5E7EB" />
+                                <ArrowRight
+                                    size={18}
+                                    color="#E5E7EB"
+                                />
                             )
                         }
                         sx={{color: '#E5E7EB'}}
                     >
                         {isLoading ? (
-                            <CircularProgress size={24} color="inherit" />
+                            <CircularProgress
+                                size={24}
+                                color="inherit"
+                            />
                         ) : (
                             'Sign in'
                         )}
@@ -331,10 +339,9 @@ export default function SignIn(props: Props) {
                     <OutlineButton
                         fullWidth
                         startIcon={<GoogleIcon />}
-                        onClick={() => props.submitFn({
-                            email: 'GOOGLE',
-                            password: ''
-                        })}
+                        onClick={() => {
+                                window.location.href = `${import.meta.env.VITE_API_URL}/api/v1/users/login/google`;
+                            }}
                     >
                         Sign in with Google
                     </OutlineButton>
@@ -351,7 +358,7 @@ export default function SignIn(props: Props) {
                             to={Paths.REGISTER}
                             style={{color: '#6ea8fe', fontWeight: 700}}
                         >
-                           Sign up
+                            Sign up
                         </NavLink>
                     </Typography>
                 </Box>

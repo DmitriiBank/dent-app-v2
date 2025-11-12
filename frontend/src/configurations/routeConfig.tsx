@@ -13,6 +13,7 @@ import {ScorePageLang} from "../components/TestsUI/ScorePage_lang";
 import TeethPage from "../components/Anatomy/TeethPage.tsx";
 import {ToothPage} from "../components/Anatomy/ToothPage.tsx";
 import {ScoreTable} from "../components/StudentInfo/ScoreTable.tsx";
+import GoogleSuccess from "../servicePages/GoogleSuccess.tsx";
 
 export const routes = [
     {path: Paths.HOME, element: <QuizSelectionPage_lang />, role: ''},
@@ -29,6 +30,7 @@ export const routes = [
         role: Roles.USER
     },
     {path: Paths.LOGIN, element: <Login />, role: ''},
+    { path: Paths.GOOGLE, element: <GoogleSuccess />, role: "" },
     {path: Paths.LOGOUT, element: <Logout />, role: Roles.USER},
     {path: Paths.REGISTER, element: <Registration />, role: ''},
     {path: Paths.LECTURES, element: <LecturesPage />, role: ''},

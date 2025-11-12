@@ -1,6 +1,7 @@
 
 export enum Paths {
     LOGIN = "/users/login",
+    GOOGLE = "/auth/success",
     HOME = "/quizzes",
     QUIZ_RESULT = "/quizzes/:id/results",
     ERROR = "/error",

@@ -22,7 +22,7 @@ const validateEnv = () => {
 
 validateEnv();
 
-const signToken = (id:string): string => {
+export const signToken = (id:string): string => {
     const secret: Secret = process.env.JWT_SECRET as Secret;
     const options: SignOptions = {
         expiresIn: (process.env.JWT_EXPIRES_IN ?? '90d')  as any,
@@ -49,6 +49,9 @@ export const createSendToken = (user: User, statusCode: number, res: Response) =
     safeUser.passwordResetToken = undefined;
     safeUser.passwordResetExpires = undefined;
     safeUser.__v = undefined;
+
+    // const url = `${process.env.GOOGLE_CLIENT_URL}/auth/success?token=${token}`;
+    // res.redirect(url);
 
     res.status(statusCode).json({
         status: 'success',

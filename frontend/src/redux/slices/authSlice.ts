@@ -37,16 +37,23 @@ export const loginUser = createAsyncThunk(
     }
 );
 
-export const fetchCurrentUser = createAsyncThunk("auth/fetchCurrentUser", async () => {
-    const data = await getUserData();
-    return data;
-});
+export const fetchCurrentUser = createAsyncThunk<User>(
+    "auth/me",
+    async (): Promise<User> => {
+        const res = await getUserData();
+
+        if ("data" in res && res.data) {
+            return res.data as User;
+        }
+        return res as User;
+    }
+);
 
 const authSlice = createSlice({
     name: "auth",
     initialState,
     reducers: {
-        loginAction: (state, { payload }) => {
+        loginAction: (state, {payload}) => {
             Object.assign(state, payload);
             state.isAuth = true;
             state.isLoading = false;
@@ -61,14 +68,17 @@ const authSlice = createSlice({
             .addCase(loginUser.pending, (state) => {
                 state.isLoading = true;
             })
-            .addCase(loginUser.fulfilled, (state, { payload }) => {
+            .addCase(loginUser.fulfilled, (state, {payload}) => {
                 state.isLoading = false;
                 state.isAuth = true;
                 Object.assign(state, payload);
             })
-            .addCase(fetchCurrentUser.fulfilled, (state, { payload }) => {
+            .addCase(fetchCurrentUser.fulfilled, (state, {payload}) => {
                 state.isAuth = true;
                 Object.assign(state, payload);
+                if (payload) {
+                    localStorage.setItem("user", JSON.stringify(payload));
+                }
             });
     },
 });

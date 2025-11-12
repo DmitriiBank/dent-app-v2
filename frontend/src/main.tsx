@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 import * as React from 'react';
 import './index.css';
 import App from './App.tsx';
-import { HashRouter } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import {PersistGate} from 'redux-persist/integration/react';
 import {store, persistor} from './redux/store.ts';
@@ -27,7 +27,7 @@ function Root() {
         <ColorModeContext.Provider value={{ mode, toggle }}>
             <ThemeProvider theme={theme}>
                 <CssBaseline />
-                <HashRouter>
+                <BrowserRouter>
                     <Header />
                     <div className="main">
                         <div className="navbar--static">
@@ -37,7 +37,7 @@ function Root() {
                             <App />
                         </div>
                     </div>
-                </HashRouter>
+                </BrowserRouter>
             </ThemeProvider>
         </ColorModeContext.Provider>
     );

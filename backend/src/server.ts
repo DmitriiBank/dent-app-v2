@@ -6,8 +6,6 @@ import * as fs from "node:fs";
 // import dotenv from 'dotenv'
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
-// import {sanitize} from 'express-mongo-sanitize';
-// import hpp from 'hpp';
 import {userRouter} from "./routes/userRouter";
 import {quizRouter} from "./routes/quizRouter";
 // import swaggerUi from "swagger-ui-express"
@@ -21,6 +19,7 @@ import {baseUrl} from "./config/appConfig";
 import passport from 'passport';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
+import './config/passportConfig';
 
 export const launchServer = () => {
     //=======load environment=====
@@ -40,7 +39,6 @@ export const launchServer = () => {
         })
     );
 
-    // ✅ Обработка preflight-запросов (OPTIONS)
     app.options("*", cors());
 
     app.use(helmet({
@@ -102,6 +100,7 @@ export const launchServer = () => {
 
     app.use(cookieParser());
     app.use(session({ secret: 'secret', resave: false, saveUninitialized: false }));
+
     app.use(passport.initialize());
     app.use(passport.session());
     // //==============Swagger Docs==========

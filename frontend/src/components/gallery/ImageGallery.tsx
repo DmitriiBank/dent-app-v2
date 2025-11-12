@@ -17,7 +17,6 @@ const Thumb = styled('button')(({theme}) => ({
     borderRadius: 10,
     overflow: 'hidden',
     width: 96,
-    height: 72,
     flex: '0 0 auto',
     border: `1px solid ${alpha(theme.palette.divider, 0.9)}`,
     background: theme.palette.background.paper,
@@ -123,7 +122,7 @@ export default function ImageGallery({ images, alt = 'image', initialIndex = 0 }
                                     src={src}
                                     alt={`${alt} preview ${idx + 1}`}
                                     width={96}
-                                    height={72}
+                                    height={182}
                                     style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                                 />
                             </Thumb>

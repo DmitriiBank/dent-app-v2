@@ -49,7 +49,7 @@ export default function LectureViewerDialog({ open, title, src, images = [], onC
 
             <DialogContent
                 dividers
-                sx={{ pt: 1, pb: 2, maxHeight: '85vh' }} // скроллим контент
+                sx={{ pt: 1, pb: 2, maxHeight: '85vh' }}
             >
                 <Box
                     sx={{
@@ -57,7 +57,7 @@ export default function LectureViewerDialog({ open, title, src, images = [], onC
                         width: '100%',
                         maxWidth: containerWidth,
                         display: 'grid',
-                        gap: 2,              // расстояние между элементами колонки
+                        gap: 2,              
                     }}
                 >
                     {isImagesMode ? (

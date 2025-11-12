@@ -15,11 +15,23 @@ export async function authFetch<T = unknown>(path: string, init: RequestInit = {
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
     });
+    console.log(res)
+    if (res.status === 304) {
+        console.warn("ℹ️ Server returned 304 Not Modified");
+        const cached = localStorage.getItem("user");
+        if (cached) return JSON.parse(cached) as T;
+        throw new Error("User not modified, and no cache found");
+    }
+
     if (!res.ok) {
         const msg = await safeText(res);
         throw new Error(msg || `HTTP ${res.status}`);
     }
-    return (await safeJson<T>(res))!;
+
+    const json = await safeJson<T>(res);
+    if (!json) throw new Error("Empty response body");
+    console.log(json);
+    return json;
 }
 
 
