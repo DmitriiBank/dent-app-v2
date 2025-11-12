@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
 import mongoose from "mongoose";
-import {db} from "./config/quizConfig";
+import {db} from "./config/appConfig";
 import {launchServer} from "./server";
 import './schemas/testResult.schema';
 

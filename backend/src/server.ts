@@ -17,7 +17,7 @@ import hpp from 'hpp';
 import qs from 'qs';
 // import swaggerDoc from "../docs/openapi.json" with {type: "json"};
 import cors from "cors";
-import {baseUrl} from "./config/quizConfig";
+import {baseUrl} from "./config/appConfig";
 
 export const launchServer = () => {
     //=======load environment=====

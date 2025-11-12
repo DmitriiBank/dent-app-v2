@@ -6,6 +6,10 @@ import crypto from 'crypto';
 import {NextFunction, Request, Response} from "express";
 import {User} from "../model/User";
 import mongoose from "mongoose";
+import {logger} from "../Logger/winston.js";
+import {
+    accountServiceImplMongo as service
+} from "../services/AccountServiceImplMongo.js";
 
 const validateEnv = () => {
     if (!process.env.JWT_SECRET) {
@@ -26,7 +30,7 @@ const signToken = (id: mongoose.Types.ObjectId): string => {
     return jwt.sign({ id }, secret, options);
 };
 
-const createSendToken = (user: User, statusCode: number, res: Response) => {
+export const createSendToken = (user: User, statusCode: number, res: Response) => {
     const token = signToken(user._id);
     const cookieExpiresInDays = Number(process.env.JWT_COOKIE_EXPIRES_IN) || 7;
 
@@ -57,7 +61,11 @@ const createSendToken = (user: User, statusCode: number, res: Response) => {
 
 
 export const signup = async (req: Request , res: Response, next: NextFunction) => {
-        const newUser = await UserDbModel.create(req.body);
+    const body = req.body;
+    if(body.length < 1){
+        return next(new HttpError(400, 'Please enter correct datas'));
+    }
+    const newUser = await service.signup(body);
         createSendToken(newUser, 201, res);
 };
 
@@ -68,9 +76,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
         return next(new HttpError(400, 'Please provide email and password'));
     }
 
-    const user = await UserDbModel.findOne({email}).select('+password');
-    if (!user || !(await user.correctPassword(password, user.password)))
-        return next(new HttpError(401, "Incorrect email or password"));
+    const user = await service.login(email, password);
 
    createSendToken(user, 200, res);
 };
@@ -112,40 +118,31 @@ export const forgotPassword = async (req: Request, res: Response, next: NextFunc
 };
 
 export const resetPassword = async (req: Request, res: Response, next: NextFunction) => {
-    const hashedToken = crypto.createHash('sha256').update(req.params.token).digest('hex');
-
-    const user = await UserDbModel.findOne({
-        passwordResetToken: hashedToken,
-        passwordResetExpires: {$gt: Date.now()},
-    });
-
-    if (!user) {
-        return next(new HttpError(400, 'Token is invalid or has expired'));
+    const token = req.params.token;
+    if (!token) {
+        logger.error(`${new Date().toISOString()} => Token is empty`);
+        throw new HttpError(400, "Token is empty");
     }
-    user.password = req.body.password;
-    user.passwordConfirm = req.body.passwordConfirm;
-    user.passwordResetToken = undefined;
-    user.passwordResetExpires = undefined;
-    await user.save();
+    const {password, passwordConfirm} = req.body;
+    if (!password || !passwordConfirm) {
+        logger.error(`${new Date().toISOString()} => Password invalid`);
+        throw new HttpError(400, "Password invalid");
+    }
+    const result = await service.resetPassword(token, password, passwordConfirm);
 
-    createSendToken(user, 200, res);
+    createSendToken(result, 200, res);
 };
 
+
 export const updatePassword = async (req: Request, res: Response, next: NextFunction) => {
-    const user = await UserDbModel.findById(req.user.id).select('+password');
-
-    if (!user) {
-        return next(new HttpError(404, 'User not found.'));
+    const userId = req.user._id;
+    const {newPassword, newPasswordConfirm, passwordCurrent} = req.body;
+    if (!newPassword || !newPasswordConfirm) {
+        logger.error(`${new Date().toISOString()} => New password invalid`);
+        throw new HttpError(400, "New password invalid");
     }
 
-    const isCorrect = await user.correctPassword(req.body.passwordCurrent, user.password);
-    if (!isCorrect) {
-        return next(new HttpError(401, 'Your current password is incorrect.'));
-    }
+    const result = await service.updatePassword(userId, passwordCurrent, newPassword, newPasswordConfirm);
 
-    user.password = req.body.password;
-    user.passwordConfirm = req.body.passwordConfirm;
-    await user.save();
-
-    createSendToken(user, 200, res);
+    createSendToken(result, 200, res);
 };
