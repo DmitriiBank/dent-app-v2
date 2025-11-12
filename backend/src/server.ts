@@ -1,5 +1,5 @@
 import 'express-async-errors';
-import express, {NextFunction, Request, Response} from 'express'
+import express, {Application, NextFunction, Request, Response} from 'express'
 import {errorHandler} from "./errorHandler/errorHandler";
 import morgan from "morgan";
 import * as fs from "node:fs";
@@ -18,12 +18,15 @@ import qs from 'qs';
 // import swaggerDoc from "../docs/openapi.json" with {type: "json"};
 import cors from "cors";
 import {baseUrl} from "./config/appConfig";
+import passport from 'passport';
+import session from 'express-session';
+import cookieParser from 'cookie-parser';
 
 export const launchServer = () => {
     //=======load environment=====
 
     const __dirname = path.resolve();
-    const app = express();
+    const app: Application = express();
 
     app.use(
         cors({
@@ -97,7 +100,10 @@ export const launchServer = () => {
         next();
     });
 
-
+    app.use(cookieParser());
+    app.use(session({ secret: 'secret', resave: false, saveUninitialized: false }));
+    app.use(passport.initialize());
+    app.use(passport.session());
     // //==============Swagger Docs==========
     // app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc))
 

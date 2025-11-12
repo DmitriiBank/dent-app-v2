@@ -1,7 +1,8 @@
-import {Request, Response} from "express";
+import {Response} from "express";
 import * as factory from "./handlerFactory";
 import {QuizDbModel} from "../schemas/quiz.schema";
 import {TestResult} from "../schemas/testResult.schema";
+import {AuthRequest} from "../utils/quizTypes";
 
 
 export const getAllQuizzes = factory.getAll(QuizDbModel);
@@ -11,7 +12,7 @@ export const deleteQuiz = factory.deleteOne(QuizDbModel)
 export const addQuiz = factory.createOne(QuizDbModel)
 
 
-export const saveQuizResult = async (req: Request, res: Response) => {
+export const saveQuizResult = async (req: AuthRequest, res: Response) => {
 
     const {points, totalQuestions} = req.body
     console.log(req.params, req.body)

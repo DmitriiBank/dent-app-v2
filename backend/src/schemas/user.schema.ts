@@ -51,8 +51,16 @@ export const userSchema = new Schema<User>(
             },
         },
         passwordChangedAt: { type: Date },
-        passwordResetToken: String,
-        passwordResetExpires: Date,
+        passwordResetToken: {
+            type: String},
+        passwordResetExpires: {
+            type: Date},
+        googleId: {
+            type: String},
+        avatar: {
+            type: String},
+        provider: {
+            type: String},
         active: {
             type: Boolean,
             default: true,

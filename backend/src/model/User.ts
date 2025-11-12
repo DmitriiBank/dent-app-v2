@@ -2,7 +2,7 @@ import mongoose, {Document} from "mongoose";
 
 
 export interface User extends Document {
-    _id: mongoose.Types.ObjectId;
+    _id: string;
     name: string;
     email: string;
     role: string;
@@ -11,6 +11,9 @@ export interface User extends Document {
     passwordChangedAt?: Date | null;
     passwordResetToken?: string | null;
     passwordResetExpires?: Date | null;
+    googleId?: string;
+    avatar?: string;
+    provider?: string;
     active: boolean;
     correctPassword(candidate: string, userPassword: string): Promise<boolean>;
     changedPasswordAfter(JWTTimestamp: number): boolean;

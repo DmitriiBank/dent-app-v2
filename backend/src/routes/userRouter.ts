@@ -1,17 +1,32 @@
 import express from "express";
 import * as userController from '../controllers/userController';
 import * as authController from '../controllers/authController';
+import {createSendToken} from '../controllers/authController';
 import * as authService from '../middleware/authMiddleware';
-import {Roles} from "../utils/quizTypes";
+import {AuthRequest, Roles} from "../utils/quizTypes";
+import passport from "passport";
+import {asAuth} from "../utils/tools";
+import {HttpError} from "../errorHandler/HttpError";
 
 export const userRouter = express.Router()
-
 
 userRouter.post('/signup', authController.signup);
 userRouter.post('/login', authController.login);
 userRouter.post('/forgotPassword', authController.forgotPassword);
 userRouter.post('/resetPassword/:token', authController.resetPassword);
 
+userRouter.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+userRouter.get(
+    '/google/callback',
+    passport.authenticate('google', { session: false }),
+    asAuth((req: AuthRequest, res) => {
+        if(!req.user) {
+            throw new HttpError(401, 'Not authorized');
+        }
+        createSendToken(req.user, 200, res)
+    })
+);
 
 userRouter.use(authService.protect);
 

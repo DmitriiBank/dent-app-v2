@@ -1,9 +1,9 @@
-import {NextFunction, Request, Response} from "express";
+import {NextFunction, Request, RequestHandler, Response} from "express";
 import {UserDbModel} from "../schemas/user.schema";
 import {HttpError} from "../errorHandler/HttpError";
-import {sendEmail} from "../utils/email";
 import jwt from "jsonwebtoken";
-import {Roles} from "../utils/quizTypes";
+import {AuthRequest, Roles} from "../utils/quizTypes";
+import {asAuth} from "../utils/tools";
 
 // ---- JWT Payload interface ----
 interface JWTPayload {
@@ -12,12 +12,15 @@ interface JWTPayload {
     exp: number;
 }
 
-export const protect = async (req: Request, res: Response, next: NextFunction) => {
+export const protect: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
     let token: string | undefined;
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
         token = req.headers.authorization.split(' ')[1];
     }
     // console.log(token);
+    else if (req.cookies?.jwt) {
+        token = req.cookies.jwt;
+    }
 
     if (!token) {
         return next(new HttpError(401, 'You are not logged in! Please log in'));
@@ -40,12 +43,12 @@ export const protect = async (req: Request, res: Response, next: NextFunction) =
 };
 
 export const restrictTo = (...roles: Roles[]) => {
-    return (req: Request, res: Response, next: NextFunction) => {
+    return asAuth((req: AuthRequest, res: Response, next: NextFunction) => {
         if (!roles.includes(req.user.role as Roles)) {
             return next(
                 new HttpError(403, 'You do not have permission to perform this action'),
             );
         }
         next();
-    };
+    });
 };

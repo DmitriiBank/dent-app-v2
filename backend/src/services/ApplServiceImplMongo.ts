@@ -1,7 +1,7 @@
 import {Document, Model} from "mongoose";
-import {APIFeatures} from "../utils/apiFeatures.ts";
-import {logger} from "../Logger/winston.ts";
-import {HttpError} from "../errorHandler/HttpError.ts";
+import {APIFeatures} from "../utils/apiFeatures";
+import {logger} from "../Logger/winston";
+import {HttpError} from "../errorHandler/HttpError";
 import {ApplService} from "./applService";
 
 export class ApplServiceImplMongo implements ApplService {

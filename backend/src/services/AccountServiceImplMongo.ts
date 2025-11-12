@@ -1,11 +1,10 @@
-import {AccountService} from "./accountService.js";
-import {HttpError} from "../errorHandler/HttpError.js";
+import {AccountService} from "./accountService";
+import {HttpError} from "../errorHandler/HttpError";
 import bcrypt from "bcryptjs";
 import {logger} from "../Logger/winston";
-import {UserDbModel} from "../schemas/user.schema.ts";
-import {User} from "../model/User.ts";
+import {UserDbModel} from "../schemas/user.schema";
+import {User} from "../model/User";
 import crypto from "crypto";
-import mongoose from "mongoose";
 
 
 export class AccountServiceImplMongo implements AccountService {

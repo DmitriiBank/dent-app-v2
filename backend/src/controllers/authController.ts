@@ -2,14 +2,14 @@ import {UserDbModel} from '../schemas/user.schema';
 import jwt, {Secret, SignOptions} from 'jsonwebtoken';
 import {HttpError} from '../errorHandler/HttpError';
 import {sendEmail} from '../utils/email';
-import crypto from 'crypto';
 import {NextFunction, Request, Response} from "express";
 import {User} from "../model/User";
-import mongoose from "mongoose";
 import {logger} from "../Logger/winston.js";
 import {
     accountServiceImplMongo as service
 } from "../services/AccountServiceImplMongo.js";
+import {AuthRequest} from "../utils/quizTypes";
+import {asAuth} from "../utils/tools";
 
 const validateEnv = () => {
     if (!process.env.JWT_SECRET) {
@@ -22,7 +22,7 @@ const validateEnv = () => {
 
 validateEnv();
 
-const signToken = (id: mongoose.Types.ObjectId): string => {
+const signToken = (id:string): string => {
     const secret: Secret = process.env.JWT_SECRET as Secret;
     const options: SignOptions = {
         expiresIn: (process.env.JWT_EXPIRES_IN ?? '90d')  as any,
@@ -134,7 +134,7 @@ export const resetPassword = async (req: Request, res: Response, next: NextFunct
 };
 
 
-export const updatePassword = async (req: Request, res: Response, next: NextFunction) => {
+export const updatePassword = asAuth(async (req: AuthRequest, res: Response, next: NextFunction) => {
     const userId = req.user._id;
     const {newPassword, newPasswordConfirm, passwordCurrent} = req.body;
     if (!newPassword || !newPasswordConfirm) {
@@ -145,4 +145,4 @@ export const updatePassword = async (req: Request, res: Response, next: NextFunc
     const result = await service.updatePassword(userId, passwordCurrent, newPassword, newPasswordConfirm);
 
     createSendToken(result, 200, res);
-};
+});
