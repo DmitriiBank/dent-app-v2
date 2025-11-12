@@ -1,7 +1,7 @@
 import express, {NextFunction, Response} from "express";
 import * as userController from '../controllers/userController';
 import * as authController from '../controllers/authController';
-import {signToken} from '../controllers/authController';
+import {googleCallback, signToken} from '../controllers/authController';
 import * as authService from '../middleware/authMiddleware';
 import {AuthRequest, Roles} from "../utils/quizTypes";
 import passport from "passport";
@@ -20,20 +20,7 @@ userRouter.get('/login/google', passport.authenticate('google', { scope: ['profi
 userRouter.get(
     '/login/google/callback',
     passport.authenticate('google', { session: false }),
-    asAuth((req: AuthRequest, res: Response, next: NextFunction) => {
-        try {
-            if (!req.user) {
-                throw new HttpError(401, 'Authentication failed');
-            }
-            // createSendToken(req.user as any, 200, res);
-            const token = signToken((req.user as any)._id);
-
-            const frontendUrl = process.env.GOOGLE_CLIENT_URL || 'http://localhost:5173';
-            res.redirect(`${frontendUrl}/auth/success?token=${token}`);
-        } catch (error) {
-            next(error);
-        }
-    })
+    authController.googleCallback
 );
 
 userRouter.use(authService.protect);

@@ -149,3 +149,18 @@ export const updatePassword = asAuth(async (req: AuthRequest, res: Response, nex
 
     createSendToken(result, 200, res);
 });
+
+export const googleCallback =  asAuth((req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+        if (!req.user) {
+            throw new HttpError(401, 'Authentication failed');
+        }
+        // createSendToken(req.user as any, 200, res);
+        const token = signToken((req.user as any)._id);
+
+        const frontendUrl = process.env.GOOGLE_CLIENT_URL || 'http://localhost:5173';
+        res.redirect(`${frontendUrl}/auth/success?token=${token}`);
+    } catch (error) {
+        next(error);
+    }
+})
