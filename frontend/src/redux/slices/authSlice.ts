@@ -57,10 +57,12 @@ const authSlice = createSlice({
             Object.assign(state, payload);
             state.isAuth = true;
             state.isLoading = false;
+            localStorage.setItem("user", JSON.stringify(payload));
         },
         logout: (state) => {
             Object.assign(state, initialState);
             localStorage.removeItem("token");
+            localStorage.removeItem("user");
         },
     },
     extraReducers: (builder) => {
@@ -72,13 +74,12 @@ const authSlice = createSlice({
                 state.isLoading = false;
                 state.isAuth = true;
                 Object.assign(state, payload);
+                localStorage.setItem("user", JSON.stringify(payload));
             })
             .addCase(fetchCurrentUser.fulfilled, (state, {payload}) => {
                 state.isAuth = true;
                 Object.assign(state, payload);
-                if (payload) {
-                    localStorage.setItem("user", JSON.stringify(payload));
-                }
+                localStorage.setItem("user", JSON.stringify(payload));
             });
     },
 });

@@ -1,7 +1,6 @@
 import Logout from "../../servicePages/Logout.tsx";
 import Box from "@mui/material/Box";
-import {Avatar, Drawer,
-    IconButton,} from "@mui/material";
+import {Avatar, Drawer, IconButton,} from "@mui/material";
 import Typography from "@mui/material/Typography";
 import {useAppSelector} from "../../redux/hooks.ts";
 import Button from "@mui/material/Button";
@@ -10,7 +9,6 @@ import {useNavigate} from "react-router-dom";
 import {useState} from "react";
 import {Navbar} from "./Navbar.tsx";
 import {MenuIcon} from "lucide-react";
-import {getAllUsers} from "../../services/accountApi.ts";
 
 export const Header = () => {
     const {email, name, role} = useAppSelector(state => state.auth);
@@ -63,19 +61,11 @@ export const Header = () => {
                                     textDecoration: "underline",
                                 },}}
                             onClick={() =>{
-                                role == 'admin' ?  navigate(Paths.ALL_USERS) :
-                                navigate(Paths.MY_PAGE)
-                            }}
+                                navigate(role === 'admin' ? Paths.ALL_USERS : Paths.MY_PAGE)}
+                            }
                         >
                         {name || email}
                     </Typography>
-                    <Button variant={'contained'}
-                            style={{backgroundColor: 'red', fontWeight: 'bold'}}
-                            onClick={() => {
-                              const users =  getAllUsers()
-                                console.log(users)
-                            }}
-                        >Users</Button>
                     <Logout />
                 </Box>
             )}
@@ -92,7 +82,6 @@ export const Header = () => {
                         borderRadius: "0 0 16px 16px",
                         px: 2,
                         py: 2,
-                        // для top-Drawer управляем высотой:
                         height: "auto",
                         maxHeight: "80vh",
                     },

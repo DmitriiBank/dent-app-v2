@@ -70,7 +70,7 @@ export default function ImageGallery({ images, alt = 'image', initialIndex = 0 }
                 }}
             >
                 <img
-                    src={images[current]}
+                    src={`/anatomy/${images[current]}`}
                     alt={`${alt} ${current + 1}/${total}`}
                     // style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                 />

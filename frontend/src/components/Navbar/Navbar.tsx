@@ -4,9 +4,7 @@ import type {RootState} from "../../redux/store.ts";
 import {Paths} from "../../types/quiz-types.ts";
 
 export const Navbar = () => {
-    const {email, name} = useAppSelector(state => state.auth);
-    console.log(email, name)
-    const navigate = useNavigate()
+   const navigate = useNavigate()
     const lang = useAppSelector((state: RootState) => state.lang.language);
 
     return (

@@ -10,7 +10,7 @@ export const getAllQuizzes = async () => {
 
 export const getQuiz = async (id: string) => {
     const token = localStorage.getItem('token');
-    console.log(token);
+    // console.log(token);
     const res = await fetch(`${API}/api/v1/quizzes/${id}`, {
         method: 'GET',
         headers: {
@@ -41,7 +41,8 @@ export function canTakeTest(
 export async function saveTestResult(quizId: string, points: number, totalQuestions: number) {
     // стандартный вариант: POST /attempt
     const token = localStorage.getItem('token');
-    console.log(token);
+    // console.log(token);
+    localStorage.setItem("forceRefreshTests", "true");
     return authFetch(`/api/v1/quizzes/${quizId}/results`, {
         method: "POST",
         headers: {"Content-Type": "application/json"},

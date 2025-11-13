@@ -22,12 +22,12 @@ const validateEnv = () => {
 
 validateEnv();
 
-export const signToken = (id:string): string => {
+export const signToken = (id: string): string => {
     const secret: Secret = process.env.JWT_SECRET as Secret;
     const options: SignOptions = {
-        expiresIn: (process.env.JWT_EXPIRES_IN ?? '90d')  as any,
+        expiresIn: (process.env.JWT_EXPIRES_IN ?? '90d') as any,
     };
-    return jwt.sign({ id }, secret, options);
+    return jwt.sign({id}, secret, options);
 };
 
 export const createSendToken = (user: User, statusCode: number, res: Response) => {
@@ -63,27 +63,23 @@ export const createSendToken = (user: User, statusCode: number, res: Response) =
 };
 
 
-export const signup = async (req: Request , res: Response, next: NextFunction) => {
+export const signup = async (req: Request, res: Response, next: NextFunction) => {
     const body = req.body;
-    if(body.length < 1){
+    if (body.length < 1) {
         return next(new HttpError(400, 'Please enter correct datas'));
     }
     const newUser = await service.signup(body);
-        createSendToken(newUser, 201, res);
+    createSendToken(newUser, 201, res);
 };
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
     const {email, password} = req.body;
-
     if (!email || !password) {
         return next(new HttpError(400, 'Please provide email and password'));
     }
-
     const user = await service.login(email, password);
-
-   createSendToken(user, 200, res);
+    createSendToken(user, 200, res);
 };
-
 
 
 export const forgotPassword = async (req: Request, res: Response, next: NextFunction) => {
@@ -150,7 +146,7 @@ export const updatePassword = asAuth(async (req: AuthRequest, res: Response, nex
     createSendToken(result, 200, res);
 });
 
-export const googleCallback =  asAuth((req: AuthRequest, res: Response, next: NextFunction) => {
+export const googleCallback = asAuth((req: AuthRequest, res: Response, next: NextFunction) => {
     try {
         if (!req.user) {
             throw new HttpError(401, 'Authentication failed');
@@ -158,7 +154,9 @@ export const googleCallback =  asAuth((req: AuthRequest, res: Response, next: Ne
         // createSendToken(req.user as any, 200, res);
         const token = signToken((req.user as any)._id);
 
-        const frontendUrl = process.env.GOOGLE_CLIENT_URL || 'https://dent-app-v2.onrender.com';
+        const frontendUrl = process.env.NODE_ENV === 'development'
+            ? process.env.GOOGLE_CLIENT_URL || 'http://localhost:5173'
+            : 'https://dent-app-v2.vercel.app';
         res.redirect(`${frontendUrl}/auth/success?token=${token}`);
     } catch (error) {
         next(error);

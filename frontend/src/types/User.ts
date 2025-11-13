@@ -15,7 +15,7 @@ export interface User {
 
 export interface TestRecord {
     quiz: string;
-    title: string;
+    user: string;
     points: number;
     totalQuestions: number;
 }

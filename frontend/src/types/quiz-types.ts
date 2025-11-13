@@ -54,3 +54,16 @@ export interface Quiz {
     icon?: string;
     questions?: Question[];
 }
+
+export interface SaveResultResponse {
+    status: string;
+    data: {
+        testResult: {
+            quiz: string;
+            user: string;
+            points: number;
+            totalQuestions: number;
+            _id: string;
+        };
+    };
+};

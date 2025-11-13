@@ -10,7 +10,7 @@ export default function GoogleSuccess() {
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
         const token = params.get("token");
-        console.log("🐾 TOKEN:", token);
+        // console.log("🐾 TOKEN:", token);
 
         if (token) {
             localStorage.setItem("token", token);

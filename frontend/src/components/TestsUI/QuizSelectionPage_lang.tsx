@@ -12,7 +12,7 @@ import {Paths} from "../../types/quiz-types.ts";
 const QuizSelectionPageLang = () => {
     const navigate = useNavigate();
     const user = useAppSelector((state: RootState) => state.auth);
-   const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(false);
     const allQuizzes = useAppSelector((state: RootState) => state.quiz.list)
     const dispatch = useAppDispatch();
     const [testStatus, setTestStatus] = useState<Record<string, {
@@ -51,7 +51,7 @@ const QuizSelectionPageLang = () => {
 
                 await Promise.all(allQuizzes.map(async (quiz) => {
                     try {
-                        console.log(`Проверяем тест ${quiz.id} для пользователя ${user._id}`);
+                        // console.log(`Проверяем тест ${quiz.id} для пользователя ${user._id}`);
 
                         let canTake = true;
                         if (user.testResults) canTake = await canTakeTest(quiz.id, user.testResults);
@@ -67,7 +67,7 @@ const QuizSelectionPageLang = () => {
                                     : undefined,
                         };
 
-                        console.log(`Тест ${quiz.id}: canTake=${canTake}, score=${testResult?.points}/${testResult?.totalQuestions}`);
+                        // console.log(`Тест ${quiz.id}: canTake=${canTake}, score=${testResult?.points}/${testResult?.totalQuestions}`);
                     } catch (error) {
                         console.error(`Ошибка при проверке теста ${quiz.id}:`, error);
                         results[quiz.id] = {canTake: true};
@@ -75,7 +75,7 @@ const QuizSelectionPageLang = () => {
                 }));
 
                 setTestStatus(results);
-                console.log('Финальный статус тестов:', results);
+                // console.log('Финальный статус тестов:', results);
             } catch (error) {
                 console.error('Ошибка при загрузке статуса тестов:', error);
                 const fallbackStatus: Record<string, {

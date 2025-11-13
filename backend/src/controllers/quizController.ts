@@ -16,7 +16,7 @@ export const addQuiz = factory.createOne(QuizDbModel)
 export const saveQuizResult = asAuth(async (req: AuthRequest, res: Response) => {
 
     const {points, totalQuestions} = req.body
-    console.log(req.params, req.body)
+    // console.log(req.params, req.body)
     const quiz = req.body.quiz || req.params.id;
     const user = req.body.user || req.user._id;
     if (!quiz || !user) {
