@@ -2,7 +2,7 @@
 import * as React from 'react';
 import { Container, Grid, Typography } from '@mui/material';
 import LectureCard from './LectureCard';
-import LectureViewerDialog from './LectureViewerDialog';
+const LectureViewerDialog = React.lazy(() => import('./LectureViewerDialog'));
 import { LECTURES } from '../../types/lecture.ts';
 import type { Lecture } from '../../types/lecture.ts';
 
@@ -33,12 +33,26 @@ const LecturesPage= () =>  {
             </Grid>
 
             {active && (
-                <LectureViewerDialog
-                    open={open}
-                    onClose={handleClose}
-                    title={active.title}
-                    src={active.pdfUrl}
-                />
+                // <LectureViewerDialog
+                //     open={open}
+                //     onClose={handleClose}
+                //     title={active.title}
+                //     src={active.pdfUrl}
+                // />
+                <React.Suspense
+                    fallback={(
+                        <Typography variant="body2" sx={{ mt: 2, textAlign: 'center' }}>
+                            Загрузка материалов...
+                        </Typography>
+                    )}
+                >
+                    <LectureViewerDialog
+                        open={open}
+                        onClose={handleClose}
+                        title={active.title}
+                        src={active.pdfUrl}
+                    />
+                </React.Suspense>
             )}
         </Container>
     );

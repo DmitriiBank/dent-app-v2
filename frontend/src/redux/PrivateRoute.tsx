@@ -1,9 +1,10 @@
-import {Navigate, Outlet} from "react-router-dom";
+import {Navigate} from "react-router-dom";
 import { useAppSelector } from "./hooks";
 
 
-const PrivateRoute = () => {
-    const {email, isLoading} = useAppSelector((state) => state.auth);
+const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
+    const { email, isLoading } = useAppSelector((state) => state.auth);
+
     if (isLoading) {
         return (
             <div style={{
@@ -16,7 +17,8 @@ const PrivateRoute = () => {
             </div>
         );
     }
-    return email ? <Outlet /> : <Navigate to="/users/login" replace />;
+
+    return email ? children : <Navigate to="/users/login" replace />;
 };
 
 export default PrivateRoute;

@@ -2,7 +2,7 @@ import {useNavigate} from 'react-router-dom';
 import '../../styles/QuizSelectionPage.css';
 import {QuizBlockLang} from "./QuizBlock_lang.tsx";
 import type {RootState} from "../../redux/store.ts";
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {useAppDispatch, useAppSelector} from "../../redux/hooks.ts";
 import {fetchQuizzes} from "../../redux/slices/quizSlice.ts";
 import {canTakeTest} from "../../services/quizApi.ts";
@@ -20,6 +20,14 @@ const QuizSelectionPageLang = () => {
         score?: string | null
     }>>({});
 
+    const { _id, testResults } = useMemo(
+        () => ({
+            _id: user?._id,
+            testResults: user?.testResults ?? [],
+        }),
+        [user]
+    );
+
     useEffect(() => {
         const loadQuizzes = async () => {
             setLoading(true);
@@ -34,7 +42,7 @@ const QuizSelectionPageLang = () => {
 
     useEffect(() => {
         const loadTestStatus = async () => {
-            if (!user._id) {
+            if (!_id) {
                 console.log('Гостевой режим - все тесты не доступны');
                 // navigate(Paths.LOGIN, {replace: true});
                 return;
@@ -51,10 +59,10 @@ const QuizSelectionPageLang = () => {
 
                 await Promise.all(allQuizzes.map(async (quiz) => {
                     try {
-                        // console.log(`Проверяем тест ${quiz.id} для пользователя ${user._id}`);
+                        // console.log(`Проверяем тест ${quiz.id} для пользователя ${_id}`);
 
                         let canTake = true;
-                        if (user.testResults) canTake = await canTakeTest(quiz.id, user.testResults);
+                        if (testResults) canTake = await canTakeTest(quiz.id, testResults);
 
                         const testResult = user?.testResults?.find((test: TestRecord) => test.quiz === quiz.id);
 
@@ -92,7 +100,7 @@ const QuizSelectionPageLang = () => {
         };
 
         if (allQuizzes.length) loadTestStatus();
-    }, [user?._id, allQuizzes]);
+    }, [_id, testResults, allQuizzes]);
 
     const handleSelect = async (id: string) => {
         navigate(`${Paths.HOME}/${id}`);
@@ -112,7 +120,7 @@ const QuizSelectionPageLang = () => {
         <div className="quiz-selection-container">
             <div className="selection-header">
                 <h1>Выберите тест</h1>
-                {!user._id && (
+                {!_id && (
                     <p className="guest-notice">
                         Вы вошли как гость. Тесты вам не доступны.
                     </p>

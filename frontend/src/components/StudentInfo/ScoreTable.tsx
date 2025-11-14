@@ -1,18 +1,28 @@
-import { useEffect, useState } from "react";
+import * as React from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Box, Chip, Typography } from "@mui/material";
-import { DeleteIcon, EditIcon } from "lucide-react";
-import { DataGrid, type GridColDef } from "@mui/x-data-grid";
-import { useAppSelector } from "../../redux/hooks.ts";
-import type { RootState } from "../../redux/store.ts";
-import type {TestRecord, User} from "../../types/User.ts";
-import { deleteUser, getAllUsers } from "../../services/accountApi.ts";
-import type {Quiz} from "../../types/quiz-types.ts";
+import { TrashIcon, Edit } from "lucide-react";
+import { type GridColDef } from "@mui/x-data-grid";
+import { useAppSelector } from "../../redux/hooks";
+import type { RootState } from "../../redux/store";
+import { deleteUser, getAllUsers } from "../../services/accountApi";
+import type { User, TestRecord } from "../../types/User";
+import type { Quiz } from "../../types/quiz-types";
 
 type Row = {
     id: string;
     studentName: string;
-    lessons: { [key: string]: { score: string; completed?: boolean } };
+    lessons: {
+        [quizId: string]: { score: string; completed?: boolean };
+    };
 };
+
+const LazyDataGrid = React.lazy(() =>
+    import("@mui/x-data-grid").then((mod) => ({
+        default: mod.DataGrid,
+    }))
+);
+
 
 function mapUserToRow(u: User, allQuizzes: Quiz[]): Row {
     return {
@@ -21,7 +31,12 @@ function mapUserToRow(u: User, allQuizzes: Quiz[]): Row {
         lessons: Object.fromEntries(
             allQuizzes.map((q) => {
                 const res = u.testResults?.find((t: TestRecord) => t.quiz === q.id);
-                return [q.id, { score: res ? `${res.points}/${res.totalQuestions}` : "0" }];
+                return [
+                    q.id,
+                    {
+                        score: res ? `${res.points}/${res.totalQuestions}` : "0",
+                    },
+                ];
             })
         ),
     };
@@ -30,47 +45,48 @@ function mapUserToRow(u: User, allQuizzes: Quiz[]): Row {
 export const ScoreTable = () => {
     const [rows, setRows] = useState<Row[]>([]);
     const [loading, setLoading] = useState(true);
+
     const currentUser = useAppSelector((state: RootState) => state.auth);
     const allQuizzes = useAppSelector((state: RootState) => state.quiz.list);
-    // const [testScore, setTestScore] = useState<Record<string, { score?: string | null }>>({});
+
+    const { _id, role, name, testResults } = useMemo(
+        () => ({
+            _id: currentUser?._id,
+            role: currentUser?.role ?? "guest",
+            name: currentUser?.name ?? "",
+            testResults: currentUser?.testResults ?? [],
+        }),
+        [currentUser]
+    );
 
     useEffect(() => {
         const loadTestStatus = async () => {
-            if (!allQuizzes.length || !currentUser?._id) return;
+            if (!allQuizzes.length || !_id) return;
 
             setLoading(true);
 
             try {
-                const results: Record<string, { score?: string }> = {};
-
-                for (const quiz of allQuizzes) {
-                    const testResult = currentUser.testResults?.find((t: TestRecord) => t.quiz === quiz.id);
-                    results[quiz.id] = {
-                        score:
-                            testResult?.points && testResult?.totalQuestions
-                                ? `${testResult.points}/${testResult.totalQuestions}`
-                                : undefined,
-                    };
-                }
-
-                // setTestScore(results);
-
-                if (currentUser.role === "admin") {
+                if (role === "admin") {
                     const res = await getAllUsers();
-                    const users = res.data || res; // защита от разных структур
+                    const users = res.data || res;
                     const allRows = users.map((u: User) => mapUserToRow(u, allQuizzes));
                     setRows(allRows);
                 } else {
-                    const allRows: Row[] = [
+                    const results = Object.fromEntries(
+                        allQuizzes.map((quiz) => {
+                            const tr = testResults.find((t) => t.quiz === quiz.id);
+                            const score = tr ? `${tr.points}/${tr.totalQuestions}` : "0";
+                            return [quiz.id, { score }];
+                        })
+                    );
+
+                    setRows([
                         {
-                            id: currentUser._id,
-                            studentName: currentUser.name ?? "",
-                            lessons: Object.fromEntries(
-                                Object.entries(results).map(([quizId, r]) => [quizId, { score: r.score ?? "0" }])
-                            ),
+                            id: _id,
+                            studentName: name ?? "",
+                            lessons: results,
                         },
-                    ];
-                    setRows(allRows);
+                    ]);
                 }
             } catch (error) {
                 console.error("Ошибка при загрузке статуса тестов:", error);
@@ -80,70 +96,76 @@ export const ScoreTable = () => {
         };
 
         loadTestStatus();
-    }, [currentUser?._id, currentUser.role, allQuizzes]);
+    }, [_id, role, name, testResults, allQuizzes]);
 
     const handleEdit = (id: string) => {
         console.log("Редактировать:", id);
-        // TODO
     };
 
     const handleDelete = async (id: string) => {
-        console.log("Удалить", id);
         try {
             await deleteUser(id);
-            setRows(prev => prev.filter(r => r.id !== id));
-            console.log("✅ User removed successfully");
+            setRows((prev) => prev.filter((r) => r.id !== id));
         } catch (err) {
             console.error("Ошибка при удалении:", err);
         }
     };
 
-    const lessonCols: GridColDef<Row>[] = allQuizzes.map((quiz) => ({
-        field: quiz.id,
-        headerName: quiz.title,
-        width: 120,
-        renderCell: (params) => {
-            const data = params.row.lessons[quiz.id];
-            return (
-                <Chip
-                    label={data?.score || "—"}
-                    color={data?.score ? "success" : "default"}
-                    size="small"
-                />
-            );
-        },
-    }));
 
-    const columns: GridColDef<Row>[] =
-        currentUser.role === "admin"
-            ? [
-                { field: "studentName", headerName: "Ученик", minWidth: 180, flex: 1 },
-                ...lessonCols,
-                {
-                    field: "actions",
-                    headerName: "Действия",
-                    width: 120,
-                    sortable: false,
-                    filterable: false,
-                    renderCell: (params) => (
-                        <Box sx={{ display: "flex", gap: 1 }}>
-                            <EditIcon
-                                size={18}
-                                color="#666"
-                                style={{ cursor: "pointer", margin: "2px" }}
-                                onClick={() => handleEdit(params.row.id)}
-                            />
-                            <DeleteIcon
-                                size={18}
-                                color="#d32f2f"
-                                style={{ cursor: "pointer", margin: "2px" }}
-                                onClick={() => handleDelete(params.row.id)}
-                            />
-                        </Box>
-                    ),
-                },
-            ]
-            : lessonCols;
+    const lessonCols = useMemo<GridColDef[]>(() => {
+        return allQuizzes.map((quiz) => ({
+            field: quiz.id,
+            headerName: quiz.title,
+            width: 120,
+            renderCell: (params) => {
+                const data = params.row.lessons[quiz.id];
+                return (
+                    <Chip
+                        label={data?.score || "—"}
+                        color={data?.score ? "success" : "default"}
+                        size="small"
+                    />
+                );
+            },
+        }));
+    }, [allQuizzes]);
+
+    const columns = useMemo<GridColDef[]>(() => {
+        if (role !== "admin") return lessonCols;
+
+        return [
+            {
+                field: "studentName",
+                headerName: "Ученик",
+                minWidth: 180,
+                flex: 1,
+            },
+            ...lessonCols,
+            {
+                field: "actions",
+                headerName: "Действия",
+                width: 120,
+                sortable: false,
+                filterable: false,
+                renderCell: (params) =>  (
+                    <Box sx={{ display: "flex", gap: 1 }}>
+                        <Edit
+                            size={18}
+                            color="#666"
+                            style={{ cursor: "pointer" }}
+                            onClick={() => handleEdit(params.row.id)}
+                        />
+                        <TrashIcon
+                            size={18}
+                            color="#d32f2f"
+                            style={{ cursor: "pointer" }}
+                            onClick={() => handleDelete(params.row.id)}
+                        />
+                    </Box>
+                ),
+            },
+        ];
+    }, [lessonCols, role]);
 
     return (
         <Box
@@ -156,21 +178,24 @@ export const ScoreTable = () => {
             }}
         >
             <Typography variant="h5" sx={{ mb: 2 }}>
-                {currentUser.role === "admin" ? "Таблица оценок всех студентов" : "Мои оценки"}
+                {role === "admin" ? "Таблица оценок всех студентов" : "Мои оценки"}
             </Typography>
-            <DataGrid
-                autoHeight
-                rows={rows}
-                getRowId={(r) => r.id}
-                columns={columns}
-                loading={loading}
-                pageSizeOptions={[5, 10, 20]}
-                initialState={{
-                    pagination: { paginationModel: { pageSize: 10 } },
-                }}
-                disableRowSelectionOnClick
-                hideFooter={currentUser.role !== "admin" && rows.length <= 1}
-            />
+
+            <React.Suspense fallback={<Typography>Загрузка таблицы…</Typography>}>
+                <LazyDataGrid
+                    autoHeight
+                    rows={rows}
+                    getRowId={(r) => r.id}
+                    columns={columns}
+                    loading={loading}
+                    pageSizeOptions={[5, 10, 20]}
+                    initialState={{
+                        pagination: { paginationModel: { pageSize: 10 } },
+                    }}
+                    disableRowSelectionOnClick
+                    hideFooter={role !== "admin" && rows.length <= 1}
+                />
+            </React.Suspense>
         </Box>
     );
 };

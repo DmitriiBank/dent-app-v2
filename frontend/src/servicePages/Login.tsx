@@ -19,7 +19,7 @@ const Login = () => {
 
         try {
             const action = await dispatch(loginUser(loginData))
-
+            console.log("✅ Вход выполнен: action", action);
             if (loginUser.fulfilled.match(action)) {
                 const user = action.payload;
 

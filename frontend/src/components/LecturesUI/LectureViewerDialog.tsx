@@ -61,7 +61,6 @@ export default function LectureViewerDialog({ open, title, src, images = [], onC
                     }}
                 >
                     {isImagesMode ? (
-                        // Режим с картинками: всё в колонку
                         images.map((url, idx) => (
                             <Box
                                 key={`${url}-${idx}`}

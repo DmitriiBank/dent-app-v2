@@ -1,5 +1,5 @@
 
-import {useEffect, useRef, useState} from 'react';
+import {useCallback, useEffect, useRef, useState} from 'react';
 import {Box, IconButton} from '@mui/material';
 import {alpha, styled} from '@mui/material/styles';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
@@ -37,9 +37,8 @@ export default function ImageGallery({ images, alt = 'image', initialIndex = 0 }
     const mainRef = useRef<HTMLDivElement | null>(null);
 
     const total = images.length;
-    const prev = () => setCurrent(i => (i - 1 + total) % total);
-    const next = () => setCurrent(i => (i + 1) % total);
-    const select = (idx: number) => setCurrent(idx);
+    const prev = useCallback(() => setCurrent(i => (i - 1 + total) % total), [total]);
+    const next = useCallback(() => setCurrent(i => (i + 1) % total), [total]); const select = (idx: number) => setCurrent(idx);
 
     useEffect(() => {
         const onKey = (e: KeyboardEvent) => {
@@ -48,7 +47,7 @@ export default function ImageGallery({ images, alt = 'image', initialIndex = 0 }
         };
         window.addEventListener('keydown', onKey);
         return () => window.removeEventListener('keydown', onKey);
-    }, [total]);
+    }, [prev, next]);
 
     if (!images || total === 0) return null;
 

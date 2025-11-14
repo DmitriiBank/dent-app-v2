@@ -35,3 +35,10 @@ export const Navbar = () => {
     );
 };
 
+export const MobileNavbar = () => {
+    return (
+        <div style={{ padding: "16px" }}>
+            <Navbar />
+        </div>
+    );
+};

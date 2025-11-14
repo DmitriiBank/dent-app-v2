@@ -6,9 +6,9 @@ import {
     fetchCurrentUser,
 } from "./redux/slices/authSlice.ts";
 import {routes} from './configurations/routeConfig.tsx'
-import PrivateRoute from "./redux/PrivateRoute.tsx";
 import {Roles} from "./types/quiz-types.ts";
-
+import {Layout} from "./Layout.tsx"
+import PrivateRoute from "./redux/PrivateRoute.tsx";
 
 
 function App() {
@@ -22,29 +22,21 @@ function App() {
     }, [dispatch]);
 
     return (
-        <div className={'app'}>
             <Routes>
-                {routes.map(({path, element, role}) =>
-                    role as Roles === Roles.USER || role as Roles === Roles.ADMIN ? (
-                        <Route
-                            key={path}
-                            element={<PrivateRoute />}
-                        >
-                            <Route
-                                path={path}
-                                element={element}
-                            />
-                        </Route>
-                    ) : (
+                <Route path="/" element={<Layout />}>
+                    {routes.map(({path, element, role}) =>
                         <Route
                             key={path}
                             path={path}
-                            element={element}
+                            element={
+                                role === Roles.USER || role as Roles === Roles.ADMIN
+                                    ? <PrivateRoute>{element}</PrivateRoute>
+                                    : element
+                            }
                         />
-                    )
-                )}
+                    )}
+                </Route>
             </Routes>
-        </div>
     );
 }
 
