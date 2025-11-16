@@ -29,7 +29,7 @@ export const Header = () => {
                 </div>
 
                 <Typography variant="h5" sx={{ fontWeight: 700 }}>
-                    Quiz Dent
+                    Dent-App
                 </Typography>
             </Box>
 
