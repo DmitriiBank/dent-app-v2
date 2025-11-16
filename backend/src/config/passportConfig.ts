@@ -4,12 +4,12 @@ import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { UserDbModel } from '../schemas/user.schema';
 
-console.log('🔧 GOOGLE OAuth Config:', {
-    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID ? 'OK' : 'MISSING',
-    GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET ? 'OK' : 'MISSING',
-    SERVER_URL: process.env.SERVER_URL,
-    CALLBACK_URL: `${process.env.SERVER_URL || 'http://localhost:3555'}/api/v1/users/login/google/callback`
-});
+// console.log('🔧 GOOGLE OAuth Config:', {
+//     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID ? 'OK' : 'MISSING',
+//     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET ? 'OK' : 'MISSING',
+//     SERVER_URL: process.env.SERVER_URL,
+//     CALLBACK_URL: `${process.env.SERVER_URL || 'http://localhost:3555'}/api/v1/users/login/google/callback`
+// });
 
 passport.use(
     new GoogleStrategy(

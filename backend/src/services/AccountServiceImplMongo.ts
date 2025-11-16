@@ -15,8 +15,7 @@ export class AccountServiceImplMongo implements AccountService {
         if(isExists){
             throw new HttpError(400, `User with email ${body.email} already exists`);
         }
-        const res = await UserDbModel.create(body);
-        return res;
+        return await UserDbModel.create(body);
     }
 
     async login(email: string, password: string): Promise<User> {
@@ -41,16 +40,14 @@ export class AccountServiceImplMongo implements AccountService {
         user.passwordConfirm = passwordConfirm;
         user.passwordResetToken = undefined;
         user.passwordResetExpires = undefined;
-        const res = await user.save();
-        return res;
-
+        return await user.save();
     };
 
     async updatePassword(userId: string, passwordCurrent: string, newPassword: string, newPasswordConfirm: string): Promise<User> {
         const user = await UserDbModel.findById(userId).select('+password');
         if (!user) {
-            logger.error(`${new Date().toISOString()} => Employee with id ${userId} not found`);
-            throw new HttpError(409, `Employee with id ${userId} not found`)
+            logger.error(`${new Date().toISOString()} => User with id ${userId} not found`);
+            throw new HttpError(409, `User with id ${userId} not found`)
         }
         const isCorrect = await user.correctPassword(passwordCurrent, user.password);
         if (!isCorrect) {
@@ -64,16 +61,12 @@ export class AccountServiceImplMongo implements AccountService {
         try {
             user.password = newPassword;
             user.passwordConfirm = newPasswordConfirm;
-            const res = await user.save();
-            return res;
+            return await user.save();
         } catch (e) {
             logger.error(`${new Date().toISOString()} => DB error on updatePassword (id=${userId}): ${e}`);
             throw new HttpError(500, "Failed to update password");
         }
     }
-
-
-
 
 }
 

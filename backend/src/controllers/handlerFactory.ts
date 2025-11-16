@@ -2,7 +2,7 @@ import {Request, Response, NextFunction} from 'express';
 import {Model, Document} from 'mongoose';
 import {
     applServiceImplMongo as service
-} from "../services/ApplServiceImplMongo.js";
+} from "../services/ApplServiceImplMongo";
 
 
 export const deleteOne = <T extends Document>(Model: Model<T>) =>

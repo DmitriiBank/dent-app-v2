@@ -21,7 +21,7 @@ import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import './config/passportConfig';
 
-export const launchServer = () => {
+export const createApp = () => {
     //=======load environment=====
 
     const __dirname = path.resolve();
@@ -127,6 +127,12 @@ export const launchServer = () => {
     }));
 
     app.use(errorHandler)
-    app.listen(process.env.PORT, () =>  console.log(`🚀 App running  at ${baseUrl}`))
+    return app;
+};
 
-}
+export const launchServer = () => {
+    const app = createApp();
+    app.listen(process.env.PORT, () =>
+        console.log(`🚀 App running at ${baseUrl}`)
+    );
+};

@@ -2,3 +2,7 @@
 {"level":"error","message":"2025-11-12T08:02:22.673Z => Employee with id undefined not found"}
 {"level":"error","message":"2025-11-12T08:02:45.323Z => Employee with id undefined not found"}
 {"level":"error","message":"2025-11-12T09:12:11.161Z => Document with id 690390e96e6ed6180fb448cf not found"}
+{"level":"error","message":"2025-11-16T09:30:20.433Z => Document with id missing not found"}
+{"level":"error","message":"2025-11-16T09:30:20.461Z => Document does not create"}
+{"level":"error","message":"2025-11-16T14:05:56.027Z => Document with id missing not found"}
+{"level":"error","message":"2025-11-16T14:05:56.072Z => Document does not create"}

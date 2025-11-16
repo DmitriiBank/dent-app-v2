@@ -1,4 +1,4 @@
-import {authFetch} from "./authApi.ts";
+import {httpRequest} from "./http.ts";
 import type { User } from "../types/User.ts";
 
 type GetUsersResponse = {
@@ -8,18 +8,17 @@ type GetUsersResponse = {
 };
 
 export async function getUserData(): Promise<User> {
-    return authFetch<User>(`/api/v1/users/me`, {method: "GET"});
+    return httpRequest<User>(`/api/v1/users/me`);
 }
 
 export async function getAllUsers(): Promise<GetUsersResponse> {
-    const res = await authFetch<GetUsersResponse>(`/api/v1/users/`, {
+    return httpRequest<GetUsersResponse>(`/api/v1/users/`, {
         method: "GET",
     });
-    return res;
 }
 
 export async function deleteUser(id: string){
-  await authFetch<GetUsersResponse>(`/api/v1/users/${id}`, {
+  await httpRequest<GetUsersResponse>(`/api/v1/users/${id}`, {
         method: "DELETE",
     });
 }

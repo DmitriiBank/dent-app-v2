@@ -14,37 +14,44 @@ import TeethPage from "../components/Anatomy/TeethPage.tsx";
 import {ToothPage} from "../components/Anatomy/ToothPage.tsx";
 import {ScoreTable} from "../components/StudentInfo/ScoreTable.tsx";
 import GoogleSuccess from "../servicePages/GoogleSuccess.tsx";
+import type {ReactNode} from "react";
 
-export const routes = [
-    {path: Paths.HOME, element: <QuizSelectionPage_lang />, role: ''},
+type AppRoute = {
+    path: string;
+    element: ReactNode;
+    allowedRoles?: Roles[];
+};
+
+const protectedRoles = [Roles.USER, Roles.ADMIN];
+
+export const routes: AppRoute[]  = [
+    {path: Paths.HOME, element: <QuizSelectionPage_lang />},
     {
         path: `${Paths.HOME}/:quizId`,
         element: <QuizPage_lang />,
-        role: Roles.USER
+        allowedRoles: protectedRoles,
     },
     {
         path: `${Paths.HOME}/:quizId/results`,
-        element: <ScorePageLang questions={[]} score={0} answers={[]} onClick={function(): void {
-            throw new Error("Function not implemented.");
-        } } />,
-        role: Roles.USER
+        element: <ScorePageLang />,
+        allowedRoles: protectedRoles,
     },
-    {path: Paths.LOGIN, element: <Login />, role: ''},
-    { path: Paths.GOOGLE, element: <GoogleSuccess />, role: "" },
-    {path: Paths.LOGOUT, element: <Logout />, role: Roles.USER},
-    {path: Paths.REGISTER, element: <Registration />, role: ''},
-    {path: Paths.LECTURES, element: <LecturesPage />, role: ''},
-    {path: Paths.ANATOMY, element: <TeethPage />, role: ''},
+    {path: Paths.LOGIN, element: <Login />},
+    { path: Paths.GOOGLE, element: <GoogleSuccess />},
+    {path: Paths.LOGOUT, element: <Logout />, allowedRoles: protectedRoles,},
+    {path: Paths.REGISTER, element: <Registration />},
+    {path: Paths.LECTURES, element: <LecturesPage />},
+    {path: Paths.ANATOMY, element: <TeethPage />},
     {
         path: `${Paths.ANATOMY}/:id`,
         element: <ToothPage />,
-        role: Roles.USER
+       allowedRoles: protectedRoles,
     },
 
-    {path: Paths.OPTIONS, element: <Options />, role: ''},
-    {path: Paths.MY_PAGE, element: <ScoreTable />, role: Roles.USER},
-    {path: Paths.ALL_USERS, element: <ScoreTable />, role: Roles.USER},
-    {path: Paths.ERROR, element: <ErrorPage />, role: ''},
+    {path: Paths.OPTIONS, element: <Options />},
+    {path: Paths.MY_PAGE, element: <ScoreTable />,allowedRoles: protectedRoles,},
+    {path: Paths.ALL_USERS, element: <ScoreTable />,allowedRoles: protectedRoles,},
+    {path: Paths.ERROR, element: <ErrorPage />},
 ] as const;
 
 export const errorItem: RouteType[] = [

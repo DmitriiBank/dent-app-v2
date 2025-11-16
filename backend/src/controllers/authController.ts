@@ -4,10 +4,10 @@ import {HttpError} from '../errorHandler/HttpError';
 import {sendEmail} from '../utils/email';
 import {NextFunction, Request, Response} from "express";
 import {User} from "../model/User";
-import {logger} from "../Logger/winston.js";
+import {logger} from "../Logger/winston";
 import {
     accountServiceImplMongo as service
-} from "../services/AccountServiceImplMongo.js";
+} from "../services/AccountServiceImplMongo";
 import {AuthRequest} from "../utils/quizTypes";
 import {asAuth} from "../utils/tools";
 
@@ -43,7 +43,7 @@ export const createSendToken = (user: User, statusCode: number, res: Response) =
 
     res.cookie('jwt', token, cookieOptions);
 
-    console.log(user)
+    console.log('google user ', user)
     const safeUser = user.toObject();
     safeUser.password = undefined;
     safeUser.passwordResetToken = undefined;

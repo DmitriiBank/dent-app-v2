@@ -4,17 +4,21 @@ import {logger} from "../Logger/winston";
 import {HttpError} from "../errorHandler/HttpError";
 import {ApplService} from "./applService";
 
+type FeaturesFactory = <T>(query: any, queryString: any) => APIFeatures<T>;
+
 export class ApplServiceImplMongo implements ApplService {
 
+    constructor(private readonly createFeatures: FeaturesFactory =
+                (query, queryString) => new APIFeatures(query, queryString)) {}
+
     async getAll<T extends Document>(dbModel: Model<T>, query: any): Promise<T[]> {
-        const features = new APIFeatures<T>(dbModel.find(), query)
+        const features = this.createFeatures<T>(dbModel.find(), query)
             .filter()
             .sort()
             .limitFields()
             .paginate();
 
-        const docs = await features.query;
-        return docs;
+        return await features.query;
     }
 
     async getOne<T extends Document>(dbModel: Model<T>, id: string, popOptions?: any): Promise<T> {

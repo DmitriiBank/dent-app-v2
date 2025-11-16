@@ -11,11 +11,11 @@ const QuizPageLang = () => {
     const dispatch = useAppDispatch();
 
     const { data: currentQuiz, loading} = useAppSelector((state: RootState) => state.quiz);
-    const user = useAppSelector((state: RootState) => state.user.data);
+    // const user = useAppSelector((state: RootState) => state.user.data);
 
     useEffect(() => {
         if (quizId) dispatch(fetchQuiz(quizId));
-    }, [dispatch, quizId, user]);
+    }, [dispatch, quizId]);
 
     if (loading) return <p>Загрузка теста...</p>;
     if (!currentQuiz) return <p>Тест не найден</p>;

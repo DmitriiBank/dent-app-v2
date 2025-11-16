@@ -1,9 +1,15 @@
-import {Navigate} from "react-router-dom";
+import {Navigate, useLocation} from "react-router-dom";
 import { useAppSelector } from "./hooks";
+import {Paths, Roles} from "../types/quiz-types.ts";
 
+interface PrivateRouteProps {
+    children: React.ReactNode;
+    allowedRoles?: Roles[];
+}
 
-const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
-    const { email, isLoading } = useAppSelector((state) => state.auth);
+const PrivateRoute = ({ children, allowedRoles }: PrivateRouteProps) => {
+    const location = useLocation();
+    const { email, role, isLoading } = useAppSelector((state) => state.auth);
 
     if (isLoading) {
         return (
@@ -18,7 +24,15 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
         );
     }
 
-    return email ? children : <Navigate to="/users/login" replace />;
+    if (!email) {
+        return <Navigate to={Paths.LOGIN} replace state={{ from: location.pathname }} />;
+    }
+
+    if (allowedRoles?.length && (!role || !allowedRoles.includes(role as Roles))) {
+        return <Navigate to={Paths.ERROR} replace />;
+    }
+
+    return children;
 };
 
 export default PrivateRoute;

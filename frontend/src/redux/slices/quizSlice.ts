@@ -1,7 +1,11 @@
 
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import {
+    createSlice,
+    createAsyncThunk,
+    type PayloadAction
+} from "@reduxjs/toolkit";
 import { getAllQuizzes, getQuiz } from "../../services/quizApi";
-import type {Quiz} from "../../types/quiz-types.ts";
+import type {Question, Quiz} from "../../types/quiz-types.ts";
 
 export const fetchQuizzes = createAsyncThunk("quiz/fetchAll", async () => {
     return await getAllQuizzes();
@@ -11,11 +15,19 @@ export const fetchQuiz = createAsyncThunk("quiz/fetchOne", async (id: string) =>
     return await getQuiz(id);
 });
 
+interface QuizResultSnapshot {
+    quizId: string;
+    questions: Question[];
+    answers: (number | null)[];
+    score: number;
+}
+
 interface QuizState {
     list: Quiz[];
     data: Quiz | null;
     loading: boolean;
     error: string | null;
+    lastResult: QuizResultSnapshot | null;
 }
 
 const initialState: QuizState = {
@@ -23,12 +35,17 @@ const initialState: QuizState = {
     data: null,
     loading: false,
     error: null,
+    lastResult: null,
 };
 
 const quizSlice = createSlice({
     name: "quiz",
     initialState,
-    reducers: {},
+    reducers: {
+        setLastResult(state, action: PayloadAction<QuizResultSnapshot | null>) {
+            state.lastResult = action.payload;
+        },
+    },
     extraReducers: (builder) => {
         builder
             // fetch all
@@ -43,5 +60,7 @@ const quizSlice = createSlice({
 
     },
 });
+
+export const { setLastResult } = quizSlice.actions;
 
 export default quizSlice.reducer;

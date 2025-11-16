@@ -1,88 +1,30 @@
 import type {LoginData} from "../types/quiz-types.ts";
 import type {UserDto, User} from "../types/User.ts";
 import {convertUserDtoToUser} from "../utils/tools.ts";
-import axios from "axios";
-
-export const API = (import.meta.env.VITE_API_URL ?? 'http://localhost:3555').replace(/\/+$/,'');
-
-export async function authFetch<T = unknown>(path: string, init: RequestInit = {}): Promise<T> {
-    const token = localStorage.getItem("token") || "";
-    const res = await fetch(`${API}${path}`, {
-        ...init,
-        headers: {
-            "Content-Type": "application/json",
-            ...(init.headers || {}),
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-    });
-    // console.log(res)
-    if (res.status === 204) {
-        return {} as T;
-    }
-
-    if (res.status === 304) {
-        console.warn("ℹ️ Server returned 304 Not Modified");
-        const cached = localStorage.getItem("user");
-        if (cached) return JSON.parse(cached) as T;
-        throw new Error("User not modified, and no cache found");
-    }
-
-    if (!res.ok) {
-        const msg = await safeText(res);
-        throw new Error(msg || `HTTP ${res.status}`);
-    }
-
-    const json = await safeJson<T>(res);
-    if (!json) throw new Error("Empty response body");
-    // console.log(json);
-    return json;
-}
-
-
-// export async function login({email, password} : LoginData) {
-//     const res = await fetch(`${API}/api/v1/users/login`, {
-//         method: 'POST',
-//         headers: { 'Content-Type': 'application/json' },
-//         body: JSON.stringify({email, password})
-//     });
-//     if (!res.ok) throw new Error('Login failed');
-//     return res.json();
-// }
+import {httpRequest} from "./http.ts";
 
 export const login = async (data: LoginData) => {
-    const res = await axios({
+    return httpRequest<{ token: string; data: { safeUser: User } }>(`/api/v1/users/login`, {
         method: "POST",
-        url: `${API}/api/v1/users/login`,
-        data
+        auth: false,
+        json: data,
     });
-    if (!res) throw new Error('Login failed');
-    return res.data;
 }
 
 export async function register(data: UserDto) {
     const newUser = await convertUserDtoToUser(data)
-    const res = await fetch(`${API}/api/v1/users/signup`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newUser),
+    const payload = await httpRequest<{ token: string; user: User }>(`/api/v1/users/signup`, {
+        method: "POST",
+        auth: false,
+        json: newUser,
     });
-    if (!res.ok) throw new Error(await res.text().catch(() => 'Register failed'));
-    const payload = await res.json() as { token: string; user: User };
-    if (payload?.token) localStorage.setItem('token', payload.token);
+    if (payload?.token) {
+        localStorage.setItem('token', payload.token);
+    }
     return payload.user;
 }
 
 export function exit() {
     localStorage.removeItem('token');
-    return true
-}
-
-
-
-// utils
-async function safeText(res: Response) {
-    try { return await res.text(); } catch { return ""; }
-}
-async function safeJson<T>(res: Response) {
-    try { return (await res.json()) as T; } catch { return undefined; }
+    return true;
 }
