@@ -1,6 +1,6 @@
 import {useEffect} from "react";
 import QuizAppLang from "./QuizApp_lang.tsx";
-import "../../styles/style.css";
+import "../../styles/quiz.css";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks.ts";
 import { fetchQuiz } from "../../redux/slices/quizSlice.ts";
 import { useParams } from "react-router-dom";
@@ -21,11 +21,11 @@ const QuizPageLang = () => {
     if (!currentQuiz) return <p>Тест не найден</p>;
 
     return (
-        <div className="quiz-selection-container">
-            <h2>
+        <div className="quiz-page">
+            <h2 className="quiz-page__title">
                 {currentQuiz.title}: {currentQuiz.description}
             </h2>
-            <QuizAppLang questions={currentQuiz.questions ?? []}  />
+            <QuizAppLang questions={currentQuiz.questions ?? []}/>
         </div>
     );
 };

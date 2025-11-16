@@ -1,5 +1,4 @@
 import {useEffect, useState} from 'react';
-import '../../styles/style.css';
 import {
     Paths,
     type Question,
@@ -75,20 +74,22 @@ const QuizAppLang = ({ questions }: { questions: Question[] }) => {
             }
         } else {
             setCurrent(prev => prev + 1);
+            setImgLoading(true);
         }
 
         setSelected(null);
     };
+
     const handleBackToSelection = () => {
         navigate(Paths.HOME);
     };
 
     if (!questions?.length) {
         return (
-            <div className="error-container">
+            <div className="quiz-error">
                 <h2>Ошибка загрузки теста</h2>
                 <p>Вопросы не найдены</p>
-                <button className="back-button" onClick={handleBackToSelection}>
+                <button className="quiz-error__action" onClick={handleBackToSelection}>
                     Вернуться назад
                 </button>
             </div>
@@ -97,9 +98,9 @@ const QuizAppLang = ({ questions }: { questions: Question[] }) => {
 
     if (finished) {
         return (
-            <div>
+            <div className="quiz-session">
                 {saving && (
-                    <div className="saving-indicator">Сохранение результата...</div>
+                    <div className="quiz-saving-indicator">Сохранение результата...</div>
                 )}
                 <ScorePageLang
                     questions={questions}
@@ -115,10 +116,10 @@ const QuizAppLang = ({ questions }: { questions: Question[] }) => {
 
     if (!q?.question) {
         return (
-            <div className="error-container">
+            <div className="quiz-error">
                 <h2>Ошибка</h2>
                 <p>Некорректные данные вопроса</p>
-                <button className="back-button" onClick={handleBackToSelection}>
+                <button className="quiz-error__action" onClick={handleBackToSelection}>
                     Вернуться назад
                 </button>
             </div>
@@ -126,18 +127,18 @@ const QuizAppLang = ({ questions }: { questions: Question[] }) => {
     }
 
     return (
-        <div>
-            <div className="question">
-                <div className="question-text">{q.question}</div>
+        <div className="quiz-session">
+            <div className="quiz-question">
+                <div className="quiz-question__title">{q.question}</div>
                 {q.image && (
-                    <>
+                    <div className="quiz-question__media">
                         {imgLoading && (
-                            <div style={{ textAlign: 'center', margin: '20px 0' }}>
+                            <div className="quiz-question__image-loading">
                                 <CircularProgress size={32} color="inherit" />
                             </div>
                         )}
                         <ImageItem image={q.image} onLoad={() => setImgLoading(false)} />
-                    </>
+                    </div>
                 )}
                 <AnswersList
                     options={q.options}
@@ -146,7 +147,7 @@ const QuizAppLang = ({ questions }: { questions: Question[] }) => {
                 />
             </div>
             <button
-                className="next-button"
+                className="quiz-session__next"
                 onClick={handleNext}
                 disabled={selected === null}
             >

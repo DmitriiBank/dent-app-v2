@@ -1,4 +1,4 @@
-import type { Question } from "../../types/quiz-types.ts";
+import type {Question} from "../../types/quiz-types.ts";
 import {ImageItem} from "./ImageItem.tsx";
 
 type Props = {
@@ -6,38 +6,46 @@ type Props = {
     answer: number | null;
 };
 
-export const ScoreItemLang = ({ quiz, answer }: Props) => {
+export const ScoreItemLang = ({quiz, answer}: Props) => {
     const statusLabel = answer === quiz.answer
         ? 'верно'
-        :  'ошибка' ;
+        : 'ошибка';
 
     return (
-        <div>
-            <div>
-                <div className="question-header">
-                    <strong>{quiz.question}</strong>
-                    <span className={`status-badge ${answer === quiz.answer ? 'correct' : 'incorrect'}`}>
-                        {statusLabel}
-                    </span>
-                </div>
-                {quiz.image && <ImageItem image={quiz.image}/>}
-                <ul className="answer-options">
-                    {quiz.options.map((opt: string, idx ) => (
+
+        <div className="quiz-score">
+            <div className="quiz-score__header">
+                <strong>{quiz.question}</strong>
+                <span
+                    className={`quiz-score__badge ${
+                        answer === quiz.answer
+                            ? 'quiz-score__badge--correct'
+                            : 'quiz-score__badge--incorrect'
+                    }`}
+                >
+                    {statusLabel}
+                </span>
+            </div>
+            {quiz.image && <ImageItem image={quiz.image} />}
+            <ul className="quiz-score__options">
+                {quiz.options.map((opt: string, idx) => {
+                    let optionClass = 'quiz-score__option';
+                    if (idx === quiz.answer) {
+                        optionClass += ' quiz-score__option--correct';
+                    } else if (idx === answer) {
+                        optionClass += ' quiz-score__option--incorrect';
+                    }
+
+                    return (
                         <li
                             key={idx}
-                            className={`option ${
-                                idx === quiz.answer
-                                    ? 'correct'
-                                    : idx === answer
-                                    ? 'incorrect'
-                                    : ''
-                            }`}
+                            className={optionClass}
                         >
                             {opt}
                         </li>
-                    ))}
-                </ul>
-            </div>
+                    )
+                })}
+            </ul>
         </div>
     );
 };

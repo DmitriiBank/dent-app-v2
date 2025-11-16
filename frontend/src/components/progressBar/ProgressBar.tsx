@@ -1,4 +1,3 @@
-
 type Props = {
     currentQuestion: number;
     questionsLength: number;
@@ -6,9 +5,10 @@ type Props = {
 
 export const ProgressBar = ({currentQuestion, questionsLength}: Props) => {
     return (
-        <div className="progress-bar">
+        <div className="quiz-progress">
             <div
-                className="progress"
+
+                className="quiz-progress__fill"
                 style={{
                     width: `${((currentQuestion) / questionsLength) * 100}%`
                 }}

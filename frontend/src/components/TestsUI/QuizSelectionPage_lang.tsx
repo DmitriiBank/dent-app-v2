@@ -59,8 +59,6 @@ const QuizSelectionPageLang = () => {
 
                 await Promise.all(allQuizzes.map(async (quiz) => {
                     try {
-                        // console.log(`Проверяем тест ${quiz.id} для пользователя ${_id}`);
-
                         let canTake = true;
                         if (testResults) canTake = await canTakeTest(quiz.id, testResults);
 
