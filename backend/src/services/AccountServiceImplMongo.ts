@@ -11,7 +11,8 @@ export class AccountServiceImplMongo implements AccountService {
 
 
     async signup(body: User): Promise<User>  {
-        const isExists = await UserDbModel.find({email: body.email})
+        console.log(body)
+        const isExists = await UserDbModel.findOne({email: body.email})
         if(isExists){
             throw new HttpError(400, `User with email ${body.email} already exists`);
         }

@@ -51,6 +51,7 @@ export const routes: AppRoute[]  = [
     {path: Paths.OPTIONS, element: <Options />},
     {path: Paths.MY_PAGE, element: <ScoreTable />,allowedRoles: protectedRoles,},
     {path: Paths.ALL_USERS, element: <ScoreTable />,allowedRoles: protectedRoles,},
+    {path: '/*', element: <ErrorPage />},
     {path: Paths.ERROR, element: <ErrorPage />},
 ] as const;
 

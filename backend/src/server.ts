@@ -3,17 +3,16 @@ import express, {Application, NextFunction, Request, Response} from 'express'
 import {errorHandler} from "./errorHandler/errorHandler";
 import morgan from "morgan";
 import * as fs from "node:fs";
-// import dotenv from 'dotenv'
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import {userRouter} from "./routes/userRouter";
 import {quizRouter} from "./routes/quizRouter";
-// import swaggerUi from "swagger-ui-express"
+import swaggerUi from "swagger-ui-express"
 import path from "node:path";
 import {sanitize} from "express-mongo-sanitize";
 import hpp from 'hpp';
 import qs from 'qs';
-// import swaggerDoc from "../docs/openapi.json" with {type: "json"};
+import swaggerDoc from "../docs/openapi.json";
 import cors from "cors";
 import {baseUrl} from "./config/appConfig";
 import passport from 'passport';
@@ -104,7 +103,7 @@ export const createApp = () => {
     app.use(passport.initialize());
     app.use(passport.session());
     // //==============Swagger Docs==========
-    // app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc))
+   app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc))
 
 
     //===============Router================

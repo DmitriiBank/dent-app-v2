@@ -1,0 +1,1155 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Dent App API",
+    "description": "REST API for the Dent App quiz platform. This document was generated from the Express/MongoDB backend contained in this repository. It describes all public and administrative endpoints that the frontend relies on, including authentication flows, quiz management, questions, and quiz result tracking.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Dent App Backend",
+      "url": "https://github.com/DmitriiBank/dent-app-v2/tree/main/backend"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3555",
+      "description": "Local development server"
+    },
+    {
+      "url": "https://dent-app-v2.onrender.com",
+      "description": "Production gateway"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Endpoints used to sign up, log in, and recover user accounts."
+    },
+    {
+      "name": "Users",
+      "description": "Authenticated user profile management and admin-only user CRUD."
+    },
+    {
+      "name": "Quizzes",
+      "description": "Quiz catalog and result management."
+    },
+    {
+      "name": "Questions",
+      "description": "Quiz question access and administration."
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "ApiError": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "fail" },
+          "message": { "type": "string" }
+        },
+        "required": ["status", "message"]
+      },
+      "AuthResponse": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "success" },
+          "token": {
+            "type": "string",
+            "description": "JWT access token valid for the configured expiration window."
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "safeUser": { "$ref": "#/components/schemas/User" }
+            }
+          }
+        },
+        "required": ["status", "token", "data"]
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "name": { "type": "string" },
+          "email": { "type": "string", "format": "email" },
+          "role": { "type": "string", "enum": ["user", "admin"] },
+          "avatar": { "type": "string", "nullable": true },
+          "provider": {
+            "type": "string",
+            "description": "Authentication provider (\"local\" or \"google\")."
+          },
+          "testResults": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/TestResult" }
+          }
+        },
+        "required": ["_id", "name", "email", "role"]
+      },
+      "UserSignupRequest": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "email": { "type": "string", "format": "email" },
+          "password": { "type": "string", "format": "password", "minLength": 8 },
+          "passwordConfirm": { "type": "string", "format": "password" }
+        },
+        "required": ["name", "email", "password", "passwordConfirm"]
+      },
+      "UserLoginRequest": {
+        "type": "object",
+        "properties": {
+          "email": { "type": "string", "format": "email" },
+          "password": { "type": "string", "format": "password" }
+        },
+        "required": ["email", "password"]
+      },
+      "ForgotPasswordRequest": {
+        "type": "object",
+        "properties": {
+          "email": { "type": "string", "format": "email" }
+        },
+        "required": ["email"]
+      },
+      "ResetPasswordRequest": {
+        "type": "object",
+        "properties": {
+          "password": { "type": "string", "format": "password" },
+          "passwordConfirm": { "type": "string", "format": "password" }
+        },
+        "required": ["password", "passwordConfirm"]
+      },
+      "UpdatePasswordRequest": {
+        "type": "object",
+        "properties": {
+          "passwordCurrent": { "type": "string", "format": "password" },
+          "newPassword": { "type": "string", "format": "password" },
+          "newPasswordConfirm": { "type": "string", "format": "password" }
+        },
+        "required": ["passwordCurrent", "newPassword", "newPasswordConfirm"]
+      },
+      "UpdateProfileRequest": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "email": { "type": "string", "format": "email" }
+        },
+        "additionalProperties": false
+      },
+      "Quiz": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "icon": { "type": "string", "nullable": true },
+          "questions": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Question" }
+          }
+        },
+        "required": ["_id", "title", "description"]
+      },
+      "QuizInput": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "icon": { "type": "string" }
+        },
+        "required": ["title", "description"]
+      },
+      "Question": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "quiz": {
+            "type": "string",
+            "description": "Identifier of the quiz that owns the question."
+          },
+          "question": { "type": "string" },
+          "image": { "type": "string", "nullable": true },
+          "options": {
+            "type": "array",
+            "minItems": 2,
+            "items": { "type": "string" }
+          },
+          "answer": {
+            "type": "integer",
+            "description": "Index of the correct option in the options array."
+          }
+        },
+        "required": ["_id", "quiz", "question", "options", "answer"]
+      },
+      "QuestionInput": {
+        "type": "object",
+        "properties": {
+          "question": { "type": "string" },
+          "image": { "type": "string" },
+          "options": {
+            "type": "array",
+            "minItems": 2,
+            "items": { "type": "string" }
+          },
+          "answer": { "type": "integer" },
+          "quiz": {
+            "type": "string",
+            "description": "Optional when using the nested question route because it is inferred from the path parameter."
+          }
+        },
+        "required": ["question", "options", "answer"]
+      },
+      "QuizResultInput": {
+        "type": "object",
+        "properties": {
+          "quiz": { "type": "string" },
+          "user": { "type": "string" },
+          "points": { "type": "integer", "minimum": 0 },
+          "totalQuestions": { "type": "integer", "minimum": 1 }
+        },
+        "required": ["points", "totalQuestions"]
+      },
+      "TestResult": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "quiz": { "type": "string" },
+          "user": { "type": "string" },
+          "points": { "type": "integer" },
+          "totalQuestions": { "type": "integer" },
+          "date": { "type": "string", "format": "date-time" }
+        },
+        "required": ["_id", "quiz", "user", "points", "totalQuestions", "date"]
+      }
+    },
+    "parameters": {
+      "PaginationPage": {
+        "name": "page",
+        "in": "query",
+        "schema": { "type": "integer", "minimum": 1 },
+        "description": "Page number for paginated responses. Defaults to 1."
+      },
+      "PaginationLimit": {
+        "name": "limit",
+        "in": "query",
+        "schema": { "type": "integer", "minimum": 1, "maximum": 100 },
+        "description": "Maximum number of items per page. Defaults to 100."
+      },
+      "SortParam": {
+        "name": "sort",
+        "in": "query",
+        "schema": { "type": "string" },
+        "description": "Comma separated fields to sort by, prefix with `-` for descending order."
+      },
+      "FieldsParam": {
+        "name": "fields",
+        "in": "query",
+        "schema": { "type": "string" },
+        "description": "Comma separated list of fields to include in the response."
+      }
+    }
+  },
+  "paths": {
+    "/api/v1/users/signup": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Create a user account",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UserSignupRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Account created and session initialized.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AuthResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiError" }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/v1/users/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Log in with email and password",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UserLoginRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login succeeded.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AuthResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiError" }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/v1/users/forgotPassword": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Request a password reset token",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ForgotPasswordRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Email containing reset instructions was sent.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "message": { "type": "string", "example": "Token sent to email" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiError" }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/v1/users/resetPassword/{token}": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Reset password using a token emailed to the user",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ResetPasswordRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password reset and user authenticated.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AuthResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid token or password requirements not met.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiError" }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/v1/users/login/google": {
+      "get": {
+        "tags": ["Auth"],
+        "summary": "Redirect to Google OAuth consent screen",
+        "responses": {
+          "302": {
+            "description": "Redirect to Google for authentication."
+          }
+        }
+      }
+    },
+
+    "/api/v1/users/login/google/callback": {
+      "get": {
+        "tags": ["Auth"],
+        "summary": "Google OAuth callback",
+        "description": "Exchanges the Google profile for a Dent App account and redirects the browser with a JWT token.",
+        "responses": {
+          "302": {
+            "description": "Redirect to the frontend with the `token` query parameter."
+          }
+        }
+      }
+    },
+
+    "/api/v1/users/updatePassword": {
+      "patch": {
+        "tags": ["Auth"],
+        "summary": "Update the password for the authenticated user",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdatePasswordRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AuthResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiError" }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiError" }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/v1/users/me": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Get the currently authenticated user profile",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Current user details.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "user": { "$ref": "#/components/schemas/User" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiError" }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/v1/users/updateMe": {
+      "patch": {
+        "tags": ["Users"],
+        "summary": "Update name or email of the authenticated user",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateProfileRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated user document.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "user": { "$ref": "#/components/schemas/User" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/users/deleteMe": {
+      "delete": {
+        "tags": ["Users"],
+        "summary": "Soft delete the authenticated account",
+        "description": "Sets the `active` flag to false so the account can no longer authenticate.",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Account deactivated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "success" },
+                    "data": { "type": "object", "nullable": true }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiError" }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/v1/users": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "List users (admin only)",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "$ref": "#/components/parameters/PaginationPage" },
+          { "$ref": "#/components/parameters/PaginationLimit" },
+          { "$ref": "#/components/parameters/SortParam" },
+          { "$ref": "#/components/parameters/FieldsParam" }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of users.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string" },
+                    "results": { "type": "integer" },
+                    "data": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/User" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Requires admin role.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiError" }
+              }
+            }
+          }
+        }
+      },
+
+      "post": {
+        "tags": ["Users"],
+        "summary": "Create a user (admin convenience route)",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UserSignupRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AuthResponse" }
+              }
+            }
+          },
+          "403": {
+            "description": "Requires admin role.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiError" }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/v1/users/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "string" }
+        }
+      ],
+      "get": {
+        "tags": ["Users"],
+        "summary": "Fetch a user by ID",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "User document with populated test results.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "user": { "$ref": "#/components/schemas/User" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiError" }
+              }
+            }
+          }
+        }
+      },
+
+      "patch": {
+        "tags": ["Users"],
+        "summary": "Update an arbitrary user (admin)",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "description": "Fields to update; validated by Mongoose schema."
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated user document.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string" },
+                    "data": { "$ref": "#/components/schemas/User" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiError" }
+              }
+            }
+          }
+        }
+      },
+
+      "delete": {
+        "tags": ["Users"],
+        "summary": "Permanently delete a user",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "204": { "description": "User removed." },
+          "404": {
+            "description": "User not found.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiError" }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/v1/quizzes": {
+      "get": {
+        "tags": ["Quizzes"],
+        "summary": "List quizzes",
+        "parameters": [
+          { "$ref": "#/components/parameters/PaginationPage" },
+          { "$ref": "#/components/parameters/PaginationLimit" },
+          { "$ref": "#/components/parameters/SortParam" },
+          { "$ref": "#/components/parameters/FieldsParam" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of quizzes.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string" },
+                    "results": { "type": "integer" },
+                    "data": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/Quiz" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+
+      "post": {
+        "tags": ["Quizzes"],
+        "summary": "Create a quiz",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/QuizInput" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Quiz created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string" },
+                    "data": { "$ref": "#/components/schemas/Quiz" }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Requires admin role.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiError" }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/v1/quizzes/{id}": {
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "string" }
+        }
+      ],
+      "get": {
+        "tags": ["Quizzes"],
+        "summary": "Retrieve a quiz with populated questions",
+        "responses": {
+          "200": {
+            "description": "Quiz document with nested questions.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string" },
+                    "data": { "$ref": "#/components/schemas/Quiz" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Quiz not found.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiError" }
+              }
+            }
+          }
+        }
+      },
+
+      "patch": {
+        "tags": ["Quizzes"],
+        "summary": "Update a quiz",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/QuizInput" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated quiz document.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string" },
+                    "data": { "$ref": "#/components/schemas/Quiz" }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Requires admin role.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiError" }
+              }
+            }
+          }
+        }
+      },
+
+      "delete": {
+        "tags": ["Quizzes"],
+        "summary": "Delete a quiz",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "204": { "description": "Quiz deleted." },
+          "403": {
+            "description": "Requires admin role.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiError" }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/v1/quizzes/{id}/results": {
+      "post": {
+        "tags": ["Quizzes"],
+        "summary": "Persist the score for a completed quiz",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Quiz identifier."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/QuizResultInput" } }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Stored quiz result.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "testResult": {
+                          "$ref": "#/components/schemas/TestResult"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing quiz or result already exists.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiError" }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/v1/quizzes/{quizId}/questions": {
+      "parameters": [
+        {
+          "name": "quizId",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "string" }
+        }
+      ],
+      "get": {
+        "tags": ["Questions"],
+        "summary": "Get questions for a quiz",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          { "$ref": "#/components/parameters/PaginationPage" },
+          { "$ref": "#/components/parameters/PaginationLimit" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Question collection.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string" },
+                    "page": { "type": "integer" },
+                    "results": { "type": "integer" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "questions": {
+                          "type": "array",
+                          "items": { "$ref": "#/components/schemas/Question" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiError" }
+              }
+            }
+          }
+        }
+      },
+
+      "post": {
+        "tags": ["Questions"],
+        "summary": "Create a question inside a quiz",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/QuestionInput" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Question created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string" },
+                    "data": { "$ref": "#/components/schemas/Question" }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Requires admin role.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiError" }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/v1/quizzes/{quizId}/questions/{id}": {
+      "parameters": [
+        {
+          "name": "quizId",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "string" }
+        },
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": { "type": "string" }
+        }
+      ],
+      "get": {
+        "tags": ["Questions"],
+        "summary": "Fetch a single question",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Question document.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string" },
+                    "data": { "$ref": "#/components/schemas/Question" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+
+      "patch": {
+        "tags": ["Questions"],
+        "summary": "Update a question",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/QuestionInput" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated question document.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string" },
+                    "data": { "$ref": "#/components/schemas/Question" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+
+      "delete": {
+        "tags": ["Questions"],
+        "summary": "Delete a question",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "204": { "description": "Question deleted." },
+          "403": {
+            "description": "Requires admin role.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiError" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

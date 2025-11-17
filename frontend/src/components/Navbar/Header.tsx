@@ -11,7 +11,7 @@ import { MenuIcon } from "lucide-react";
 import { MobileNavbar } from "./Navbar";
 
 export const Header = () => {
-    const { email, name, role } = useAppSelector((state) => state.auth);
+    const { email, name, role, avatar } = useAppSelector((state) => state.auth);
     const navigate = useNavigate();
     const [open, setOpen] = useState(false);
 
@@ -50,7 +50,9 @@ export const Header = () => {
                         mr: "15px",
                     }}
                 >
-                    <Avatar sx={{ m: "3px" }}>{(name || email)?.[0]?.toUpperCase()}</Avatar>
+                    {/*<Avatar sx={{ m: "3px" }}>{(name || email)?.[0]?.toUpperCase()}</Avatar>*/}
+                    <Avatar sx={{ m: "3px" }}>{!avatar &&  name?.[0]?.toUpperCase()}</Avatar>
+
 
                     <Typography
                         sx={{

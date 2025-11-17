@@ -11,6 +11,7 @@ export interface AuthState {
     name: string | null;
     email: string | null;
     role: string | null;
+    avatar: string | null,
     isAuth: boolean;
     isLoading: boolean;
     testResults: TestRecord[];
@@ -21,6 +22,7 @@ const initialState: AuthState = {
     name: null,
     email: null,
     role: null,
+    avatar: null,
     isAuth: false,
     isLoading: false,
     testResults: [],
