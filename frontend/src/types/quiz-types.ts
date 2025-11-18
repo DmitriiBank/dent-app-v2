@@ -1,4 +1,3 @@
-
 export enum Paths {
     LOGIN = "/users/login",
     GOOGLE = "/auth/success",
@@ -12,6 +11,8 @@ export enum Paths {
     ANATOMY = '/anatomy',
     MY_PAGE = "users/me",
     ALL_USERS = "users/users_list",
+    RESTORE_PASS = "/users/forgotPassword",
+    RESET_PASS = "/users/resetPassword/:token"
 }
 
 export enum Roles {
@@ -41,7 +42,7 @@ export type SignupData = {
 
 export interface Question {
     question: string;
-    options:  string[];
+    options: string[];
     answer: number;
     image?: string;
     iframe?: string;
@@ -66,4 +67,4 @@ export interface SaveResultResponse {
             _id: string;
         };
     };
-};
+}

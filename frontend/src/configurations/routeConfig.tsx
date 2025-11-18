@@ -15,6 +15,8 @@ import {ToothPage} from "../components/Anatomy/ToothPage.tsx";
 import {ScoreTable} from "../components/StudentInfo/ScoreTable.tsx";
 import GoogleSuccess from "../servicePages/GoogleSuccess.tsx";
 import type {ReactNode} from "react";
+import RestorePass from "../servicePages/RestorePass.tsx";
+import ResetPass from "../servicePages/ResetPass.tsx";
 
 type AppRoute = {
     path: string;
@@ -40,6 +42,8 @@ export const routes: AppRoute[]  = [
     { path: Paths.GOOGLE, element: <GoogleSuccess />},
     {path: Paths.LOGOUT, element: <Logout />, allowedRoles: protectedRoles,},
     {path: Paths.REGISTER, element: <Registration />},
+    {path: Paths.RESTORE_PASS, element: <RestorePass />},
+    {path: Paths.RESET_PASS, element: <ResetPass />},
     {path: Paths.LECTURES, element: <LecturesPage />},
     {path: Paths.ANATOMY, element: <TeethPage />},
     {

@@ -24,6 +24,22 @@ export async function register(data: UserDto) {
     return payload.user;
 }
 
+export const forgotPassword = async (email: string) => {
+    return httpRequest<{ token: string; data: { email: string } }>(`/api/v1/users/forgotPassword`, {
+        method: "POST",
+        auth: false,
+        json: {email},
+    });
+}
+
+
+export const resetPassword = async (token: string, password: string, passwordConfirm: string) => {
+    return httpRequest<{ token: string; data: { password: string, passwordConfirm: string } }>(`/api/v1/users/resetPassword/${token}`, {
+        method: "POST",
+        auth: false,
+        json: {password, passwordConfirm},
+    });
+}
 export function exit() {
     localStorage.removeItem('token');
     return true;

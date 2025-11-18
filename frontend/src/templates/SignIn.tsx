@@ -302,6 +302,13 @@ export default function SignIn(props: Props) {
                         />
                     </FormControl>
 
+                    <NavLink
+                        to={Paths.RESTORE_PASS}
+                        style={{fontSize: 14, color: '#6ea8fe', fontWeight: 400}}
+                    >
+                        Forgot your password?
+                    </NavLink>
+
                     <PrimaryButton
                         type="submit"
                         fullWidth

@@ -90,10 +90,12 @@ export const forgotPassword = async (req: Request, res: Response, next: NextFunc
 
     const resetToken = user.createPasswordResetToken();
     await user.save({validateBeforeSave: false});
+    const frontendUrl = process.env.NODE_ENV === 'development'
+        ? 'http://localhost:5173'
+        : 'https://dent-app-v2.vercel.app';
+    const resetURL = `${frontendUrl}/users/resetPassword/${resetToken}`;
 
-    const resetURL = `${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${resetToken}`;
-
-    const message = `Forgot your password? Submit a Patch request with your new password and passwordConfirm to: ${resetURL}.\n If you didn't forget your password, please log in again.`;
+    const message = `Forgot your password? Submit a Patch request with your new password and passwordConfirm to: ${resetURL}\n If you didn't forget your password, please log in again.`;
 
     try {
         await sendEmail({
@@ -155,8 +157,8 @@ export const googleCallback = asAuth((req: AuthRequest, res: Response, next: Nex
         const token = signToken((req.user as any)._id);
 
         const frontendUrl = process.env.NODE_ENV === 'development'
-            ? process.env.GOOGLE_CLIENT_URL || 'http://localhost:5173'
-            : 'https://dent-app-v2.vercel.app';
+            ? 'http://localhost:5173'
+            : process.env.GOOGLE_CLIENT_URL;
         res.redirect(`${frontendUrl}/auth/success?token=${token}`);
     } catch (error) {
         next(error);
