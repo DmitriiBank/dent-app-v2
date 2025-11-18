@@ -53,7 +53,6 @@ export const Header = () => {
                     {/*<Avatar sx={{ m: "3px" }}>{(name || email)?.[0]?.toUpperCase()}</Avatar>*/}
                     <Avatar src={avatar || undefined} sx={{ m: "7px" }}>{!avatar &&  name?.[0]?.toUpperCase()}</Avatar>
 
-
                     <Typography
                         className="nickName"
                         sx={{
