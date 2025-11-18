@@ -141,7 +141,7 @@ button:focus-visible {
         margin: 0 auto;
     }
 
-    .navbar--static {
+    .navbar--static, .nickName {
         display: none;
     }
     .burger {
