@@ -33,12 +33,6 @@ const LecturesPage= () =>  {
             </Grid>
 
             {active && (
-                // <LectureViewerDialog
-                //     open={open}
-                //     onClose={handleClose}
-                //     title={active.title}
-                //     src={active.pdfUrl}
-                // />
                 <React.Suspense
                     fallback={(
                         <Typography variant="body2" sx={{ mt: 2, textAlign: 'center' }}>

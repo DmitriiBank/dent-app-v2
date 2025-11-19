@@ -30,7 +30,7 @@ export const createApp = () => {
         cors({
             origin: [
                 "http://localhost:5173",
-                "https://dent-app-v2.vercel.app",
+                !process.env.GOOGLE_CLIENT_URL,
             ],
             credentials: true,
             methods: ["GET", "POST", "PATCH", "DELETE"],

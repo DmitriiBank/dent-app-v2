@@ -6,7 +6,18 @@ interface EmailOptions {
   message: string;
 }
 
+// import { Resend } from 'resend';
+
 export const sendEmail = async (options: EmailOptions): Promise<void> => {
+// const resend = new Resend('re_BFnGYgfX_KhVDzLXu4nCGi3zXtZmBVcCZ');
+
+// resend.emails.send({
+//   from: 'onboarding@resend.dev',
+//   to: 'dm.skakov@gmail.com',
+//   subject: 'Hello World',
+//   html: '<p>Congrats on sending your <strong>first email</strong>!</p>'
+// });
+
   const transporter = nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
     port: Number(process.env.EMAIL_PORT) || 587,

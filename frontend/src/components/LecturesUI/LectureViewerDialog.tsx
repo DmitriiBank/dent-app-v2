@@ -18,12 +18,12 @@ type Props = {
 export default function LectureViewerDialog({ open, title, src, images = [], onClose }: Props) {
     const [numPages, setNumPages] = React.useState(0);
     const [containerWidth, setContainerWidth] = React.useState(
-        Math.min(1000, Math.floor(window.innerWidth * 0.85))
+        window.innerWidth < 600 ? window.innerWidth : Math.min(1000, Math.floor(window.innerWidth * 0.85))
     );
 
     React.useEffect(() => {
         const onResize = () =>
-            setContainerWidth(Math.min(1000, Math.floor(window.innerWidth * 0.85)));
+            setContainerWidth(window.innerWidth < 600 ? window.innerWidth : Math.min(1000, Math.floor(window.innerWidth * 0.85)));
         window.addEventListener('resize', onResize);
         return () => window.removeEventListener('resize', onResize);
     }, []);
@@ -49,14 +49,14 @@ export default function LectureViewerDialog({ open, title, src, images = [], onC
 
             <DialogContent
                 dividers
-                sx={{ pt: 1, pb: 2, maxHeight: '85vh' }}
+                sx={{ p: 0, pb: 2, maxHeight: '85vh' }}
             >
                 <Box
                     sx={{
                         mx: 'auto',
                         width: '100%',
                         maxWidth: containerWidth,
-                        display: 'grid',
+                        // display: 'grid',
                         gap: 2,              
                     }}
                 >
@@ -81,7 +81,7 @@ export default function LectureViewerDialog({ open, title, src, images = [], onC
                             </Box>
                         ))
                     ) : src ? (
-                        // Режим PDF: все страницы в колонку
+
                         <Document
                             file={src}
                             onLoadSuccess={({ numPages }) => setNumPages(numPages)}
@@ -96,6 +96,8 @@ export default function LectureViewerDialog({ open, title, src, images = [], onC
                                         bgcolor: 'background.paper',
                                         border: '1px solid',
                                         borderColor: 'divider',
+                                        display: 'flex',
+                                        justifyContent: 'center',
                                     }}
                                 >
                                     <Page

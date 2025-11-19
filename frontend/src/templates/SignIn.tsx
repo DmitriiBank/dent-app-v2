@@ -49,7 +49,7 @@ type Props = { submitFn: (loginData: LoginData) => void };
 export const SignInContainer = styled(Stack)(({theme}) => ({
     position: 'relative',
     minHeight: '350px',
-    minWidth: '450px',
+    width: '100%',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -347,7 +347,7 @@ export default function SignIn(props: Props) {
                         fullWidth
                         startIcon={<GoogleIcon />}
                         onClick={() => {
-                                window.location.href = `${import.meta.env.VITE_API_URL}/api/v1/users/login/google`;
+                                window.location.href = `${import.meta.env.VITE_API_BASE_URL}/api/v1/users/login/google`;
                             }}
                     >
                         Sign in with Google
