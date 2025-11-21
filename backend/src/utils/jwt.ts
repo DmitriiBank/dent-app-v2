@@ -36,7 +36,7 @@ export const createSendToken = (
     res.cookie("jwt", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
+        sameSite: "none",
         path: "/",
         maxAge: ACCESS_EXPIRES_MS,
     });
@@ -44,7 +44,7 @@ export const createSendToken = (
     res.cookie("refreshJwt", refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
+        sameSite: "none",
         path: "/",
         maxAge: REFRESH_EXPIRES_MS,
     });
