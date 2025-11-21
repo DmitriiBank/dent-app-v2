@@ -53,7 +53,7 @@ export const forgotPassword = async (req: Request, res: Response, next: NextFunc
     const resetToken = user.createPasswordResetToken();
     await user.save({validateBeforeSave: false});
     const frontendUrl = process.env.NODE_ENV === 'development'
-        ?  'http://localhost:5173'
+        ? 'http://localhost:5173'
         : 'https://dent-app-v2.vercel.app';
     const resetURL = `${frontendUrl}/users/resetPassword/${resetToken}`;
 
@@ -119,7 +119,16 @@ export const googleCallback = (req: Request, res: Response, next: NextFunction) 
         console.log(user);
         createSendToken(user, 200, res);
 
-        res.redirect(`${process.env.GOOGLE_CLIENT_URL}/auth/success`);
+        res.send(`
+  <html>
+  <body>
+    <script>
+      window.location.href = "${process.env.GOOGLE_CLIENT_URL}/auth/success";
+    </script>
+  </body>
+  </html>
+`);
+
     } catch (error) {
         next(error);
     }
