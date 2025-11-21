@@ -52,7 +52,7 @@ export const ScoreTable = () => {
     const { _id, role, name, testResults } = useMemo(
         () => ({
             _id: currentUser?._id,
-            role: currentUser?.role ?? "guest",
+            role: currentUser?.role ?? "user",
             name: currentUser?.name ?? "",
             testResults: currentUser?.testResults ?? [],
         }),
@@ -68,6 +68,7 @@ export const ScoreTable = () => {
             try {
                 if (role === "admin") {
                     const res = await getAllUsers();
+                    console.log(res)
                     const users = res.data || res;
                     const allRows = users.map((u: User) => mapUserToRow(u, allQuizzes));
                     setRows(allRows);

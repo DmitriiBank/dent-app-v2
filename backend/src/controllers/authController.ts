@@ -104,12 +104,12 @@ export const googleCallback = asAuth((req: AuthRequest, res: Response, next: Nex
         }
         console.log(req.user);
         const token = signToken(req.user._id);
-
-        res.cookie('accessToken', token, {
-            expires: new Date(Date.now() + 15 * 60 * 1000), // 15 min
+        console.log("TOKEN: ", token);
+        res.cookie("jwt", token, {
             httpOnly: true,
             secure: false,
-            sameSite: 'lax',
+            sameSite: "lax",
+            maxAge: 15 * 60 * 1000,
         });
 
         res.redirect(`${process.env.GOOGLE_CLIENT_URL}/auth/success`);

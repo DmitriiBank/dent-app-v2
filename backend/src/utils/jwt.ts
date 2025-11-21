@@ -1,48 +1,53 @@
-import jwt, {Secret} from 'jsonwebtoken';
-import {Response} from 'express';
-import {User} from "../model/User";
+import jwt, { Secret } from "jsonwebtoken";
+import { Response } from "express";
+import { User } from "../model/User";
 
 const validateEnv = () => {
     if (!process.env.JWT_ACCESS_SECRET || !process.env.JWT_REFRESH_SECRET) {
-        throw new Error('JWT_SECRET is not defined in environment variables');
-    }
-    if (process.env.JWT_ACCESS_SECRET.length < 16 || process.env.JWT_REFRESH_SECRET.length < 16) {
-        throw new Error('JWT_SECRET must be at least 32 characters long');
+        throw new Error("JWT secrets are missing");
     }
 };
 
 validateEnv();
 
-const ACCESS_TOKEN_EXPIRES = '15m';
-const REFRESH_TOKEN_EXPIRES = '7d';
+const ACCESS_EXPIRES_MS = 15 * 60 * 1000; // 15 minutes
+const REFRESH_EXPIRES_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 export const signToken = (id: string) =>
     jwt.sign({ id }, process.env.JWT_ACCESS_SECRET as Secret, {
-        expiresIn: ACCESS_TOKEN_EXPIRES,
+        expiresIn: "15m",
     });
 
 export const signRefreshToken = (id: string) =>
     jwt.sign({ id }, process.env.JWT_REFRESH_SECRET as Secret, {
-        expiresIn: REFRESH_TOKEN_EXPIRES,
+        expiresIn: "7d",
     });
 
-export const createSendToken = (user: User, statusCode: number, res: Response) => {
+export const createSendToken = (
+    user: User,
+    statusCode: number,
+    res: Response
+) => {
     const token = signToken(user._id.toString());
     const refreshToken = signRefreshToken(user._id.toString());
 
-    res.cookie('accessToken', token, {
-        expires: new Date(Date.now() + 15 * 60 * 1000), // 15 min
+    console.log("TOKEN:", token);
+
+
+    res.cookie("jwt", token, {
         httpOnly: true,
         secure: false,
-        sameSite: 'lax',
+        sameSite: "lax",
+        maxAge: ACCESS_EXPIRES_MS,
     });
 
-    res.cookie('refreshToken', refreshToken, {
-        expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+    res.cookie("refreshJwt", refreshToken, {
         httpOnly: true,
         secure: false,
-        sameSite: 'lax',
+        sameSite: "lax",
+        maxAge: REFRESH_EXPIRES_MS,
     });
+
 
     res.status(statusCode).json({
         status: "success",
@@ -55,6 +60,6 @@ export const createSendToken = (user: User, statusCode: number, res: Response) =
             avatar: user.avatar || null,
             provider: user.provider || "local",
             testResults: user.testResults || [],
-        }
+        },
     });
 };

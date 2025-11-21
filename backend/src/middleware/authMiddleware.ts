@@ -15,7 +15,7 @@ interface JWTPayload {
 
 export const protect: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
 
-    const token = req.cookies?.accessToken;
+    const token = req.cookies?.jwt;
 
     if (!token) return next(new HttpError(401, 'You are not logged in'));
     try {
@@ -51,7 +51,7 @@ export const restrictTo = (...roles: Roles[]) => {
 };
 
 export const refresh = async (req: Request, res: Response, next: NextFunction) => {
-    const token = req.cookies?.refreshToken;
+    const token = req.cookies?.refreshJwt;
 
     if (!token) return next(new HttpError(401, 'No refresh token'));
 

@@ -15,6 +15,7 @@ export const Header = () => {
     const navigate = useNavigate();
     const [open, setOpen] = useState(false);
     console.log(user);
+
     const { email, name, role, avatar } = useMemo(
         () => ({
             email: user?.email,
@@ -62,7 +63,7 @@ export const Header = () => {
                     }}
                 >
                     {/*<Avatar sx={{ m: "3px" }}>{(name || email)?.[0]?.toUpperCase()}</Avatar>*/}
-                    <Avatar src={avatar || ''} sx={{ m: "7px" }}>{!avatar &&  name?.[0]?.toUpperCase()}</Avatar>
+                    <Avatar src={avatar ?? undefined} sx={{ m: "7px" }} imgProps={{ referrerPolicy: "no-referrer" }}>{!avatar &&  name?.[0]?.toUpperCase()}</Avatar>
 
                     <Typography
                         className="nickName"

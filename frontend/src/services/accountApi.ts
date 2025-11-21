@@ -20,7 +20,7 @@ export async function getUserData(): Promise<User> {
 
 
 export async function getAllUsers(): Promise<GetUsersResponse> {
-    return httpRequest<GetUsersResponse>(`/api/v1/users/`, {
+    return httpRequest<GetUsersResponse>(`/api/v1/users`, {
         method: "GET",
     });
 }
