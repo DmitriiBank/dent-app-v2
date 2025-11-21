@@ -17,7 +17,9 @@ export const QuizBlockLang = ({ quiz, onClick, isCompleted, score }: Props) => {
             <img
                 src={`${import.meta.env.BASE_URL}${quiz.icon}`}
                 alt={quiz.title}
+                loading="lazy"
                 className="quiz-icon"
+                width="200" height="200"
             />
             <h2>{quiz.title}</h2>
             <p className="quiz-description">

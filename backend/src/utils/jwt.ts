@@ -35,15 +35,17 @@ export const createSendToken = (
 
     res.cookie("jwt", token, {
         httpOnly: true,
-        secure: true,
-        sameSite: "none",
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
         maxAge: ACCESS_EXPIRES_MS,
     });
 
     res.cookie("refreshJwt", refreshToken, {
         httpOnly: true,
-        secure: true,
-        sameSite: "none",
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
         maxAge: REFRESH_EXPIRES_MS,
     });
 

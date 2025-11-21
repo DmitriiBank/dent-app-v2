@@ -109,7 +109,7 @@ export const updatePassword = asAuth(async (req: AuthRequest, res: Response, nex
     createSendToken(result, 200, res);
 });
 
-export const googleCallback = asAuth((req: AuthRequest, res: Response, next: NextFunction) => {
+export const googleCallback = (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
         if (!req.user) {
             throw new HttpError(401, 'Authentication failed');
@@ -121,4 +121,4 @@ export const googleCallback = asAuth((req: AuthRequest, res: Response, next: Nex
     } catch (error) {
         next(error);
     }
-})
+}
