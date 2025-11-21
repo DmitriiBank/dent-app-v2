@@ -16,7 +16,6 @@ import swaggerDoc from "../docs/openapi.json";
 import cors from "cors";
 import {baseUrl} from "./config/appConfig";
 import passport from 'passport';
-import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import './config/passportConfig';
 
@@ -25,6 +24,8 @@ export const createApp = () => {
 
     const __dirname = path.resolve();
     const app: Application = express();
+
+    app.set('trust proxy', 1);
 
     app.use(
         cors({

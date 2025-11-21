@@ -27,11 +27,10 @@ passport.use(
                 // });
 
                 let user = await UserDbModel.findOne({ googleId: profile.id });
-
                 if (!user) {
                     console.log("📝 Creating new user");
                     user = await UserDbModel.create({
-                        name: profile.name,
+                        name: profile.displayName,
                         email: profile.emails?.[0].value,
                         googleId: profile.id,
                         avatar: profile.photos?.[0].value,
