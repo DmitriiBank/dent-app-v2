@@ -23,21 +23,42 @@ export const signRefreshToken = (id: string) =>
         expiresIn: "7d",
     });
 
+const resolveClientUrl = () => {
+    const urlFromEnv = process.env.GOOGLE_CLIENT_URL || process.env.CLIENT_URL;
+    return urlFromEnv ? new URL(urlFromEnv) : null;
+};
+
+const resolveServerUrl = () => {
+    const serverUrl = process.env.SERVER_URL;
+    return serverUrl ? new URL(serverUrl) : null;
+};
+
+const isCrossSite = () => {
+    const client = resolveClientUrl();
+    const server = resolveServerUrl();
+
+    if (!client || !server) return false;
+
+    return client.hostname !== server.hostname;
+};
+
 export const setAuthCookies = (res: Response, token: string, refreshToken: string) => {
-    const isProd = process.env.NODE_ENV === "production";
+    const crossSite = isCrossSite();
+    const useSecure = process.env.NODE_ENV === "production" || crossSite;
+    const sameSite: "lax" | "none" = crossSite ? "none" : "lax";
 
     res.cookie("jwt", token, {
         httpOnly: true,
-        secure: isProd,
-        sameSite: isProd ? "none" : "lax",
+        secure: useSecure,
+        sameSite,
         path: "/",
         maxAge: ACCESS_EXPIRES_MS,
     });
 
     res.cookie("refreshJwt", refreshToken, {
         httpOnly: true,
-        secure: isProd,
-        sameSite: isProd ? "none" : "lax",
+        secure: useSecure,
+        sameSite,
         path: "/",
         maxAge: REFRESH_EXPIRES_MS,
     });
