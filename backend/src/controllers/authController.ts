@@ -8,7 +8,7 @@ import {
 } from "../services/AccountServiceImplMongo";
 import {AuthRequest} from "../utils/quizTypes";
 import {asAuth} from "../utils/tools";
-import {createSendToken, signToken} from "../utils/jwt";
+import {createSendToken, signRefreshToken, signToken} from "../utils/jwt";
 
 
 export const signup = async (req: Request, res: Response, next: NextFunction) => {
@@ -26,8 +26,20 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
         return next(new HttpError(400, 'Please provide email and password'));
     }
     const user = await service.login(email, password);
-    console.log(user)
+
     createSendToken(user, 200, res);
+    res.status(200).json({
+        status: "success",
+        data: {
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            avatar: user.avatar || null,
+            provider: user.provider || "local",
+            testResults: user.testResults || [],
+        },
+    });
 };
 
 
@@ -103,14 +115,7 @@ export const googleCallback = asAuth((req: AuthRequest, res: Response, next: Nex
             throw new HttpError(401, 'Authentication failed');
         }
         console.log(req.user);
-        const token = signToken(req.user._id);
-        console.log("TOKEN: ", token);
-        res.cookie("jwt", token, {
-            httpOnly: true,
-            secure: true,
-            sameSite: "none",
-            maxAge: 15 * 60 * 1000,
-        });
+        createSendToken(req.user, 200, res);
 
         res.redirect(`${process.env.GOOGLE_CLIENT_URL}/auth/success`);
     } catch (error) {

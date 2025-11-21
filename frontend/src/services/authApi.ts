@@ -1,7 +1,8 @@
 import type {LoginData} from "../types/quiz-types.ts";
-import type {UserDto, User} from "../types/User.ts";
+import type {UserDto} from "../types/User.ts";
 import {convertUserDtoToUser} from "../utils/tools.ts";
 import {httpRequest} from "./http.ts";
+// import type {GetUserResponseData} from "./accountApi.ts";
 
 export const login = async (data: LoginData) => {
     return httpRequest(`/api/v1/users/login`, {
@@ -13,17 +14,15 @@ export const login = async (data: LoginData) => {
 
 export async function register(data: UserDto) {
     const newUser = await convertUserDtoToUser(data)
-    const payload = await httpRequest<{ token: string; data: User }>(`/api/v1/users/signup`, {
+    return await httpRequest(`/api/v1/users/signup`, {
         method: "POST",
         auth: false,
         json: newUser,
     });
-    console.log(payload)
-    return payload.data;
 }
 
 export const forgotPassword = async (email: string) => {
-    return httpRequest<{ token: string; data: { email: string } }>(`/api/v1/users/forgotPassword`, {
+    return httpRequest<{ data: { email: string } }>(`/api/v1/users/forgotPassword`, {
         method: "POST",
         auth: false,
         json: {email},
@@ -32,7 +31,7 @@ export const forgotPassword = async (email: string) => {
 
 
 export const resetPassword = async (token: string, password: string, passwordConfirm: string) => {
-    return httpRequest<{ token: string; data: { password: string, passwordConfirm: string } }>(`/api/v1/users/resetPassword/${token}`, {
+    return httpRequest<{ data: { password: string, passwordConfirm: string } }>(`/api/v1/users/resetPassword/${token}`, {
         method: "POST",
         auth: false,
         json: {password, passwordConfirm},

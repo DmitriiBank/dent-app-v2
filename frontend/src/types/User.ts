@@ -23,3 +23,13 @@ export interface TestRecord {
     points: number;
     totalQuestions: number;
 }
+
+export interface GetUserResponseData {
+    status: string;
+    data: User;
+}
+
+export interface GetUsersResponseData  {
+    status: string;
+    data: User[];
+}

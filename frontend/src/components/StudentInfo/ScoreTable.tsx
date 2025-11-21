@@ -6,7 +6,11 @@ import { type GridColDef } from "@mui/x-data-grid";
 import { useAppSelector } from "../../redux/hooks";
 import type { RootState } from "../../redux/store";
 import { deleteUser, getAllUsers } from "../../services/accountApi";
-import type { User, TestRecord } from "../../types/User";
+import type {
+    User,
+    TestRecord,
+    GetUsersResponseData
+} from "../../types/User";
 import type { Quiz } from "../../types/quiz-types";
 
 type Row = {
@@ -52,7 +56,7 @@ export const ScoreTable = () => {
     const { _id, role, name, testResults } = useMemo(
         () => ({
             _id: currentUser?._id,
-            role: currentUser?.role ?? "user",
+            role: currentUser?.role,
             name: currentUser?.name ?? "",
             testResults: currentUser?.testResults ?? [],
         }),
@@ -67,9 +71,9 @@ export const ScoreTable = () => {
 
             try {
                 if (role === "admin") {
-                    const res = await getAllUsers();
+                    const res = await getAllUsers() as GetUsersResponseData;
                     console.log(res)
-                    const users = res.data || res;
+                    const users = res.data;
                     const allRows = users.map((u: User) => mapUserToRow(u, allQuizzes));
                     setRows(allRows);
                 } else {

@@ -20,11 +20,11 @@ passport.use(
         },
         async (_accessToken, _refreshToken, profile, done) => {
             try {
-                // console.log("🔍 Strategy called with profile:", {
-                //     id: profile?.id,
-                //     email: profile?.emails?.[0]?.value,
-                //     name: profile?.displayName
-                // });
+                console.log("🔍 Strategy called with profile:", {
+                    id: profile?.id,
+                    email: profile?.emails?.[0]?.value,
+                    name: profile?.displayName
+                });
 
                 let user = await UserDbModel.findOne({ googleId: profile.id });
                 if (!user) {
@@ -37,6 +37,7 @@ passport.use(
                         provider: "google",
                     });
                     console.log("✅ User created:", user._id);
+                    console.log(user)
                 } else {
                     console.log("✅ Existing user found:", user._id);
                 }

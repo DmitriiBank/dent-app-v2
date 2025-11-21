@@ -33,7 +33,6 @@ export const createSendToken = (
 
     console.log("TOKEN:", token);
 
-
     res.cookie("jwt", token, {
         httpOnly: true,
         secure: true,
@@ -43,23 +42,11 @@ export const createSendToken = (
 
     res.cookie("refreshJwt", refreshToken, {
         httpOnly: true,
-        secure: true,              // ОБЯЗАТЕЛЬНО для прод
+        secure: true,
         sameSite: "none",
         maxAge: REFRESH_EXPIRES_MS,
     });
 
 
-    res.status(statusCode).json({
-        status: "success",
-        token,
-        data: {
-            _id: user._id,
-            name: user.name,
-            email: user.email,
-            role: user.role,
-            avatar: user.avatar || null,
-            provider: user.provider || "local",
-            testResults: user.testResults || [],
-        },
-    });
+
 };

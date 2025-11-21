@@ -6,7 +6,7 @@ import quizReducer from "./slices/quizSlice.ts";
 import storage from "redux-persist/lib/storage";
 import {
     persistReducer, persistStore,
-    FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER
+    // FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER
 } from 'redux-persist';
 
 const rootReducer = combineReducers({
@@ -26,9 +26,9 @@ const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
     reducer: persistedReducer,
-    middleware: (getDefault) =>
-        getDefault({
-            serializableCheck: { ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER] },
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware({
+            serializableCheck: false,
         }),
 })
 

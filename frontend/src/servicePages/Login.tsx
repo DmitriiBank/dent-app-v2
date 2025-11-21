@@ -21,7 +21,7 @@ const Login = () => {
             const action = await dispatch(loginUser(loginData))
             console.log("✅ Вход выполнен: action", action);
             if (loginUser.fulfilled.match(action)) {
-                const user = action.payload.data;
+                const user = action.payload;
 
                 console.log("✅ Вход выполнен:", user.name);
                 navigate(Paths.HOME);
