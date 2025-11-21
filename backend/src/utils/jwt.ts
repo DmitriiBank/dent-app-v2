@@ -23,6 +23,26 @@ export const signRefreshToken = (id: string) =>
         expiresIn: "7d",
     });
 
+export const setAuthCookies = (res: Response, token: string, refreshToken: string) => {
+    const isProd = process.env.NODE_ENV === "production";
+
+    res.cookie("jwt", token, {
+        httpOnly: true,
+        secure: isProd,
+        sameSite: isProd ? "none" : "lax",
+        path: "/",
+        maxAge: ACCESS_EXPIRES_MS,
+    });
+
+    res.cookie("refreshJwt", refreshToken, {
+        httpOnly: true,
+        secure: isProd,
+        sameSite: isProd ? "none" : "lax",
+        path: "/",
+        maxAge: REFRESH_EXPIRES_MS,
+    });
+};
+
 export const createSendToken = (
     user: User,
     statusCode: number,
@@ -32,23 +52,19 @@ export const createSendToken = (
     const refreshToken = signRefreshToken(user._id.toString());
 
     console.log("TOKEN:", token);
+    
+    setAuthCookies(res, token, refreshToken);
 
-    res.cookie("jwt", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "none",
-        path: "/",
-        maxAge: ACCESS_EXPIRES_MS,
+    res.status(statusCode).json({
+        status: "success",
+        data: {
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            avatar: user.avatar || null,
+            provider: user.provider || "local",
+            testResults: user.testResults || [],
+        },
     });
-
-    res.cookie("refreshJwt", refreshToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "none",
-        path: "/",
-        maxAge: REFRESH_EXPIRES_MS,
-    });
-
-
-
 };

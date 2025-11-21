@@ -8,7 +8,7 @@ import {
 } from "../services/AccountServiceImplMongo";
 import {AuthRequest} from "../utils/quizTypes";
 import {asAuth} from "../utils/tools";
-import {createSendToken, signRefreshToken, signToken} from "../utils/jwt";
+import {createSendToken, setAuthCookies, signRefreshToken, signToken} from "../utils/jwt";
 import {User} from "../model/User";
 
 
@@ -29,18 +29,6 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     const user = await service.login(email, password);
 
     createSendToken(user, 200, res);
-    res.status(200).json({
-        status: "success",
-        data: {
-            _id: user._id,
-            name: user.name,
-            email: user.email,
-            role: user.role,
-            avatar: user.avatar || null,
-            provider: user.provider || "local",
-            testResults: user.testResults || [],
-        },
-    });
 };
 
 
@@ -117,7 +105,10 @@ export const googleCallback = (req: Request, res: Response, next: NextFunction) 
             throw new HttpError(401, 'Authentication failed');
         }
         console.log(user);
-        createSendToken(user, 200, res);
+        const token = signToken(user._id.toString());
+        const refreshToken = signRefreshToken(user._id.toString());
+        
+        setAuthCookies(res, token, refreshToken);
 
         res.send(`
   <html>
