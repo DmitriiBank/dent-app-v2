@@ -36,15 +36,15 @@ export const createSendToken = (
 
     res.cookie("jwt", token, {
         httpOnly: true,
-        secure: false,
-        sameSite: "lax",
+        secure: true,
+        sameSite: "none",
         maxAge: ACCESS_EXPIRES_MS,
     });
 
     res.cookie("refreshJwt", refreshToken, {
         httpOnly: true,
-        secure: false,
-        sameSite: "lax",
+        secure: true,              // ОБЯЗАТЕЛЬНО для прод
+        sameSite: "none",
         maxAge: REFRESH_EXPIRES_MS,
     });
 

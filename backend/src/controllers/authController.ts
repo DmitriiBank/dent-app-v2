@@ -107,8 +107,8 @@ export const googleCallback = asAuth((req: AuthRequest, res: Response, next: Nex
         console.log("TOKEN: ", token);
         res.cookie("jwt", token, {
             httpOnly: true,
-            secure: false,
-            sameSite: "lax",
+            secure: true,
+            sameSite: "none",
             maxAge: 15 * 60 * 1000,
         });
 

@@ -31,6 +31,7 @@ export const createApp = () => {
             origin: [
                 "http://localhost:5173",
                 "https://dent-app-v2.vercel.app",
+                "https://dent-app-v2.onrender.com"
             ].filter(Boolean) as string[],
             credentials: true,
             methods: ["GET", "POST", "PATCH", "DELETE"],
@@ -98,10 +99,9 @@ export const createApp = () => {
     });
 
     app.use(cookieParser());
-    app.use(session({ secret: 'secret', resave: false, saveUninitialized: false }));
 
     app.use(passport.initialize());
-    // app.use(passport.session());
+
     // //==============Swagger Docs==========
    app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc))
 
