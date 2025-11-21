@@ -9,6 +9,7 @@ import {
 import {AuthRequest} from "../utils/quizTypes";
 import {asAuth} from "../utils/tools";
 import {createSendToken, signRefreshToken, signToken} from "../utils/jwt";
+import {User} from "../model/User";
 
 
 export const signup = async (req: Request, res: Response, next: NextFunction) => {
@@ -109,13 +110,14 @@ export const updatePassword = asAuth(async (req: AuthRequest, res: Response, nex
     createSendToken(result, 200, res);
 });
 
-export const googleCallback = (req: AuthRequest, res: Response, next: NextFunction) => {
+export const googleCallback = (req: Request, res: Response, next: NextFunction) => {
     try {
-        if (!req.user) {
+        const user = req.user as User | undefined;
+        if (!user) {
             throw new HttpError(401, 'Authentication failed');
         }
-        console.log(req.user);
-        createSendToken(req.user, 200, res);
+        console.log(user);
+        createSendToken(user, 200, res);
 
         res.redirect(`${process.env.GOOGLE_CLIENT_URL}/auth/success`);
     } catch (error) {
