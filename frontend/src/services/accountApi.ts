@@ -7,9 +7,17 @@ type GetUsersResponse = {
     data: User[];
 };
 
-export async function getUserData(): Promise<User> {
-    return httpRequest<User>(`/api/v1/users/me`);
+type GetUserResponseData = {
+    status: string;
+    data: User;
 }
+
+export async function getUserData(): Promise<User> {
+    const res = await httpRequest<GetUserResponseData>(`/api/v1/users/me`);
+    console.log(res)
+    return res.data;
+}
+
 
 export async function getAllUsers(): Promise<GetUsersResponse> {
     return httpRequest<GetUsersResponse>(`/api/v1/users/`, {

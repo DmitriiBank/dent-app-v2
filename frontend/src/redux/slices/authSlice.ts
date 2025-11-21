@@ -1,5 +1,5 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
-import type {TestRecord, User} from "../../types/User.ts";
+import type {User} from "../../types/User.ts";
 import {getUserData} from "../../services/accountApi.ts";
 
 import type {LoginData} from "../../types/quiz-types.ts";
@@ -7,46 +7,41 @@ import {login} from "../../services/authApi.ts";
 
 
 export interface AuthState {
-    _id: string | null;
-    name: string | null;
-    email: string | null;
-    role: string | null;
-    avatar: string | null,
     isAuth: boolean;
     isLoading: boolean;
-    testResults: TestRecord[];
+    data: User | null;        // ВСЕ данные только здесь
+    token: string | null;
 }
 
 const initialState: AuthState = {
-    _id: null,
-    name: null,
-    email: null,
-    role: null,
-    avatar: null,
+    data:  null,
+    token:  null,
     isAuth: false,
     isLoading: false,
-    testResults: [],
 };
 
+export interface LoginApiResponse {
+    token: string;
+    data: User;
+}
 
-export const loginUser = createAsyncThunk(
+export const loginUser = createAsyncThunk<LoginApiResponse, LoginData>(
     "auth/loginUser",
-    async (loginData: LoginData): Promise<User> => {
-        const result = await login(loginData);
-        const token = result.token;
-        localStorage.setItem("token", token);
-        return result.data.safeUser;
+    async (loginData) => {
+        const {data, token} = await login(loginData) as LoginApiResponse;
+        console.log(data, token)
+        return {
+            data: data,
+            token: token,
+        }
     }
 );
 
 export const fetchCurrentUser = createAsyncThunk<User>(
     "auth/me",
-    async (): Promise<User> => {
+    async () => {
         const res = await getUserData();
-
-        if ("data" in res && res.data) {
-            return res.data as User;
-        }
+        console.log(res, "clean res")
         return res as User;
     }
 );
@@ -55,17 +50,24 @@ const authSlice = createSlice({
     name: "auth",
     initialState,
     reducers: {
-        loginAction: (state, {payload}) => {
-            Object.assign(state, payload);
-            state.isAuth = true;
-            state.isLoading = false;
-            localStorage.setItem("user", JSON.stringify(payload));
-        },
+        // loginAction: (state, {payload}) => {
+        //     Object.assign(state, payload);
+        //     state.isAuth = true;
+        //     state.isLoading = false;
+        //     localStorage.setItem("user", JSON.stringify(payload));
+        // },
         logout: (state) => {
-            Object.assign(state, initialState);
-            localStorage.removeItem("token");
+            state.data = null;
+            state.token = null;
+            state.isAuth = false;
+            state.isLoading = false;
             localStorage.removeItem("user");
         },
+        updateTestResults: (state, { payload }) => {
+            if (state.data) {
+                state.data.testResults = payload;
+            }
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -75,17 +77,17 @@ const authSlice = createSlice({
             .addCase(loginUser.fulfilled, (state, {payload}) => {
                 state.isLoading = false;
                 state.isAuth = true;
-                Object.assign(state, payload);
-                localStorage.setItem("user", JSON.stringify(payload));
+                state.data = payload.data;
+                state.token = payload.token;
             })
             .addCase(fetchCurrentUser.fulfilled, (state, {payload}) => {
                 state.isAuth = true;
-                Object.assign(state, payload);
-                localStorage.setItem("user", JSON.stringify(payload));
+                state.isLoading = false;
+                state.data = payload;
             });
     },
 });
 
-export const {loginAction, logout} = authSlice.actions;
+export const {updateTestResults, logout} = authSlice.actions;
 
 export default authSlice.reducer;

@@ -20,18 +20,18 @@ passport.use(
         },
         async (_accessToken, _refreshToken, profile, done) => {
             try {
-                console.log("🔍 Strategy called with profile:", {
-                    id: profile?.id,
-                    email: profile?.emails?.[0]?.value,
-                    name: profile?.displayName
-                });
+                // console.log("🔍 Strategy called with profile:", {
+                //     id: profile?.id,
+                //     email: profile?.emails?.[0]?.value,
+                //     name: profile?.displayName
+                // });
 
                 let user = await UserDbModel.findOne({ googleId: profile.id });
 
                 if (!user) {
                     console.log("📝 Creating new user");
                     user = await UserDbModel.create({
-                        name: profile.displayName,
+                        name: profile.name,
                         email: profile.emails?.[0].value,
                         googleId: profile.id,
                         avatar: profile.photos?.[0].value,
@@ -51,18 +51,18 @@ passport.use(
     )
 );
 
-passport.serializeUser((user: any, done) => {
-    console.log("📦 Serializing user:", user._id);
-    done(null, user._id);
-});
-
-passport.deserializeUser(async (id: string, done) => {
-    try {
-        console.log("📤 Deserializing user:", id);
-        const user = await UserDbModel.findById(id);
-        done(null, user);
-    } catch (err) {
-        console.error("🔥 Deserialize error:", err);
-        done(err as Error, null);
-    }
-});
+// passport.serializeUser((user: any, done) => {
+//     console.log("📦 Serializing user:", user._id);
+//     done(null, user._id);
+// });
+//
+// passport.deserializeUser(async (id: string, done) => {
+//     try {
+//         console.log("📤 Deserializing user:", id);
+//         const user = await UserDbModel.findById(id);
+//         done(null, user);
+//     } catch (err) {
+//         console.error("🔥 Deserialize error:", err);
+//         done(err as Error, null);
+//     }
+// });

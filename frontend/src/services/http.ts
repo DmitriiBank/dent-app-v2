@@ -14,13 +14,11 @@ async function readText(res: Response) {
 }
 
 export async function httpRequest<T = unknown>(path: string, options: HttpOptions = {}): Promise<T> {
-    const {auth = true, json, headers, ...init} = options;
-    const token = auth ? localStorage.getItem('token') : null;
+    const { json, headers, ...init} = options;
 
     const finalHeaders: HeadersInit = {
         'Content-Type': 'application/json',
         ...headers,
-        ...(auth && token ? {Authorization: `Bearer ${token}`} : {}),
     };
 
     const body = json !== undefined ? JSON.stringify(json) : init.body;
@@ -29,6 +27,7 @@ export async function httpRequest<T = unknown>(path: string, options: HttpOption
         ...init,
         headers: finalHeaders,
         body,
+        credentials: 'include',
     });
 
     if (response.status === 204) {

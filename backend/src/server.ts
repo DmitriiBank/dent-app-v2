@@ -101,7 +101,7 @@ export const createApp = () => {
     app.use(session({ secret: 'secret', resave: false, saveUninitialized: false }));
 
     app.use(passport.initialize());
-    app.use(passport.session());
+    // app.use(passport.session());
     // //==============Swagger Docs==========
    app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc))
 

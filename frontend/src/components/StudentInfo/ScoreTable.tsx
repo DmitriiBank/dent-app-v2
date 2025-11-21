@@ -46,7 +46,7 @@ export const ScoreTable = () => {
     const [rows, setRows] = useState<Row[]>([]);
     const [loading, setLoading] = useState(true);
 
-    const currentUser = useAppSelector((state: RootState) => state.auth);
+    const currentUser = useAppSelector((state: RootState) => state.auth.data);
     const allQuizzes = useAppSelector((state: RootState) => state.quiz.list);
 
     const { _id, role, name, testResults } = useMemo(

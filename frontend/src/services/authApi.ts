@@ -4,7 +4,7 @@ import {convertUserDtoToUser} from "../utils/tools.ts";
 import {httpRequest} from "./http.ts";
 
 export const login = async (data: LoginData) => {
-    return httpRequest<{ token: string; data: { safeUser: User } }>(`/api/v1/users/login`, {
+    return httpRequest(`/api/v1/users/login`, {
         method: "POST",
         auth: false,
         json: data,
@@ -13,15 +13,13 @@ export const login = async (data: LoginData) => {
 
 export async function register(data: UserDto) {
     const newUser = await convertUserDtoToUser(data)
-    const payload = await httpRequest<{ token: string; user: User }>(`/api/v1/users/signup`, {
+    const payload = await httpRequest<{ token: string; data: User }>(`/api/v1/users/signup`, {
         method: "POST",
         auth: false,
         json: newUser,
     });
-    if (payload?.token) {
-        localStorage.setItem('token', payload.token);
-    }
-    return payload.user;
+    console.log(payload)
+    return payload.data;
 }
 
 export const forgotPassword = async (email: string) => {
@@ -41,6 +39,7 @@ export const resetPassword = async (token: string, password: string, passwordCon
     });
 }
 export function exit() {
-    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    // localStorage.removeItem('token');
     return true;
 }

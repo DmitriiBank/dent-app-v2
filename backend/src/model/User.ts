@@ -15,6 +15,7 @@ export interface User extends Document {
     avatar?: string;
     provider?: string;
     active: boolean;
+    testResults: any[];
     correctPassword(candidate: string, userPassword: string): Promise<boolean>;
     changedPasswordAfter(JWTTimestamp: number): boolean;
     createPasswordResetToken(): string;

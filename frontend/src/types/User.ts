@@ -10,8 +10,11 @@ export interface User {
     name: string;
     email: string;
     role: string;
-    avatar: string;
+    avatar: string | null;
+    googleId?: string;
+    provider?: string;
     testResults?: TestRecord[];
+    passwordChangedAt?: string;
 }
 
 export interface TestRecord {

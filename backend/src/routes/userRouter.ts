@@ -1,12 +1,9 @@
-import express, {NextFunction, Response} from "express";
+import express from "express";
 import * as userController from '../controllers/userController';
 import * as authController from '../controllers/authController';
-import {googleCallback, signToken} from '../controllers/authController';
 import * as authService from '../middleware/authMiddleware';
-import {AuthRequest, Roles} from "../utils/quizTypes";
+import {Roles} from "../utils/quizTypes";
 import passport from "passport";
-import {asAuth} from "../utils/tools";
-import {HttpError} from "../errorHandler/HttpError";
 
 export const userRouter = express.Router()
 

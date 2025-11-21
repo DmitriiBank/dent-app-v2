@@ -12,12 +12,12 @@ import {ImageItem} from "./ImageItem.tsx";
 import {saveTestResult} from "../../services/quizApi.ts";
 import type {RootState} from "../../redux/store.ts";
 import {CircularProgress} from "@mui/material";
-import {loginAction} from '../../redux/slices/authSlice.ts';
 import {setLastResult} from "../../redux/slices/quizSlice.ts"
+import {updateTestResults} from "../../redux/slices/authSlice.ts";
 
 const QuizAppLang = ({ questions }: { questions: Question[] }) => {
     const { quizId } = useParams<{ quizId: string }>();
-    const user = useAppSelector((state: RootState) => state.auth);
+    const user = useAppSelector((state: RootState) => state.auth.data);
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
@@ -50,20 +50,17 @@ const QuizAppLang = ({ questions }: { questions: Question[] }) => {
         if (isLastQuestion) {
             setFinished(true);
 
-            if (user._id && quizId) {
+            if (user?._id && quizId) {
                 setSaving(true);
                 try {
                     const res = await saveTestResult(quizId, newScore, questions.length) as SaveResultResponse;
                     const newResult = res.data.testResult;
 
                     dispatch(
-                        loginAction({
-                            ...user,
-                            testResults: [
-                                ...(user.testResults?.filter(t => t.quiz !== quizId) || []),
+                        updateTestResults([
+                            ...(user.testResults?.filter(t => t.quiz !== quizId) || []),
                                 newResult,
-                            ],
-                        })
+                            ])
                     );
 
                     console.log("🔄 Пользователь обновлён после теста");

@@ -5,6 +5,7 @@ export const errorHandler = (err: Error, req: Request, res: Response, next: Next
     if (err instanceof HttpError) {
         res.status(err.status).send(err.message);
     } else {
+        console.error('🔥 Internal Server Error:', err);
         res.status(500).send("Internal Server Error");
     }
 };

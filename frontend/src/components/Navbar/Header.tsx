@@ -6,15 +6,26 @@ import { useAppSelector } from "../../redux/hooks";
 import Button from "@mui/material/Button";
 import { Paths } from "../../types/quiz-types";
 import { useNavigate } from "react-router-dom";
-import { useState, useCallback } from "react";
+import {useState, useCallback, useMemo} from "react";
 import { MenuIcon } from "lucide-react";
 import { MobileNavbar } from "./Navbar";
 
 export const Header = () => {
-    const { email, name, role, avatar } = useAppSelector((state) => state.auth);
+    const user = useAppSelector((state) => state.auth.data);
     const navigate = useNavigate();
     const [open, setOpen] = useState(false);
+    console.log(user);
+    const { email, name, role, avatar } = useMemo(
+        () => ({
+            email: user?.email,
+            name: user?.name,
+            role: user?.role,
+            avatar: user?.avatar,
 
+        }),
+        [user]
+    );
+    console.log(avatar)
     const openMenu = useCallback(() => setOpen(true), []);
     const closeMenu = useCallback(() => setOpen(false), []);
     const handleLogin = useCallback(() => navigate(Paths.LOGIN), [navigate]);
@@ -51,7 +62,7 @@ export const Header = () => {
                     }}
                 >
                     {/*<Avatar sx={{ m: "3px" }}>{(name || email)?.[0]?.toUpperCase()}</Avatar>*/}
-                    <Avatar src={avatar || undefined} sx={{ m: "7px" }}>{!avatar &&  name?.[0]?.toUpperCase()}</Avatar>
+                    <Avatar src={avatar || ''} sx={{ m: "7px" }}>{!avatar &&  name?.[0]?.toUpperCase()}</Avatar>
 
                     <Typography
                         className="nickName"

@@ -10,14 +10,24 @@ import {Layout} from "./Layout.tsx"
 import PrivateRoute from "./redux/PrivateRoute.tsx";
 
 
+
 function App() {
     const dispatch = useAppDispatch();
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            dispatch(fetchCurrentUser());
+        async function checkAuth() {
+            const hasToken = document.cookie.includes("accessToken=");
+            if (!hasToken) return;
+
+            try {
+                const user = await dispatch(fetchCurrentUser()).unwrap();
+                console.log("User is logged in", user);
+            } catch {
+                console.log("Error fetching user");
+            }
         }
+
+        checkAuth();
     }, [dispatch]);
 
     return (

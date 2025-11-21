@@ -11,7 +11,7 @@ import {Paths} from "../../types/quiz-types.ts";
 
 const QuizSelectionPageLang = () => {
     const navigate = useNavigate();
-    const user = useAppSelector((state: RootState) => state.auth);
+    const user = useAppSelector((state: RootState) => state.auth.data);
     const [loading, setLoading] = useState(false);
     const allQuizzes = useAppSelector((state: RootState) => state.quiz.list)
     const dispatch = useAppDispatch();

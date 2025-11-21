@@ -1,72 +1,20 @@
 import {UserDbModel} from '../schemas/user.schema';
-import jwt, {Secret, SignOptions} from 'jsonwebtoken';
 import {HttpError} from '../errorHandler/HttpError';
 import {sendEmail} from '../utils/email';
 import {NextFunction, Request, Response} from "express";
-import {User} from "../model/User";
 import {logger} from "../Logger/winston";
 import {
     accountServiceImplMongo as service
 } from "../services/AccountServiceImplMongo";
 import {AuthRequest} from "../utils/quizTypes";
 import {asAuth} from "../utils/tools";
-
-const validateEnv = () => {
-    if (!process.env.JWT_SECRET) {
-        throw new Error('JWT_SECRET is not defined in environment variables');
-    }
-    if (process.env.JWT_SECRET.length < 16) {
-        throw new Error('JWT_SECRET must be at least 32 characters long');
-    }
-};
-
-validateEnv();
-
-export const signToken = (id: string): string => {
-    const secret: Secret = process.env.JWT_SECRET as Secret;
-    const options: SignOptions = {
-        expiresIn: (process.env.JWT_EXPIRES_IN ?? '90d') as any,
-    };
-    return jwt.sign({id}, secret, options);
-};
-
-export const createSendToken = (user: User, statusCode: number, res: Response) => {
-    const token = signToken(user._id);
-    const cookieExpiresInDays = Number(process.env.JWT_COOKIE_EXPIRES_IN) || 7;
-
-    const cookieOptions = {
-        expires: new Date(Date.now() + cookieExpiresInDays * 24 * 60 * 60 * 1000),
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'strict' as const,
-    };
-
-    res.cookie('jwt', token, cookieOptions);
-
-    console.log('google user ', user)
-    const safeUser = user.toObject();
-    safeUser.password = undefined;
-    safeUser.passwordResetToken = undefined;
-    safeUser.passwordResetExpires = undefined;
-    safeUser.__v = undefined;
-
-    // const url = `${process.env.GOOGLE_CLIENT_URL}/auth/success?token=${token}`;
-    // res.redirect(url);
-
-    res.status(statusCode).json({
-        status: 'success',
-        token,
-        data: {
-            safeUser
-        },
-    });
-};
+import {createSendToken, signToken} from "../utils/jwt";
 
 
 export const signup = async (req: Request, res: Response, next: NextFunction) => {
     const body = req.body;
     if (body.length < 1) {
-        return next(new HttpError(400, 'Please enter correct datas'));
+        return next(new HttpError(400, 'Invalid data'));
     }
     const newUser = await service.signup(body);
     createSendToken(newUser, 201, res);
@@ -78,6 +26,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
         return next(new HttpError(400, 'Please provide email and password'));
     }
     const user = await service.login(email, password);
+    console.log(user)
     createSendToken(user, 200, res);
 };
 
@@ -153,13 +102,17 @@ export const googleCallback = asAuth((req: AuthRequest, res: Response, next: Nex
         if (!req.user) {
             throw new HttpError(401, 'Authentication failed');
         }
-        // createSendToken(req.user as any, 200, res);
-        const token = signToken((req.user as any)._id);
+        console.log(req.user);
+        const token = signToken(req.user._id);
 
-        const frontendUrl = process.env.NODE_ENV === 'development'
-            ?  "http://localhost:5173"
-            : process.env.GOOGLE_CLIENT_URL;
-        res.redirect(`${frontendUrl}/auth/success?token=${token}`);
+        res.cookie('accessToken', token, {
+            expires: new Date(Date.now() + 15 * 60 * 1000), // 15 min
+            httpOnly: true,
+            secure: false,
+            sameSite: 'lax',
+        });
+
+        res.redirect(`${process.env.GOOGLE_CLIENT_URL}/auth/success`);
     } catch (error) {
         next(error);
     }

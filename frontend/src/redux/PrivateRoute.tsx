@@ -9,7 +9,7 @@ interface PrivateRouteProps {
 
 const PrivateRoute = ({ children, allowedRoles }: PrivateRouteProps) => {
     const location = useLocation();
-    const { email, role, isLoading } = useAppSelector((state) => state.auth);
+    const { data, isLoading } = useAppSelector((state) => state.auth);
 
     if (isLoading) {
         return (
@@ -24,11 +24,11 @@ const PrivateRoute = ({ children, allowedRoles }: PrivateRouteProps) => {
         );
     }
 
-    if (!email) {
+    if (!data?.email) {
         return <Navigate to={Paths.LOGIN} replace state={{ from: location.pathname }} />;
     }
 
-    if (allowedRoles?.length && (!role || !allowedRoles.includes(role as Roles))) {
+    if (allowedRoles?.length && (!data?.role || !allowedRoles.includes(data?.role as Roles))) {
         return <Navigate to={Paths.ERROR} replace />;
     }
 
