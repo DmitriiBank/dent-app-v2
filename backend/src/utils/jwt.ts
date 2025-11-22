@@ -56,12 +56,12 @@ export const saveToken = async (userId: string, refreshToken: string) => {
 export const setAuthCookies = async (res: Response, token: string, refreshToken: string) => {
     const crossSite = isCrossSite();
     const useSecure = process.env.NODE_ENV === "production" || crossSite;
-    // const sameSite: "lax" | "none" = crossSite ? "none" : "lax";
+    const sameSite: "lax" | "none" = crossSite ? "none" : "lax";
 
     res.cookie("jwt", token, {
         httpOnly: true,
         secure: useSecure,
-        // sameSite,
+        sameSite,
         // path: "/",
         maxAge: ACCESS_EXPIRES_MS,
     });
@@ -69,10 +69,12 @@ export const setAuthCookies = async (res: Response, token: string, refreshToken:
     res.cookie("refreshJwt", refreshToken, {
         httpOnly: true,
         secure: useSecure,
-        // sameSite,
+        sameSite,
         // path: "/",
         maxAge: REFRESH_EXPIRES_MS,
     });
+
+    return { token, refreshToken };
 };
 
 export const removeToken = async (refreshToken: string) => {

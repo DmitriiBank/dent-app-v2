@@ -2,30 +2,33 @@ import {Route, Routes} from "react-router-dom";
 import {routes} from './configurations/routeConfig.tsx'
 import {Layout} from "./Layout.tsx"
 import PrivateRoute from "./redux/PrivateRoute.tsx";
-import AuthWrapper from "./utils/AuthWrapper.tsx";
+import {useEffect} from "react";
+import {useAppDispatch} from "./redux/hooks.ts";
+import {fetchCurrentUser} from "./redux/slices/authSlice.ts";
+
 
 
 function App() {
-    // const dispatch = useAppDispatch();
-    //
-    // useEffect(() => {
-    //     async function checkAuth() {
-    //         const hasToken = document.cookie.includes("accessToken=");
-    //         if (!hasToken) return;
-    //
-    //         try {
-    //             const user = await dispatch(fetchCurrentUser()).unwrap();
-    //             console.log("User is logged in", user);
-    //         } catch {
-    //             console.log("Error fetching user");
-    //         }
-    //     }
-    //
-    //     checkAuth();
-    // }, [dispatch]);
+    const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        async function checkAuth() {
+            const hasToken = document.cookie.includes("accessToken=");
+            if (!hasToken) return;
+
+            try {
+                const user = await dispatch(fetchCurrentUser()).unwrap();
+                console.log("User is logged in", user);
+            } catch {
+                console.log("Error fetching user");
+            }
+        }
+
+        checkAuth();
+    }, [dispatch]);
 
     return (
-        <AuthWrapper>
+
             <Routes>
                 <Route path="/" element={<Layout />}>
                     {routes.map(({path, element, allowedRoles}) =>
@@ -41,7 +44,7 @@ function App() {
                     )}
                 </Route>
             </Routes>
-        </AuthWrapper>
+
     );
 }
 

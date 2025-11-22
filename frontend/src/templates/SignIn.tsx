@@ -17,7 +17,6 @@ import {NavLink} from "react-router-dom";
 import {CircularProgress} from "@mui/material";
 
 
-
 export const Card = styled(MuiCard)(({theme}) => ({
     display: 'flex',
     flexDirection: 'column',
@@ -102,6 +101,8 @@ const PrimaryButton = styled(Button)(({theme}) => ({
     transition: 'all .18s ease',
 }));
 
+
+
 const OutlineButton = styled(Button)(({theme}) => ({
     height: 48,
     borderRadius: 14,
@@ -173,6 +174,10 @@ export default function SignIn(props: Props) {
             setPasswordErrorMessage('');
         }
         return isValid;
+    };
+
+    const handleGoogleLogin = () => {
+        window.location.href = `${import.meta.env.VITE_API_BASE_URL}/api/v1/users/login/google`;
     };
 
     return (
@@ -304,7 +309,11 @@ export default function SignIn(props: Props) {
 
                     <NavLink
                         to={Paths.RESTORE_PASS}
-                        style={{fontSize: 14, color: '#6ea8fe', fontWeight: 400}}
+                        style={{
+                            fontSize: 14,
+                            color: '#6ea8fe',
+                            fontWeight: 400
+                        }}
                     >
                         Forgot your password?
                     </NavLink>
@@ -346,9 +355,7 @@ export default function SignIn(props: Props) {
                     <OutlineButton
                         fullWidth
                         startIcon={<GoogleIcon />}
-                        onClick={() => {
-                                window.location.href = `${import.meta.env.VITE_API_BASE_URL}/api/v1/users/login/google`;
-                            }}
+                        onClick={handleGoogleLogin}
                     >
                         Sign in with Google
                     </OutlineButton>

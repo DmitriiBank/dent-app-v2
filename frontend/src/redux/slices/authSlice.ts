@@ -48,7 +48,7 @@ export const logoutUser = createAsyncThunk(
     "auth/logout",
     async (_, { rejectWithValue }) => {
         try {
-            // Используем httpRequest для единообразия
+
             const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3555';
             await fetch(`${API_BASE_URL}/api/v1/users/logout`, {
                 method: 'POST',

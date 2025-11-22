@@ -1,8 +1,10 @@
 import dotenv from 'dotenv';
+
 dotenv.config();
 import passport from 'passport';
-import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
-import { UserDbModel } from '../schemas/user.schema';
+import {Strategy as GoogleStrategy} from 'passport-google-oauth20';
+import {UserDbModel} from '../schemas/user.schema';
+import {setAuthCookies} from "../utils/jwt";
 
 // console.log('🔧 GOOGLE OAuth Config:', {
 //     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID ? 'OK' : 'MISSING',
@@ -26,7 +28,8 @@ passport.use(
                     name: profile?.displayName
                 });
 
-                let user = await UserDbModel.findOne({ googleId: profile.id });
+                let user = await UserDbModel.findOne({googleId: profile.id});
+
                 if (!user) {
                     console.log("📝 Creating new user");
                     user = await UserDbModel.create({
@@ -41,7 +44,6 @@ passport.use(
                 } else {
                     console.log("✅ Existing user found:", user._id);
                 }
-
                 done(null, user);
             } catch (err) {
                 console.error("🔥 GoogleStrategy error:", err);

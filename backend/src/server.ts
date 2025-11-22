@@ -15,7 +15,7 @@ import qs from 'qs';
 import swaggerDoc from "../docs/openapi.json";
 import cors from "cors";
 import {baseUrl} from "./config/appConfig";
-import passport from 'passport';
+import passport, {session} from 'passport';
 import cookieParser from 'cookie-parser';
 import './config/passportConfig';
 
@@ -26,7 +26,6 @@ export const createApp = () => {
     const app: Application = express();
 
     app.set('trust proxy', 1);
-
 
 
     app.use(helmet({
@@ -47,11 +46,11 @@ export const createApp = () => {
     }
     const logsDir = path.join(process.cwd(), 'logs');
     if (!fs.existsSync(logsDir)) {
-        fs.mkdirSync(logsDir, { recursive: true });
+        fs.mkdirSync(logsDir, {recursive: true});
     }
 
-    const accessLogStream = fs.createWriteStream(path.join(logsDir, 'access.log'), { flags: 'a' });
-    const errorLogStream = fs.createWriteStream(path.join(logsDir, 'error.log'), { flags: 'a' });
+    const accessLogStream = fs.createWriteStream(path.join(logsDir, 'access.log'), {flags: 'a'});
+    const errorLogStream = fs.createWriteStream(path.join(logsDir, 'error.log'), {flags: 'a'});
 
     app.use(morgan('combined', {stream: accessLogStream}))
 
@@ -71,7 +70,15 @@ export const createApp = () => {
     app.set('query parser', (str: string) => qs.parse(str));
 
     app.use(cookieParser());
+    // app.use(
+    //     session({
+    //         secret: process.env.SESSION_SECRET,
+    //         resave: true,
+    //         saveUninitialized: true
+    //     })
+    // )
     app.use(passport.initialize());
+    // app.use(passport.session());
 
     app.use(
         cors({
@@ -106,7 +113,7 @@ export const createApp = () => {
     });
 
     // //==============Swagger Docs==========
-   app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc))
+    app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc))
 
 
     //===============Router================

@@ -109,45 +109,63 @@ export const updatePassword = asAuth(async (req: AuthRequest, res: Response, nex
 export const googleCallback = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const user = req.user as User | undefined;
+        console.log("Google callback: ", user)
+
         if (!user) {
             throw new HttpError(401, 'Authentication failed');
         }
         console.log(user);
-        const token = signToken(user._id.toString());
-        const refreshToken = signRefreshToken(user._id.toString());
+        const accessToken = signToken(user._id.toString());
 
+        const refreshToken = signRefreshToken(user._id.toString());
         await saveToken(user._id.toString(), refreshToken);
 
-        await setAuthCookies(res, token, refreshToken);
+        const result = await setAuthCookies(res, accessToken, refreshToken);
 
-        res.send(`
-  <html>
-  <body>
-    <script>
-      window.location.href = "${process.env.GOOGLE_CLIENT_URL}/auth/success";
-    </script>
-  </body>
-  </html>
-`);
+        console.log("setAuthCookies: ", result, "res.redirect", res)
+        // await createSendToken(user, 200, res);
+        // res.send(
+        //     window.location.href = "${process.env.GOOGLE_CLIENT_URL}/auth/success"
+        // );
+        // res.status(200).json({
+        //     status: "success",
+        //     data: {
+        //         _id: user._id,
+        //         name: user.name,
+        //         email: user.email,
+        //         role: user.role,
+        //         avatar: user.avatar,
+        //         provider: user.provider,
+        //     }
+        // });
+        res.redirect(`${process.env.GOOGLE_CLIENT_URL}/auth/success`)
 
     } catch (error) {
         next(error);
     }
 }
 
+export const redirectGoogleCallback = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        console.log("redirect google");
+        res.redirect(`${process.env.GOOGLE_CLIENT_URL}/auth/success`)
 
+    }catch (error) {
+        next(error);
+    }
+}
 export const logout = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const {refreshJwt} = req.cookies;
         console.log(req.cookies);
-       const token = await service.logout(refreshJwt);
+        const token = await service.logout(refreshJwt);
         res.clearCookie('jwt');
         res.clearCookie('refreshJwt');
 
-       res.status(200).json({
+        res.status(200).json({
             status: 'success',
             message: 'Logged out successfully',
-           removeToken: token,
+            removeToken: token,
         });
     } catch (error) {
         next(error);

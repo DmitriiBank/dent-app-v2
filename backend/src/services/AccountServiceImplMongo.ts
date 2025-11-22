@@ -26,6 +26,7 @@ export class AccountServiceImplMongo implements AccountService {
         const user = await UserDbModel.findOne({email}).select('+password');
         if (!user || !(await user.correctPassword(password, user.password)))
             throw new HttpError(401, "Incorrect email or password");
+        console.log(user)
         return user;
     }
 

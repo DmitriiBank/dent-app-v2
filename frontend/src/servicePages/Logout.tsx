@@ -20,7 +20,6 @@ const Logout = () => {
             navigate(Paths.HOME);
         } catch (error) {
             console.error('❌ Logout failed:', error);
-            // Все равно перенаправляем на главную
             navigate(Paths.HOME);
         } finally {
             setIsLoading(false);
