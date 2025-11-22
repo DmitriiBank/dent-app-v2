@@ -25,7 +25,7 @@ export const loginUser = createAsyncThunk(
             const res = await login(loginData) as GetUserResponseData;
             console.log('Login response:', res);
             return res.data as User;
-        } catch (error: unknown) {
+        } catch (error) {
             return rejectWithValue(error || 'Login failed');
         }
     }
@@ -38,7 +38,7 @@ export const fetchCurrentUser = createAsyncThunk<User>(
             const res = await getUserData() as GetUserResponseData;
             console.log('Current user:', res);
             return res.data as User;
-        } catch (error: unknown) {
+        } catch (error) {
             return rejectWithValue(error || 'Unauthorized');
         }
     }
@@ -58,7 +58,7 @@ export const logoutUser = createAsyncThunk(
             exit(); // Очищаем localStorage
             console.log('✅ Logout successful');
             return true;
-        } catch (error: unknown) {
+        } catch (error) {
             console.error('❌ Logout failed:', error);
             return rejectWithValue(error);
         }
