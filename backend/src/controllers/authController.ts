@@ -124,3 +124,28 @@ export const googleCallback = (req: Request, res: Response, next: NextFunction) 
         next(error);
     }
 }
+
+
+export const logout = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+
+        res.cookie('jwt', '', {
+            httpOnly: true,
+            expires: new Date(0),
+            path: '/',
+        });
+
+        res.cookie('refreshJwt', '', {
+            httpOnly: true,
+            expires: new Date(0),
+            path: '/',
+        });
+
+        res.status(200).json({
+            status: 'success',
+            message: 'Logged out successfully',
+        });
+    } catch (error) {
+        next(error);
+    }
+};

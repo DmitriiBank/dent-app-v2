@@ -32,11 +32,11 @@ export const saveQuizResult = asAuth(async (req: AuthRequest, res: Response) => 
     }
 
     const testResult = await TestResult.create({
-        quiz,
-        user,
-        points,
-        totalQuestions,
-    });
+            quiz,
+            user,
+            points,
+            totalQuestions,
+        });
 
     res.status(201).json({
         status: 'success',

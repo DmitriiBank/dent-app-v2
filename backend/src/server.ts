@@ -37,6 +37,7 @@ export const createApp = () => {
             credentials: true,
             methods: ["GET", "POST", "PATCH", "DELETE"],
             allowedHeaders: ["Content-Type", "Authorization"],
+            exposedHeaders: ['Set-Cookie'],
         })
     );
 

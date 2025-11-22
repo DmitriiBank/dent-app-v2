@@ -26,6 +26,7 @@ userRouter.patch('/updatePassword',  authController.updatePassword);
 userRouter.get('/me', userController.getMe, userController.getUserById);
 userRouter.patch('/updateMe',   userController.updateMe)
 userRouter.delete('/deleteMe',  userController.deleteMe)
+userRouter.post('/logout', authService.logout);
 
 userRouter.use(authService.restrictTo(<Roles>'admin'));
 

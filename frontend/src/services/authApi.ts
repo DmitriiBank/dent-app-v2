@@ -38,7 +38,7 @@ export const resetPassword = async (token: string, password: string, passwordCon
     });
 }
 export function exit() {
-    localStorage.removeItem('user');
-    // localStorage.removeItem('token');
-    return true;
+    return httpRequest(`/api/v1/users/logout}`, {
+        method: "POST"
+    });
 }

@@ -1,8 +1,8 @@
 import Button from "@mui/material/Button";
 import {useDispatch} from "react-redux";
-import {logout} from "../redux/slices/authSlice.ts";
+import {logout, logoutUser} from "../redux/slices/authSlice.ts";
 import {useNavigate} from "react-router-dom";
-import {exit} from "../services/authApi.ts"
+//import {exit} from "../services/authApi.ts"
 import {Paths} from "../types/quiz-types.ts";
 
 
@@ -13,7 +13,7 @@ const Logout = () => {
     const handleLogout = async () => {
         alert("Are you sure?")
         dispatch(logout());
-        await exit();
+        await logoutUser();
         navigate(Paths.HOME)
     }
 

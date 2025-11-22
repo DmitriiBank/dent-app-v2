@@ -4,7 +4,7 @@ export enum Paths {
     HOME = "/quizzes",
     QUIZ_RESULT = "/quizzes/:id/results",
     ERROR = "/error",
-    LOGOUT = "/logout",
+    LOGOUT = "/users/logout",
     REGISTER = '/users/signup',
     OPTIONS = '/options',
     LECTURES = '/lectures',

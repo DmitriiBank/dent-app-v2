@@ -67,7 +67,7 @@ export const refresh = async (req: Request, res: Response, next: NextFunction) =
 };
 
 export const logout = (req: Request, res: Response) => {
-    res.clearCookie('accessToken');
-    res.clearCookie('refreshToken');
+    res.clearCookie('jwt');
+    res.clearCookie('refreshJwt');
     res.status(200).json({ status: 'success' });
 };
