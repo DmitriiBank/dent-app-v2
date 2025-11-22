@@ -11,7 +11,6 @@ const Logout = () => {
     const navigate = useNavigate();
 
     const handleLogout = async () => {
-        alert("Are you sure?")
         dispatch(logout());
         logoutUser();
         navigate(Paths.HOME)
