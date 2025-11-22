@@ -5,6 +5,9 @@ import {logger} from "../Logger/winston";
 import {UserDbModel} from "../schemas/user.schema";
 import {User} from "../model/User";
 import crypto from "crypto";
+import * as tokenService from "../utils/jwt"
+import jwt from "jsonwebtoken";
+import {createSendToken} from "../utils/jwt";
 
 
 export class AccountServiceImplMongo implements AccountService {
@@ -69,6 +72,21 @@ export class AccountServiceImplMongo implements AccountService {
         }
     }
 
+    async logout(refreshToken: string) {
+        const token = await tokenService.removeToken(refreshToken);
+        return token;
+    }
+
+    async refresh(token: any) {
+        const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET!) as { id: string };
+        const tokenFromDb = await tokenService.findToken(token);
+        if (!decoded || !tokenFromDb) {
+            throw new HttpError(401, `Token with id ${tokenFromDb} not found`);
+        }
+        const user = await UserDbModel.findById(decoded.id);
+        if (!user)throw new HttpError(401, 'User not found');
+        return user;
+    }
 }
 
 export const accountServiceImplMongo = new AccountServiceImplMongo()

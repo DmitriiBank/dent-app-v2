@@ -27,21 +27,7 @@ export const createApp = () => {
 
     app.set('trust proxy', 1);
 
-    app.use(
-        cors({
-            origin: [
-                "http://localhost:5173",
-                "https://dent-app-v2.vercel.app",
-                "https://dent-app-v2.onrender.com"
-            ].filter(Boolean) as string[],
-            credentials: true,
-            methods: ["GET", "POST", "PATCH", "DELETE"],
-            allowedHeaders: ["Content-Type", "Authorization"],
-            exposedHeaders: ['Set-Cookie'],
-        })
-    );
 
-    app.options("*", cors());
 
     app.use(helmet({
         contentSecurityPolicy: {
@@ -84,10 +70,29 @@ export const createApp = () => {
     app.use(express.json({limit: '10kb'}));
     app.set('query parser', (str: string) => qs.parse(str));
 
+    app.use(cookieParser());
+    app.use(passport.initialize());
+
+    app.use(
+        cors({
+            origin: [
+                "http://localhost:5173",
+                "https://dent-app-v2.vercel.app",
+                "https://dent-app-v2.onrender.com"
+            ].filter(Boolean) as string[],
+            credentials: true,
+            methods: ["GET", "POST", "PATCH", "DELETE"],
+            allowedHeaders: ["Content-Type", "Authorization"],
+            exposedHeaders: ['Set-Cookie'],
+        })
+    );
+
+    app.options("*", cors());
+
     app.use((req, res, next) => {
         if (req.body) sanitize(req.body);
         if (req.params) sanitize(req.params);
-        // if (req.query) sanitize(req.query);
+        if (req.query) sanitize(req.query);
         next();
     });
 
@@ -99,10 +104,6 @@ export const createApp = () => {
         req.requestTime = new Date().toISOString();
         next();
     });
-
-    app.use(cookieParser());
-
-    app.use(passport.initialize());
 
     // //==============Swagger Docs==========
    app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc))

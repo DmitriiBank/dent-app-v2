@@ -8,8 +8,15 @@ import {
 } from "../services/AccountServiceImplMongo";
 import {AuthRequest} from "../utils/quizTypes";
 import {asAuth} from "../utils/tools";
-import {createSendToken, setAuthCookies, signRefreshToken, signToken} from "../utils/jwt";
+import {
+    createSendToken,
+    saveToken,
+    setAuthCookies,
+    signRefreshToken,
+    signToken
+} from "../utils/jwt";
 import {User} from "../model/User";
+import jwt from "jsonwebtoken";
 
 
 export const signup = async (req: Request, res: Response, next: NextFunction) => {
@@ -18,7 +25,7 @@ export const signup = async (req: Request, res: Response, next: NextFunction) =>
         return next(new HttpError(400, 'Invalid data'));
     }
     const newUser = await service.signup(body);
-    createSendToken(newUser, 201, res);
+    await createSendToken(newUser, 201, res);
 };
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
@@ -28,7 +35,8 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     }
     const user = await service.login(email, password);
 
-    createSendToken(user, 200, res);
+    await createSendToken(user, 200, res);
+    console.log(req.cookies);
 };
 
 
@@ -81,7 +89,7 @@ export const resetPassword = async (req: Request, res: Response, next: NextFunct
     }
     const result = await service.resetPassword(token, password, passwordConfirm);
 
-    createSendToken(result, 200, res);
+    await createSendToken(result, 200, res);
 };
 
 
@@ -95,10 +103,10 @@ export const updatePassword = asAuth(async (req: AuthRequest, res: Response, nex
 
     const result = await service.updatePassword(userId, passwordCurrent, newPassword, newPasswordConfirm);
 
-    createSendToken(result, 200, res);
+    await createSendToken(result, 200, res);
 });
 
-export const googleCallback = (req: Request, res: Response, next: NextFunction) => {
+export const googleCallback = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const user = req.user as User | undefined;
         if (!user) {
@@ -107,8 +115,10 @@ export const googleCallback = (req: Request, res: Response, next: NextFunction) 
         console.log(user);
         const token = signToken(user._id.toString());
         const refreshToken = signRefreshToken(user._id.toString());
-        
-        setAuthCookies(res, token, refreshToken);
+
+        await saveToken(user._id.toString(), refreshToken);
+
+        await setAuthCookies(res, token, refreshToken);
 
         res.send(`
   <html>
@@ -128,24 +138,33 @@ export const googleCallback = (req: Request, res: Response, next: NextFunction) 
 
 export const logout = async (req: Request, res: Response, next: NextFunction) => {
     try {
+        const {refreshJwt} = req.cookies;
+        console.log(req.cookies);
+       const token = await service.logout(refreshJwt);
+        res.clearCookie('jwt');
+        res.clearCookie('refreshJwt');
 
-        res.cookie('jwt', '', {
-            httpOnly: true,
-            expires: new Date(0),
-            path: '/',
-        });
-
-        res.cookie('refreshJwt', '', {
-            httpOnly: true,
-            expires: new Date(0),
-            path: '/',
-        });
-
-        res.status(200).json({
+       res.status(200).json({
             status: 'success',
             message: 'Logged out successfully',
+           removeToken: token,
         });
     } catch (error) {
         next(error);
+    }
+};
+
+export const refresh = async (req: Request, res: Response, next: NextFunction) => {
+    const token = req.cookies?.refreshJwt;
+
+    if (!token) return next(new HttpError(401, 'No refresh token'));
+
+    try {
+        const user = await service.refresh(token);
+        if (!user) return next(new HttpError(401, 'User not found'));
+
+        await createSendToken(user, 200, res);
+    } catch (e) {
+        next(new HttpError(401, 'Invalid refresh token'));
     }
 };

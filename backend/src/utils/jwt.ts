@@ -1,6 +1,7 @@
 import jwt, { Secret } from "jsonwebtoken";
 import { Response } from "express";
 import { User } from "../model/User";
+import {TokenDbModel} from "../schemas/token.schema";
 
 const validateEnv = () => {
     if (!process.env.JWT_ACCESS_SECRET || !process.env.JWT_REFRESH_SECRET) {
@@ -42,29 +43,48 @@ const isCrossSite = () => {
     return client.hostname !== server.hostname;
 };
 
-export const setAuthCookies = (res: Response, token: string, refreshToken: string) => {
+export const saveToken = async (userId: string, refreshToken: string) => {
+    const tokenData = await TokenDbModel.findOne({user: userId});
+    if (tokenData) {
+        tokenData.refreshToken = refreshToken;
+        return tokenData.save();
+    }
+    const token = await TokenDbModel.create({user: userId, refreshToken})
+    return token;
+}
+
+export const setAuthCookies = async (res: Response, token: string, refreshToken: string) => {
     const crossSite = isCrossSite();
     const useSecure = process.env.NODE_ENV === "production" || crossSite;
-    const sameSite: "lax" | "none" = crossSite ? "none" : "lax";
+    // const sameSite: "lax" | "none" = crossSite ? "none" : "lax";
 
     res.cookie("jwt", token, {
         httpOnly: true,
         secure: useSecure,
-        sameSite,
-        path: "/",
+        // sameSite,
+        // path: "/",
         maxAge: ACCESS_EXPIRES_MS,
     });
 
     res.cookie("refreshJwt", refreshToken, {
         httpOnly: true,
         secure: useSecure,
-        sameSite,
-        path: "/",
+        // sameSite,
+        // path: "/",
         maxAge: REFRESH_EXPIRES_MS,
     });
 };
 
-export const createSendToken = (
+export const removeToken = async (refreshToken: string) => {
+    const tokenData = await TokenDbModel.deleteOne({refreshToken});
+    return tokenData;
+}
+export const findToken = async (refreshToken: string) => {
+    const tokenData = await TokenDbModel.findOne({refreshToken});
+    return tokenData;
+}
+
+export const createSendToken = async (
     user: User,
     statusCode: number,
     res: Response
@@ -73,8 +93,10 @@ export const createSendToken = (
     const refreshToken = signRefreshToken(user._id.toString());
 
     console.log("TOKEN:", token);
-    
-    setAuthCookies(res, token, refreshToken);
+
+    await saveToken(user._id.toString(), refreshToken);
+
+   await setAuthCookies(res, token, refreshToken);
 
     res.status(statusCode).json({
         status: "success",

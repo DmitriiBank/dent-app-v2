@@ -50,24 +50,4 @@ export const restrictTo = (...roles: Roles[]) => {
     });
 };
 
-export const refresh = async (req: Request, res: Response, next: NextFunction) => {
-    const token = req.cookies?.refreshJwt;
 
-    if (!token) return next(new HttpError(401, 'No refresh token'));
-
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET!) as { id: string };
-        const user = await UserDbModel.findById(decoded.id);
-        if (!user) return next(new HttpError(401, 'User not found'));
-
-        createSendToken(user, 200, res);
-    } catch (e) {
-        next(new HttpError(401, 'Invalid refresh token'));
-    }
-};
-
-export const logout = (req: Request, res: Response) => {
-    res.clearCookie('jwt');
-    res.clearCookie('refreshJwt');
-    res.status(200).json({ status: 'success' });
-};
