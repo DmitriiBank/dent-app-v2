@@ -16,10 +16,6 @@ const filterObj = (obj:  Record<string, any>, ...allowedFields: string[]) => {
     return newObj;
 }
 
-export const getMe = asAuth((req: AuthRequest, res: Response, next: NextFunction) => {
-    req.params.id = req.user._id;
-    next()
-})
 
 export const updateMe = asAuth(async (req: AuthRequest, res: Response, next: NextFunction) => {
     if (req.body.password || req.body.passwordConfirm) {

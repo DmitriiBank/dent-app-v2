@@ -116,8 +116,8 @@ export const googleCallback = async (req: Request, res: Response, next: NextFunc
         }
         console.log(user);
         const accessToken = signToken(user._id.toString());
-
         const refreshToken = signRefreshToken(user._id.toString());
+
         await saveToken(user._id.toString(), refreshToken);
 
         const result = await setAuthCookies(res, accessToken, refreshToken);
@@ -145,14 +145,26 @@ export const googleCallback = async (req: Request, res: Response, next: NextFunc
     }
 }
 
-export const redirectGoogleCallback = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        console.log("redirect google");
-        res.redirect(`${process.env.GOOGLE_CLIENT_URL}/auth/success`)
-
-    }catch (error) {
-        next(error);
-    }
+export const me = async (req: Request, res: Response, next: NextFunction) => {
+    const user = req.user as User;
+   if(!user) {
+       return res.status(401).json({
+           status: 'error',
+           message: 'User does not exist'
+       })
+   }
+       res.status(200).json({
+           status: 'success',
+           data: {
+               _id: user._id,
+               name: user.name,
+               email: user.email,
+               role: user.role,
+               avatar: user.avatar || null,
+               provider: user.provider || "local",
+               testResults: user.testResults || [],
+           },
+       })
 }
 export const logout = async (req: Request, res: Response, next: NextFunction) => {
     try {

@@ -18,6 +18,7 @@ import {baseUrl} from "./config/appConfig";
 import passport, {session} from 'passport';
 import cookieParser from 'cookie-parser';
 import './config/passportConfig';
+import {configurePassport} from "./config/passportConfig";
 
 export const createApp = () => {
     //=======load environment=====
@@ -26,7 +27,6 @@ export const createApp = () => {
     const app: Application = express();
 
     app.set('trust proxy', 1);
-
 
     app.use(helmet({
         contentSecurityPolicy: {
@@ -40,10 +40,10 @@ export const createApp = () => {
         crossOriginEmbedderPolicy: false,
     }));
 
-
     if (process.env.NODE_ENV === 'development') {
         app.use(morgan('dev'));
     }
+
     const logsDir = path.join(process.cwd(), 'logs');
     if (!fs.existsSync(logsDir)) {
         fs.mkdirSync(logsDir, {recursive: true});
@@ -54,31 +54,13 @@ export const createApp = () => {
 
     app.use(morgan('combined', {stream: accessLogStream}))
 
-    const limiter = rateLimit({
-        max: 100,
-        windowMs: 60 * 60 * 1000,
-        message: 'Too many request from this IP, please try again in an hour!',
-        standardHeaders: true,
-        legacyHeaders: false,
-    })
-
-    app.use('/api', limiter);
 
 
     //===============Middleware============
     app.use(express.json({limit: '10kb'}));
     app.set('query parser', (str: string) => qs.parse(str));
-
     app.use(cookieParser());
-    // app.use(
-    //     session({
-    //         secret: process.env.SESSION_SECRET,
-    //         resave: true,
-    //         saveUninitialized: true
-    //     })
-    // )
-    app.use(passport.initialize());
-    // app.use(passport.session());
+
 
     app.use(
         cors({
@@ -88,13 +70,24 @@ export const createApp = () => {
                 "https://dent-app-v2.onrender.com"
             ].filter(Boolean) as string[],
             credentials: true,
-            methods: ["GET", "POST", "PATCH", "DELETE"],
+            methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
             allowedHeaders: ["Content-Type", "Authorization"],
             exposedHeaders: ['Set-Cookie'],
         })
     );
 
     app.options("*", cors());
+
+    const limiter = rateLimit({
+        max: 100,
+        windowMs: 60 * 60 * 1000,
+        message: 'Too many request from this IP, please try again in an hour!',
+        standardHeaders: true,
+        legacyHeaders: false,
+    })
+
+    app.use(limiter);
+
 
     app.use((req, res, next) => {
         if (req.body) sanitize(req.body);
@@ -112,6 +105,8 @@ export const createApp = () => {
         next();
     });
 
+    configurePassport()
+    app.use(passport.initialize());
     // //==============Swagger Docs==========
     app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDoc))
 

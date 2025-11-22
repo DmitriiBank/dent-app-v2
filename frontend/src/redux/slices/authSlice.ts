@@ -1,8 +1,7 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
-import type {GetUserResponseData, User} from "../../types/User.ts";
-import {getUserData} from "../../services/accountApi.ts";
+import type {GetUserResponseData, User, UserDto} from "../../types/User.ts";
 import type {LoginData} from "../../types/quiz-types.ts";
-import {login} from "../../services/authApi.ts";
+import {exit, login, meRequest, register} from "../../services/authApi.ts";
 
 export interface AuthState {
     isAuth: boolean;
@@ -18,6 +17,19 @@ const initialState: AuthState = {
     error: null,
 };
 
+export const signupUser = createAsyncThunk(
+    "auth/signupUser",
+    async (registerData: UserDto, { rejectWithValue }) => {
+        try {
+            const res = await register(registerData) as GetUserResponseData;
+            console.log('Register response:', res);
+            return res.data as User;
+        } catch (error) {
+            return rejectWithValue(error || 'Register failed');
+        }
+    }
+);
+
 export const loginUser = createAsyncThunk(
     "auth/loginUser",
     async (loginData: LoginData, { rejectWithValue }) => {
@@ -31,11 +43,13 @@ export const loginUser = createAsyncThunk(
     }
 );
 
+
+
 export const fetchCurrentUser = createAsyncThunk<User>(
     "auth/me",
     async (_, { rejectWithValue }) => {
         try {
-            const res = await getUserData() as GetUserResponseData;
+            const res = await meRequest() as GetUserResponseData;
             console.log('Current user:', res);
             return res.data as User;
         } catch (error) {
@@ -48,15 +62,9 @@ export const logoutUser = createAsyncThunk(
     "auth/logout",
     async (_, { rejectWithValue }) => {
         try {
-
-            const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3555';
-            await fetch(`${API_BASE_URL}/api/v1/users/logout`, {
-                method: 'POST',
-                credentials: 'include',
-            });
-
+            await exit();
             console.log('✅ Logout successful');
-            return true;
+            return;
         } catch (error) {
             console.error('❌ Logout failed:', error);
             return rejectWithValue(error);
@@ -84,7 +92,6 @@ const authSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            // Login
             .addCase(loginUser.pending, (state) => {
                 state.isLoading = true;
                 state.error = null;
@@ -101,7 +108,6 @@ const authSlice = createSlice({
                 state.error = action.payload as string;
             })
 
-            // Fetch current user
             .addCase(fetchCurrentUser.pending, (state) => {
                 state.isLoading = true;
             })
@@ -118,8 +124,9 @@ const authSlice = createSlice({
                 state.error = action.payload as string;
             })
 
-            // Logout
-            .addCase(logoutUser.fulfilled, (state) => {
+
+            builder
+                .addCase(logoutUser.fulfilled, (state) => {
                 state.data = null;
                 state.isAuth = false;
                 state.error = null;
@@ -127,5 +134,5 @@ const authSlice = createSlice({
     },
 });
 
-export const { logout, updateTestResults, clearError } = authSlice.actions;
+export const { logout, updateTestResults} = authSlice.actions;
 export default authSlice.reducer;

@@ -3,8 +3,8 @@ import {
     createSlice,
     type PayloadAction
 } from "@reduxjs/toolkit";
-import { getUserData } from "../../services/accountApi.ts";
-import type { User, GetUserResponseData } from "../../types/User.ts";
+import type { User } from "../../types/User.ts";
+import {getUserData} from "../../services/accountApi.ts";
 
 interface UserState {
     data: User | null;
@@ -19,16 +19,10 @@ const initialState: UserState = {
 };
 
 
-export const fetchUser = createAsyncThunk<User, void, { rejectValue: string }>(
+export const fetchUser = createAsyncThunk(
     "user/fetchUser",
-    async (_, { rejectWithValue }) => {
-        try {
-            const response = await getUserData() as GetUserResponseData;
-            return response.data;
-        } catch (error) {
-            const message = error instanceof Error ? error.message : 'Failed to fetch user';
-            return rejectWithValue(message);
-        }
+    async (userId: string) => {
+            return await getUserData(userId);
     }
 );
 
@@ -55,10 +49,10 @@ const userSlice = createSlice({
                 state.data = action.payload;
                 state.error = null;
             })
-            .addCase(fetchUser.rejected, (state, action) => {
+            .addCase(fetchUser.rejected, (state) => {
                 state.loading = false;
                 state.data = null;
-                state.error = action.payload ?? 'Failed to fetch user';
+                state.error = 'Failed to fetch user';
             });
     }
 });

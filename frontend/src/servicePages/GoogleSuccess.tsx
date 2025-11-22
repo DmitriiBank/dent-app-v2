@@ -11,11 +11,12 @@ export default function GoogleSuccess() {
     useEffect(() => {
         async function checkAuth() {
             try {
-                await dispatch(fetchCurrentUser());
+                await dispatch(fetchCurrentUser()).unwrap();
                 console.log('✅ Google auth successful');
                 navigate(Paths.HOME);
             } catch (error) {
                 console.error('❌ Google auth failed:', error);
+                navigate(Paths.LOGIN);
             }
         }
 

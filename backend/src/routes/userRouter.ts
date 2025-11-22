@@ -4,7 +4,6 @@ import * as authController from '../controllers/authController';
 import * as authService from '../middleware/authMiddleware';
 import {Roles} from "../utils/quizTypes";
 import passport from "passport";
-import {redirectGoogleCallback} from "../controllers/authController";
 
 export const userRouter = express.Router()
 
@@ -21,16 +20,10 @@ userRouter.get(
     authController.googleCallback
 );
 
-// userRouter.get(
-//     '/login/profile',
-//     passport.authenticate('google', { session: false }),
-//     authController.googleCallback
-// );
-
 userRouter.use(authService.protect);
 
 userRouter.patch('/updatePassword',  authController.updatePassword);
-userRouter.get('/me', userController.getMe, userController.getUserById);
+userRouter.get('/me', authController.me);
 userRouter.patch('/updateMe',   userController.updateMe)
 userRouter.delete('/deleteMe',  userController.deleteMe)
 userRouter.post('/logout', authController.logout);

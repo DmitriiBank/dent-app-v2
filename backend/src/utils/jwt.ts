@@ -25,7 +25,7 @@ export const signRefreshToken = (id: string) =>
     });
 
 const resolveClientUrl = () => {
-    const urlFromEnv = process.env.GOOGLE_CLIENT_URL || process.env.CLIENT_URL;
+    const urlFromEnv = process.env.GOOGLE_CLIENT_URL;
     return urlFromEnv ? new URL(urlFromEnv) : null;
 };
 
@@ -62,7 +62,7 @@ export const setAuthCookies = async (res: Response, token: string, refreshToken:
         httpOnly: true,
         secure: useSecure,
         sameSite,
-        // path: "/",
+       path: "/",
         maxAge: ACCESS_EXPIRES_MS,
     });
 
@@ -70,7 +70,7 @@ export const setAuthCookies = async (res: Response, token: string, refreshToken:
         httpOnly: true,
         secure: useSecure,
         sameSite,
-        // path: "/",
+        path: "/",
         maxAge: REFRESH_EXPIRES_MS,
     });
 

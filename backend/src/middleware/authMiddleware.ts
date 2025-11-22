@@ -21,7 +21,6 @@ export const protect: RequestHandler = async (req: Request, res: Response, next:
     try {
         const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET!) as JWTPayload;
 
-
         const currentUser = await UserDbModel.findById(decoded.id);
         if (!currentUser) {
             return next(new HttpError(401, 'The user belongs to this token does no longer exist!'));

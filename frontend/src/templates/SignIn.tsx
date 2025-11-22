@@ -17,6 +17,7 @@ import {NavLink} from "react-router-dom";
 import {CircularProgress} from "@mui/material";
 
 
+
 export const Card = styled(MuiCard)(({theme}) => ({
     display: 'flex',
     flexDirection: 'column',
@@ -100,7 +101,6 @@ const PrimaryButton = styled(Button)(({theme}) => ({
     },
     transition: 'all .18s ease',
 }));
-
 
 
 const OutlineButton = styled(Button)(({theme}) => ({

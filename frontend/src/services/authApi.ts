@@ -9,6 +9,7 @@ export const login = async (data: LoginData) => {
         method: "POST",
         auth: false,
         json: data,
+        body: JSON.stringify(data)
     });
 }
 
@@ -21,6 +22,11 @@ export async function register(data: UserDto) {
     });
 }
 
+export function meRequest() {
+    return httpRequest(`/api/v1/users/me`, {
+        method: "GET"
+    });
+}
 export const forgotPassword = async (email: string) => {
     return httpRequest<{ data: { email: string } }>(`/api/v1/users/forgotPassword`, {
         method: "POST",
@@ -37,8 +43,9 @@ export const resetPassword = async (token: string, password: string, passwordCon
         json: {password, passwordConfirm},
     });
 }
+
 export function exit() {
-    return httpRequest(`/api/v1/users/logout}`, {
+    return httpRequest(`/api/v1/users/logout`, {
         method: "POST"
     });
 }

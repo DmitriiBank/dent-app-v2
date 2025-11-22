@@ -8,8 +8,7 @@ import type { RootState } from "../../redux/store";
 import { deleteUser, getAllUsers } from "../../services/accountApi";
 import type {
     User,
-    TestRecord,
-    GetUsersResponseData
+    TestRecord
 } from "../../types/User";
 import type { Quiz } from "../../types/quiz-types";
 
@@ -71,9 +70,8 @@ export const ScoreTable = () => {
 
             try {
                 if (role === "admin") {
-                    const res = await getAllUsers() as GetUsersResponseData;
-                    console.log(res)
-                    const users = res.data;
+                    const users = await getAllUsers();
+                    console.log(users)
                     const allRows = users.map((u: User) => mapUserToRow(u, allQuizzes));
                     setRows(allRows);
                 } else {
