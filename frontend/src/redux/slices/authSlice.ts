@@ -2,7 +2,7 @@ import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import type {GetUserResponseData, User} from "../../types/User.ts";
 import {getUserData} from "../../services/accountApi.ts";
 import type {LoginData} from "../../types/quiz-types.ts";
-import {login, exit} from "../../services/authApi.ts";
+import {login} from "../../services/authApi.ts";
 
 export interface AuthState {
     isAuth: boolean;
@@ -49,13 +49,12 @@ export const logoutUser = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             // Используем httpRequest для единообразия
-            const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3555';
+            const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3555';
             await fetch(`${API_BASE_URL}/api/v1/users/logout`, {
                 method: 'POST',
                 credentials: 'include',
             });
 
-            exit(); // Очищаем localStorage
             console.log('✅ Logout successful');
             return true;
         } catch (error) {

@@ -1,27 +1,46 @@
+import { useState } from 'react';
 import Button from "@mui/material/Button";
-import {useDispatch} from "react-redux";
-import {logout, logoutUser} from "../redux/slices/authSlice.ts";
-import {useNavigate} from "react-router-dom";
-//import {exit} from "../services/authApi.ts"
-import {Paths} from "../types/quiz-types.ts";
-
+import CircularProgress from "@mui/material/CircularProgress";
+import { useNavigate } from "react-router-dom";
+import { useAppDispatch } from "../redux/hooks";
+import { logoutUser } from "../redux/slices/authSlice";
+import { Paths } from "../types/quiz-types";
 
 const Logout = () => {
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleLogout = async () => {
-        dispatch(logout());
-        logoutUser();
-        navigate(Paths.HOME)
-    }
+        setIsLoading(true);
+        try {
+            await dispatch(logoutUser()).unwrap();
+            console.log('✅ Logout successful');
+
+            navigate(Paths.HOME);
+        } catch (error) {
+            console.error('❌ Logout failed:', error);
+            // Все равно перенаправляем на главную
+            navigate(Paths.HOME);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     return (
         <div>
-            <Button variant={'contained'}
-                    style={{backgroundColor: 'red', fontWeight: 'bold'}}
-                    onClick={handleLogout}
-            >Exit</Button>
+            <Button
+                variant="contained"
+                style={{
+                    backgroundColor: isLoading ? '#ccc' : 'red',
+                    fontWeight: 'bold'
+                }}
+                onClick={handleLogout}
+                disabled={isLoading}
+                startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : null}
+            >
+                {isLoading ? 'Выход...' : 'Exit'}
+            </Button>
         </div>
     );
 };
