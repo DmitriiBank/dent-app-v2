@@ -13,7 +13,7 @@ const Logout = () => {
     const handleLogout = async () => {
         alert("Are you sure?")
         dispatch(logout());
-        await logoutUser();
+        logoutUser();
         navigate(Paths.HOME)
     }
 

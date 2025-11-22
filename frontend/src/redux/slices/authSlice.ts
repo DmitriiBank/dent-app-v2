@@ -25,8 +25,8 @@ export const loginUser = createAsyncThunk(
             const res = await login(loginData) as GetUserResponseData;
             console.log('Login response:', res);
             return res.data as User;
-        } catch (error) {
-            return rejectWithValue(error.message || 'Login failed');
+        } catch (error: unknown) {
+            return rejectWithValue(error || 'Login failed');
         }
     }
 );
@@ -38,8 +38,8 @@ export const fetchCurrentUser = createAsyncThunk<User>(
             const res = await getUserData() as GetUserResponseData;
             console.log('Current user:', res);
             return res.data as User;
-        } catch (error) {
-            return rejectWithValue(error.message || 'Unauthorized');
+        } catch (error: unknown) {
+            return rejectWithValue(error || 'Unauthorized');
         }
     }
 );
@@ -58,9 +58,9 @@ export const logoutUser = createAsyncThunk(
             exit(); // Очищаем localStorage
             console.log('✅ Logout successful');
             return true;
-        } catch (error) {
+        } catch (error: unknown) {
             console.error('❌ Logout failed:', error);
-            return rejectWithValue(error.message);
+            return rejectWithValue(error);
         }
     }
 );
