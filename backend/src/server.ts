@@ -138,7 +138,9 @@ export const createApp = () => {
 
 export const launchServer = () => {
     const app = createApp();
-    app.listen(process.env.PORT, () =>
-        console.log(`🚀 App running at ${baseUrl}`)
-    );
+    app.listen(process.env.PORT, () => {
+        console.log(`🚀 App running at ${baseUrl}`);
+        console.log(`🌍 SERVER_URL: ${process.env.SERVER_URL}`);
+        console.log(`🔗 GOOGLE_CLIENT_URL: ${process.env.GOOGLE_CLIENT_URL}`);
+    });
 };

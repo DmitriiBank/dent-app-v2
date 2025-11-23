@@ -58,6 +58,8 @@ export const setAuthCookies = async (res: Response, token: string, refreshToken:
     const useSecure = process.env.NODE_ENV === "production" || crossSite;
     const sameSite: "lax" | "none" = crossSite ? "none" : "lax";
 
+    console.log(`🍪 Setting cookies: Secure=${useSecure}, SameSite=${sameSite}, CrossSite=${crossSite}`);
+
     res.cookie("jwt", token, {
         httpOnly: true,
         secure: useSecure,
