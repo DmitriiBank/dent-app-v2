@@ -4,7 +4,7 @@ import path from "node:path";
 import {readFileSync} from "node:fs";
 dotenv.config();
 
-export const PORT= process.env.PORT || 1000;
+export const PORT= process.env.PORT;
 export const baseUrl = `http://localhost:${PORT}`;
 export const db = process.env.DATABASE!.replace('<PASSWORD>', process.env.DATABASE_PASSWORD!);
 
