@@ -62,10 +62,10 @@ export const setAuthCookies = async (res: Response, token: string) => {
 
     res.cookie("jwt", token, {
         httpOnly: true,
-        // secure: useSecure,
-        // sameSite,
-        sameSite: "lax",
-        secure: false,
+        secure: useSecure,
+        sameSite,
+        // sameSite: "lax",
+        // secure: false,
        path: "/",
         maxAge: ACCESS_EXPIRES_MS,
     });

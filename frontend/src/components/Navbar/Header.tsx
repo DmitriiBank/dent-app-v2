@@ -2,19 +2,34 @@ import Logout from "../../servicePages/Logout";
 import Box from "@mui/material/Box";
 import { Avatar, Drawer, IconButton } from "@mui/material";
 import Typography from "@mui/material/Typography";
-import { useAppSelector } from "../../redux/hooks";
+import {useAppDispatch, useAppSelector} from "../../redux/hooks";
 import Button from "@mui/material/Button";
 import { Paths } from "../../types/quiz-types";
 import { useNavigate } from "react-router-dom";
-import {useState, useCallback} from "react";
+import {useState, useCallback, useEffect} from "react";
 import { MenuIcon } from "lucide-react";
 import { MobileNavbar } from "./Navbar";
+import {fetchCurrentUser} from "../../redux/slices/authSlice.ts";
 
 export const Header = () => {
-    const user = useAppSelector((state) => state.auth.data);
+    const dispatch = useAppDispatch();
+    const {initialized, data} = useAppSelector((state) => state.auth);
     const navigate = useNavigate();
     const [open, setOpen] = useState(false);
-    console.log(user);
+    console.log(data);
+
+    useEffect(() => {
+        async function checkAuth() {
+            try {
+                if (!initialized) {
+                    await dispatch(fetchCurrentUser()).unwrap();
+                }
+            } catch {
+                console.error("❌ auth failed");
+            }
+        }
+        checkAuth()
+    }, [initialized]);
 
     // const { email, name, role, avatar } = useMemo(
     //     () => ({
@@ -45,7 +60,7 @@ export const Header = () => {
                 </Typography>
             </Box>
 
-            {!user?.email ? (
+            {!data?.email ? (
                 <Button
                     variant="contained"
                     sx={{ backgroundColor: "red", fontWeight: "bold" }}
@@ -63,7 +78,7 @@ export const Header = () => {
                     }}
                 >
                     {/*<Avatar sx={{ m: "3px" }}>{(name || email)?.[0]?.toUpperCase()}</Avatar>*/}
-                    <Avatar src={user?.avatar ?? undefined} sx={{ m: "7px" }} imgProps={{ referrerPolicy: "no-referrer" }}>{!user?.avatar &&  user?.name?.[0]?.toUpperCase()}</Avatar>
+                    <Avatar src={data?.avatar ?? undefined} sx={{ m: "7px" }} imgProps={{ referrerPolicy: "no-referrer" }}>{!data?.avatar &&  data?.name?.[0]?.toUpperCase()}</Avatar>
 
                     <Typography
                         className="nickName"
@@ -75,10 +90,10 @@ export const Header = () => {
                             "&:hover": { textDecoration: "underline" },
                         }}
                         onClick={() =>
-                            navigate(user?.role === "admin" ? Paths.ALL_USERS : Paths.MY_PAGE)
+                            navigate(data?.role === "admin" ? Paths.ALL_USERS : Paths.MY_PAGE)
                         }
                     >
-                        {user?.name || user?.email}
+                        {data?.name || data?.email}
                     </Typography>
 
                     <Logout />
