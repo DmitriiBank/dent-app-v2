@@ -11,7 +11,7 @@ interface AuthWrapperProps {
 export default function AuthWrapper({ children }: AuthWrapperProps) {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
-    const { isAuth, isLoading, data } = useAppSelector(state => state.auth);
+    const { isAuth, isLoading } = useAppSelector(state => state.auth);
 
     useEffect(() => {
         // Проверяем авторизацию только если пользователь не авторизован
@@ -25,10 +25,10 @@ export default function AuthWrapper({ children }: AuthWrapperProps) {
     }, [dispatch, isAuth]);
 
     useEffect(() => {
-        if (isAuth && !data) {
-            navigate(Paths.LOGIN)
+        if (!isAuth && !isLoading) {
+            navigate(Paths.LOGIN);
         }
-    }, [data, isAuth, navigate])
+    }, [isAuth, isLoading, navigate]);
 
     if(isLoading){
         return <p style={{color: "#fff", textAlign: "center"}}>Checking auth...</p>

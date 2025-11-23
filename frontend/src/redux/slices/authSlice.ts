@@ -18,7 +18,7 @@ const initialState: AuthState = {
 };
 
 export const signupUser = createAsyncThunk(
-    "auth/signupUser",
+    "auth/signup",
     async (registerData: UserDto, { rejectWithValue }) => {
         try {
             const res = await register(registerData) as GetUserResponseData;
@@ -31,7 +31,7 @@ export const signupUser = createAsyncThunk(
 );
 
 export const loginUser = createAsyncThunk(
-    "auth/loginUser",
+    "auth/login",
     async (loginData: LoginData, { rejectWithValue }) => {
         try {
             const res = await login(loginData) as GetUserResponseData;

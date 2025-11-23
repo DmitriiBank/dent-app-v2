@@ -7,18 +7,6 @@ import passport from "passport";
 
 export const userRouter = express.Router()
 
-userRouter.post('/signup', authController.signup);
-userRouter.post('/login', authController.login);
-userRouter.post('/forgotPassword', authController.forgotPassword);
-userRouter.post('/resetPassword/:token', authController.resetPassword);
-
-userRouter.get('/login/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
-
-userRouter.get(
-    '/login/google/callback',
-    passport.authenticate('google', { session: false }),
-    authController.googleCallback
-);
 
 userRouter.use(authService.protect);
 

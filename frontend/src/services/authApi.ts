@@ -5,7 +5,7 @@ import {httpRequest} from "./http.ts";
 // import type {GetUserResponseData} from "./accountApi.ts";
 
 export const login = async (data: LoginData) => {
-    return httpRequest(`/api/v1/users/login`, {
+    return httpRequest(`/api/v1/auth/login`, {
         method: "POST",
         auth: false,
         json: data,
@@ -15,7 +15,7 @@ export const login = async (data: LoginData) => {
 
 export async function register(data: UserDto) {
     const newUser = await convertUserDtoToUser(data)
-    return await httpRequest(`/api/v1/users/signup`, {
+    return await httpRequest(`/api/v1/auth/signup`, {
         method: "POST",
         auth: false,
         json: newUser,
@@ -44,8 +44,8 @@ export const resetPassword = async (token: string, password: string, passwordCon
     });
 }
 
-export function exit() {
-    return httpRequest(`/api/v1/users/logout`, {
+export async function exit() {
+    return await httpRequest(`/api/v1/users/logout`, {
         method: "POST"
     });
 }

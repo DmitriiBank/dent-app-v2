@@ -171,14 +171,22 @@ export const logout = async (req: Request, res: Response, next: NextFunction) =>
         const {refreshJwt} = req.cookies;
         console.log(req.cookies);
         const token = await service.logout(refreshJwt);
-        res.clearCookie('jwt');
-        res.clearCookie('refreshJwt');
+        const cookieOptions = {
+            httpOnly: true,
+            sameSite: 'strict' as const,
+            secure: process.env.NODE_ENV === 'production',
+            path: '/',
+        };
+
+        res.clearCookie('jwt', cookieOptions);
+        res.clearCookie('refreshJwt', cookieOptions);
 
         res.status(200).json({
             status: 'success',
             message: 'Logged out successfully',
             removeToken: token,
         });
+
     } catch (error) {
         next(error);
     }

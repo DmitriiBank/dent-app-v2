@@ -177,7 +177,7 @@ export default function SignIn(props: Props) {
     };
 
     const handleGoogleLogin = () => {
-        window.location.href = `${import.meta.env.VITE_API_BASE_URL}/api/v1/users/login/google`;
+        window.location.href = `${import.meta.env.VITE_API_BASE_URL}/api/v1/auth/google`;
     };
 
     return (

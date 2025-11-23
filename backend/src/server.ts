@@ -19,6 +19,7 @@ import passport, {session} from 'passport';
 import cookieParser from 'cookie-parser';
 import './config/passportConfig';
 import {configurePassport} from "./config/passportConfig";
+import {authRouter} from "./routes/authRoutes";
 
 export const createApp = () => {
     //=======load environment=====
@@ -112,6 +113,7 @@ export const createApp = () => {
 
 
     //===============Router================
+    app.use('/api/v1/auth', authRouter)
     app.use('/api/v1/quizzes', quizRouter)
     app.use('/api/v1/users', userRouter);
     app.get('/', (_, res) => res.send('API is running'));

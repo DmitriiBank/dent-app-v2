@@ -11,21 +11,21 @@ import {fetchCurrentUser} from "./redux/slices/authSlice.ts";
 function App() {
     const dispatch = useAppDispatch();
 
-    useEffect(() => {
-        async function checkAuth() {
-            const hasToken = document.cookie.includes("accessToken=");
-            if (!hasToken) return;
-
-            try {
-                const user = await dispatch(fetchCurrentUser()).unwrap();
-                console.log("User is logged in", user);
-            } catch {
-                console.log("Error fetching user");
-            }
-        }
-
-        checkAuth();
-    }, [dispatch]);
+    // useEffect(() => {
+    //     async function checkAuth() {
+    //         const hasToken = document.cookie.includes("jwt=");
+    //         if (!hasToken) return;
+    //
+    //         try {
+    //             const user = await dispatch(fetchCurrentUser()).unwrap();
+    //             console.log("User is logged in", user);
+    //         } catch {
+    //             console.log("Error fetching user");
+    //         }
+    //     }
+    //
+    //     checkAuth();
+    // }, [dispatch]);
 
     return (
 

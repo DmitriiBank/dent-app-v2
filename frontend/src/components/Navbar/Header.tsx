@@ -6,7 +6,7 @@ import { useAppSelector } from "../../redux/hooks";
 import Button from "@mui/material/Button";
 import { Paths } from "../../types/quiz-types";
 import { useNavigate } from "react-router-dom";
-import {useState, useCallback, useMemo} from "react";
+import {useState, useCallback} from "react";
 import { MenuIcon } from "lucide-react";
 import { MobileNavbar } from "./Navbar";
 
@@ -16,17 +16,17 @@ export const Header = () => {
     const [open, setOpen] = useState(false);
     console.log(user);
 
-    const { email, name, role, avatar } = useMemo(
-        () => ({
-            email: user?.email,
-            name: user?.name,
-            role: user?.role,
-            avatar: user?.avatar,
+    // const { email, name, role, avatar } = useMemo(
+    //     () => ({
+    //         email: user?.email,
+    //         name: user?.name,
+    //         role: user?.role,
+    //         avatar: user?.avatar,
+    //
+    //     }),
+    //     []
+    // );
 
-        }),
-        [user]
-    );
-    console.log(avatar)
     const openMenu = useCallback(() => setOpen(true), []);
     const closeMenu = useCallback(() => setOpen(false), []);
     const handleLogin = useCallback(() => navigate(Paths.LOGIN), [navigate]);
@@ -45,7 +45,7 @@ export const Header = () => {
                 </Typography>
             </Box>
 
-            {!email ? (
+            {!user?.email ? (
                 <Button
                     variant="contained"
                     sx={{ backgroundColor: "red", fontWeight: "bold" }}
@@ -63,7 +63,7 @@ export const Header = () => {
                     }}
                 >
                     {/*<Avatar sx={{ m: "3px" }}>{(name || email)?.[0]?.toUpperCase()}</Avatar>*/}
-                    <Avatar src={avatar ?? undefined} sx={{ m: "7px" }} imgProps={{ referrerPolicy: "no-referrer" }}>{!avatar &&  name?.[0]?.toUpperCase()}</Avatar>
+                    <Avatar src={user?.avatar ?? undefined} sx={{ m: "7px" }} imgProps={{ referrerPolicy: "no-referrer" }}>{!user?.avatar &&  user?.name?.[0]?.toUpperCase()}</Avatar>
 
                     <Typography
                         className="nickName"
@@ -75,10 +75,10 @@ export const Header = () => {
                             "&:hover": { textDecoration: "underline" },
                         }}
                         onClick={() =>
-                            navigate(role === "admin" ? Paths.ALL_USERS : Paths.MY_PAGE)
+                            navigate(user?.role === "admin" ? Paths.ALL_USERS : Paths.MY_PAGE)
                         }
                     >
-                        {name || email}
+                        {user?.name || user?.email}
                     </Typography>
 
                     <Logout />

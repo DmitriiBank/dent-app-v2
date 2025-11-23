@@ -3,7 +3,7 @@ import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../redux/hooks";
-import { logoutUser } from "../redux/slices/authSlice";
+import {logout} from "../redux/slices/authSlice";
 import { Paths } from "../types/quiz-types";
 
 const Logout = () => {
@@ -14,7 +14,7 @@ const Logout = () => {
     const handleLogout = async () => {
         setIsLoading(true);
         try {
-            await dispatch(logoutUser()).unwrap();
+            dispatch(logout());
             console.log('✅ Logout successful');
 
             navigate(Paths.HOME);

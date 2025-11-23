@@ -17,7 +17,7 @@ import GoogleSuccess from "../servicePages/GoogleSuccess.tsx";
 import type {ReactNode} from "react";
 import RestorePass from "../servicePages/RestorePass.tsx";
 import ResetPass from "../servicePages/ResetPass.tsx";
-import AuthWrapper from "../utils/AuthWrapper.tsx";
+
 
 type AppRoute = {
     path: string;
@@ -29,9 +29,7 @@ const protectedRoles = [Roles.USER, Roles.ADMIN];
 
 export const routes: AppRoute[]  = [
     {path: Paths.HOME, element:
-        <AuthWrapper>
             <QuizSelectionPage_lang />
-        </AuthWrapper>
         },
     {
         path: `${Paths.HOME}/:quizId`,
