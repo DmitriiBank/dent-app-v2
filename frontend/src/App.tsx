@@ -1,7 +1,6 @@
 import {Route, Routes} from "react-router-dom";
 import {routes} from './configurations/routeConfig.tsx'
 import {Layout} from "./Layout.tsx"
-import PrivateRoute from "./redux/PrivateRoute.tsx";
 import {useAppDispatch} from "./redux/hooks.ts";
 import {useEffect} from "react";
 import {fetchCurrentUser} from "./redux/slices/authSlice.ts";
@@ -27,14 +26,15 @@ function App() {
 
             <Routes>
                 <Route path="/" element={<Layout />}>
-                    {routes.map(({path, element, allowedRoles}) =>
+                    {routes.map(({path, element}) =>
                         <Route
                             key={path}
                             path={path}
                             element={
-                               allowedRoles?.length
-                                    ? <PrivateRoute>{element}</PrivateRoute>
-                                    : element
+                               // allowedRoles?.length
+                               //      ? <PrivateRoute>{element}</PrivateRoute>
+                               //      :
+                                   element
                             }
                         />
                     )}

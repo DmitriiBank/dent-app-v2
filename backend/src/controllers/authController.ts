@@ -115,11 +115,11 @@ export const googleCallback = async (req: Request, res: Response, next: NextFunc
         }
         // console.log(user);
         const accessToken = signToken(user._id.toString());
-        const refreshToken = signRefreshToken(user._id.toString());
+        // const refreshToken = signRefreshToken(user._id.toString());
 
-        await saveToken(user._id.toString(), refreshToken);
+        // await saveToken(user._id.toString(), refreshToken);
 
-        const result = await setAuthCookies(res, accessToken, refreshToken);
+         await setAuthCookies(res, accessToken);
 
         // console.log("setAuthCookies: ", result, "res.redirect", res)
         // await createSendToken(user, 200, res);
@@ -137,7 +137,7 @@ export const googleCallback = async (req: Request, res: Response, next: NextFunc
         //         provider: user.provider,
         //     }
         // });
-        res.redirect(`${process.env.GOOGLE_CLIENT_URL}/auth/success`)
+        res.redirect(`${process.env.GOOGLE_CLIENT_URL}`)
 
     } catch (error) {
         next(error);
@@ -167,9 +167,9 @@ export const me = async (req: Request, res: Response, next: NextFunction) => {
 }
 export const logout = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const {refreshJwt} = req.cookies;
-        console.log(req.cookies);
-        const token = await service.logout(refreshJwt);
+        // const {refreshJwt} = req.cookies;
+        console.log("Coockies: ", req.cookies);
+        // const token = await service.logout(refreshJwt);
         const cookieOptions = {
             httpOnly: true,
             sameSite: 'none' as const,
@@ -183,7 +183,7 @@ export const logout = async (req: Request, res: Response, next: NextFunction) =>
         res.status(200).json({
             status: 'success',
             message: 'Logged out successfully',
-            removeToken: token,
+            // removeToken: token,
         });
 
     } catch (error) {

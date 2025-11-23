@@ -53,7 +53,7 @@ export const saveToken = async (userId: string, refreshToken: string) => {
     return token;
 }
 
-export const setAuthCookies = async (res: Response, token: string, refreshToken: string) => {
+export const setAuthCookies = async (res: Response, token: string) => {
     const crossSite = isCrossSite();
     const useSecure = process.env.NODE_ENV === "production" || crossSite;
     const sameSite: "lax" | "none" = crossSite ? "none" : "lax";
@@ -64,23 +64,23 @@ export const setAuthCookies = async (res: Response, token: string, refreshToken:
         httpOnly: true,
         // secure: useSecure,
         // sameSite,
-        sameSite: "none",
-        secure: true,
+        sameSite: "lax",
+        secure: false,
        path: "/",
         maxAge: ACCESS_EXPIRES_MS,
     });
 
-    res.cookie("refreshJwt", refreshToken, {
-        httpOnly: true,
-        // secure: useSecure,
-        // sameSite,
-        sameSite: "none",
-        secure: true,
-        path: "/",
-        maxAge: REFRESH_EXPIRES_MS,
-    });
+    // res.cookie("refreshJwt", refreshToken, {
+    //     httpOnly: true,
+    //     secure: useSecure,
+    //     sameSite,
+    //     // sameSite: "none",
+    //     // secure: true,
+    //     path: "/",
+    //     maxAge: REFRESH_EXPIRES_MS,
+    // });
 
-    return { token, refreshToken };
+    return { token};
 };
 
 export const removeToken = async (refreshToken: string) => {
@@ -98,13 +98,13 @@ export const createSendToken = async (
     res: Response
 ) => {
     const token = signToken(user._id.toString());
-    const refreshToken = signRefreshToken(user._id.toString());
+    // const refreshToken = signRefreshToken(user._id.toString());
 
     console.log("TOKEN:", token);
 
-    await saveToken(user._id.toString(), refreshToken);
+    // await saveToken(user._id.toString(), refreshToken);
 
-   await setAuthCookies(res, token, refreshToken);
+   await setAuthCookies(res, token);
 
 
     res.status(statusCode).json({
