@@ -1,5 +1,5 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
-import type {GetUserResponseData, User, UserDto} from "../../types/User.ts";
+import type { User, UserDto} from "../../types/User.ts";
 import type {LoginData} from "../../types/quiz-types.ts";
 import {exit, login, meRequest, register} from "../../services/authApi.ts";
 
@@ -21,9 +21,9 @@ export const signupUser = createAsyncThunk(
     "auth/signup",
     async (registerData: UserDto, { rejectWithValue }) => {
         try {
-            const res = await register(registerData) as GetUserResponseData;
+            const res = await register(registerData);
             console.log('Register response:', res);
-            return res.data as User;
+            return res as User;
         } catch (error) {
             return rejectWithValue(error || 'Register failed');
         }
@@ -34,9 +34,9 @@ export const loginUser = createAsyncThunk(
     "auth/login",
     async (loginData: LoginData, { rejectWithValue }) => {
         try {
-            const res = await login(loginData) as GetUserResponseData;
+            const res = await login(loginData) ;
             console.log('Login response:', res);
-            return res.data as User;
+            return res;
         } catch (error) {
             return rejectWithValue(error || 'Login failed');
         }
@@ -49,9 +49,9 @@ export const fetchCurrentUser = createAsyncThunk<User>(
     "auth/me",
     async (_, { rejectWithValue }) => {
         try {
-            const res = await meRequest() as GetUserResponseData;
+            const res = await meRequest() ;
             console.log('Current user:', res);
-            return res.data as User;
+            return res as User;
         } catch (error) {
             return rejectWithValue(error || 'Unauthorized');
         }

@@ -36,7 +36,6 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     const user = await service.login(email, password);
 
     await createSendToken(user, 200, res);
-    console.log(req.cookies);
 };
 
 
@@ -109,12 +108,12 @@ export const updatePassword = asAuth(async (req: AuthRequest, res: Response, nex
 export const googleCallback = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const user = req.user as User | undefined;
-        console.log("Google callback: ", user)
+        // console.log("Google callback: ", user)
 
         if (!user) {
             throw new HttpError(401, 'Authentication failed');
         }
-        console.log(user);
+        // console.log(user);
         const accessToken = signToken(user._id.toString());
         const refreshToken = signRefreshToken(user._id.toString());
 
@@ -122,7 +121,7 @@ export const googleCallback = async (req: Request, res: Response, next: NextFunc
 
         const result = await setAuthCookies(res, accessToken, refreshToken);
 
-        console.log("setAuthCookies: ", result, "res.redirect", res)
+        // console.log("setAuthCookies: ", result, "res.redirect", res)
         // await createSendToken(user, 200, res);
         // res.send(
         //     window.location.href = "${process.env.GOOGLE_CLIENT_URL}/auth/success"
@@ -180,7 +179,7 @@ export const logout = async (req: Request, res: Response, next: NextFunction) =>
 
         res.clearCookie('jwt', cookieOptions);
         res.clearCookie('refreshJwt', cookieOptions);
-
+        console.log("logged out");
         res.status(200).json({
             status: 'success',
             message: 'Logged out successfully',

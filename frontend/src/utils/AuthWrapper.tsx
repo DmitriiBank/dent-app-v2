@@ -1,8 +1,6 @@
-import { useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '../redux/hooks';
-import { fetchCurrentUser } from '../redux/slices/authSlice';
-import {useNavigate} from "react-router-dom";
-import {Paths} from "../types/quiz-types.ts";
+import {useEffect} from 'react';
+import {useAppDispatch, useAppSelector} from '../redux/hooks';
+import {fetchCurrentUser} from '../redux/slices/authSlice';
 
 interface AuthWrapperProps {
     children: React.ReactNode;
@@ -10,29 +8,19 @@ interface AuthWrapperProps {
 
 export default function AuthWrapper({ children }: AuthWrapperProps) {
     const dispatch = useAppDispatch();
-    const navigate = useNavigate();
-    const { isAuth, isLoading } = useAppSelector(state => state.auth);
+    const user = useAppSelector((state) => state.auth.data);
 
     useEffect(() => {
         // Проверяем авторизацию только если пользователь не авторизован
-        if (!isAuth ) {
+        if (!user ) {
             console.log('🔍 Checking authentication...');
             dispatch(fetchCurrentUser())
                 .unwrap()
                 .then(() => console.log('✅ User authenticated'))
                 .catch(() => console.log('❌ User not authenticated'));
         }
-    }, [dispatch, isAuth]);
+    }, [dispatch, user]);
 
-    useEffect(() => {
-        if (!isAuth && !isLoading) {
-            navigate(Paths.LOGIN);
-        }
-    }, [isAuth, isLoading, navigate]);
-
-    if(isLoading){
-        return <p style={{color: "#fff", textAlign: "center"}}>Checking auth...</p>
-    }
 
     return <>{children}</>;
 }

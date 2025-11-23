@@ -9,15 +9,16 @@ import FormLabel from '@mui/material/FormLabel';
 import FormControl from '@mui/material/FormControl';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import {Paths, type SignupData} from "../types/quiz-types.ts";
+import {Paths} from "../types/quiz-types.ts";
 import {Card, SignInContainer} from "./SignIn.tsx";
-import {NavLink, useNavigate} from "react-router-dom";
-import {useSelector} from "react-redux";
+import {NavLink} from "react-router-dom";
 import type {RootState} from "../redux/store.ts";
 import {ERROR_DICT} from "../types/error-types.ts";
+import {useAppSelector} from '../redux/hooks.ts';
+import type {UserDto} from "../types/User.ts";
 
 type Props = {
-    submitFunc: (data: SignupData) => Promise<void> | void;
+    submitFunc: (data: UserDto) => Promise<void> | void;
     serverErrorKey?: string | null;
 };
 
@@ -27,8 +28,7 @@ function tErr(key: string | null | undefined, lang: 'ru' | 'he') {
 }
 
 export default function SignUpForm({submitFunc, serverErrorKey}: Props) {
-    const lang = useSelector((state: RootState) => state.lang.language);
-
+    const lang = useAppSelector((state: RootState) => state.lang.language);
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
@@ -43,7 +43,6 @@ export default function SignUpForm({submitFunc, serverErrorKey}: Props) {
 
     const [submitting, setSubmitting] = useState(false);
 
-    const navigate = useNavigate();
 
     const validate = () => {
         let ok = true;
@@ -89,12 +88,10 @@ export default function SignUpForm({submitFunc, serverErrorKey}: Props) {
             await submitFunc({
                 first_name: firstName.trim(),
                 last_name: lastName.trim(),
-                email: email.trim(),
+                email,
                 password,
                 passwordConfirm
-            });
-
-            navigate(Paths.HOME ?? '/');
+            })
         } finally {
             setSubmitting(false);
         }

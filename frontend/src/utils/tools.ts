@@ -1,6 +1,7 @@
-import type {SignupData} from "../types/quiz-types.ts";
 
-export const convertUserDtoToUser = async (dto: SignupData) => {
+import type {UserDto} from "../types/User.ts";
+
+export const convertUserDtoToUser = async (dto: UserDto) => {
 
     const name = `${dto.first_name} ${dto.last_name}`.trim();
     return {

@@ -45,6 +45,13 @@ const quizSlice = createSlice({
         setLastResult(state, action: PayloadAction<QuizResultSnapshot | null>) {
             state.lastResult = action.payload;
         },
+        eraseResults(state) {
+            state.list = [];
+            state.data = null;
+            state.loading = false;
+            state.error = null;
+            state.lastResult = null;
+        }
     },
     extraReducers: (builder) => {
         builder
@@ -61,6 +68,6 @@ const quizSlice = createSlice({
     },
 });
 
-export const { setLastResult } = quizSlice.actions;
+export const { eraseResults, setLastResult } = quizSlice.actions;
 
 export default quizSlice.reducer;

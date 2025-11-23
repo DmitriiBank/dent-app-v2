@@ -1,31 +1,33 @@
 import type {LoginData} from "../types/quiz-types.ts";
-import type {UserDto} from "../types/User.ts";
+import type {User, UserDto} from "../types/User.ts";
 import {convertUserDtoToUser} from "../utils/tools.ts";
 import {httpRequest} from "./http.ts";
 // import type {GetUserResponseData} from "./accountApi.ts";
 
 export const login = async (data: LoginData) => {
-    return httpRequest(`/api/v1/auth/login`, {
+    const res = await httpRequest<{ data: User}>(`/api/v1/auth/login`, {
         method: "POST",
         auth: false,
         json: data,
-        body: JSON.stringify(data)
     });
+    return res.data as User;
 }
 
-export async function register(data: UserDto) {
+export const register = async (data: UserDto) => {
     const newUser = await convertUserDtoToUser(data)
-    return await httpRequest(`/api/v1/auth/signup`, {
+    const res = await httpRequest<{ data: User }>(`/api/v1/auth/signup`, {
         method: "POST",
         auth: false,
         json: newUser,
     });
+    return res.data as User;
 }
 
-export function meRequest() {
-    return httpRequest(`/api/v1/users/me`, {
+export const meRequest = async () =>  {
+    const res = await httpRequest<{ data: User}>(`/api/v1/users/me`, {
         method: "GET"
     });
+    return res.data as User;
 }
 export const forgotPassword = async (email: string) => {
     return httpRequest<{ data: { email: string } }>(`/api/v1/users/forgotPassword`, {
@@ -44,8 +46,9 @@ export const resetPassword = async (token: string, password: string, passwordCon
     });
 }
 
-export async function exit() {
+export const exit = async (): Promise<void> => {
     return await httpRequest(`/api/v1/users/logout`, {
-        method: "POST"
+        method: "POST",
+        credentials: "include"
     });
 }

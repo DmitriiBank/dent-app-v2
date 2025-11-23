@@ -100,6 +100,7 @@ export const createSendToken = async (
 
    await setAuthCookies(res, token, refreshToken);
 
+
     res.status(statusCode).json({
         status: "success",
         data: {

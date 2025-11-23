@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import {useState} from 'react';
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
-import { useNavigate } from "react-router-dom";
-import { useAppDispatch } from "../redux/hooks";
+import {useNavigate} from "react-router-dom";
+// import { useAppDispatch } from "../redux/hooks";
 import {logout} from "../redux/slices/authSlice";
-import { Paths } from "../types/quiz-types";
+import {Paths} from "../types/quiz-types";
+import {useAppDispatch} from "../redux/hooks.ts";
+import {exit} from "../services/authApi.ts";
 
 const Logout = () => {
     const dispatch = useAppDispatch();
@@ -14,6 +16,9 @@ const Logout = () => {
     const handleLogout = async () => {
         setIsLoading(true);
         try {
+
+            await exit()
+            // await dispatch(eraseResults());
             dispatch(logout());
             console.log('✅ Logout successful');
 
@@ -38,7 +43,7 @@ const Logout = () => {
                 disabled={isLoading}
                 startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : null}
             >
-                {isLoading ? 'Выход...' : 'Exit'}
+                {isLoading ? 'Exit...' : 'Exit'}
             </Button>
         </div>
     );

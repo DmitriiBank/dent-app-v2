@@ -33,13 +33,6 @@ export type LoginData = {
     password: string,
 }
 
-export type SignupData = {
-    first_name: string,
-    last_name: string,
-    email: string,
-    password: string,
-    passwordConfirm?: string
-}
 
 export interface Question {
     question: string;

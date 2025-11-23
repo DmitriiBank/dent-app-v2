@@ -1,10 +1,9 @@
 import SignUp from "../templates/SignUp.tsx";
 import {useState} from "react";
-import type {GetUserResponseData, UserDto} from "../types/User.ts";
-import {register} from "../services/authApi.ts";
+import type { UserDto} from "../types/User.ts";
 import {useAppDispatch} from "../redux/hooks.ts";
 import {useNavigate} from "react-router-dom";
-import {fetchCurrentUser} from "../redux/slices/authSlice.ts";
+import {signupUser} from "../redux/slices/authSlice.ts";
 import {Paths} from "../types/quiz-types.ts";
 
 const Registration = () => {
@@ -14,10 +13,10 @@ const Registration = () => {
 
     const handleRegister = async (data: UserDto): Promise<void> => {
         try {
-            const user = await register(data) as GetUserResponseData;
-            if (!user.data.email) throw new Error('Ошибка регистрации');
-            await dispatch(fetchCurrentUser()).unwrap();
-            navigate(Paths.HOME);
+            const user = await dispatch(signupUser(data)).unwrap();
+            if (!user.email) throw new Error('Ошибка регистрации');
+            // await dispatch(fetchCurrentUser()).unwrap();
+            navigate(Paths.LOGIN);
         } catch (err) {
             console.error(err);
             setErrorCode('default');

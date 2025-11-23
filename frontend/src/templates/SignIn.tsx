@@ -17,7 +17,6 @@ import {NavLink} from "react-router-dom";
 import {CircularProgress} from "@mui/material";
 
 
-
 export const Card = styled(MuiCard)(({theme}) => ({
     display: 'flex',
     flexDirection: 'column',
@@ -124,32 +123,13 @@ const OutlineButton = styled(Button)(({theme}) => ({
     },
 }));
 
-export default function SignIn(props: Props) {
+export default function SignIn({submitFn}: Props) {
     const [emailError, setEmailError] = React.useState(false);
     const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
     const [passwordError, setPasswordError] = React.useState(false);
     const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
     const [isLoading, setIsLoading] = React.useState(false);
 
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        setIsLoading(true);
-        try {
-            if (emailError || passwordError) return;
-            if (!validateInputs()) return;
-
-            const data = new FormData(event.currentTarget);
-
-            await props.submitFn({
-                email: data.get("email") as string,
-                password: data.get("password") as string,
-            });
-        } catch (error) {
-            console.error("Login error:", error);
-        } finally {
-            setIsLoading(false);
-        }
-    };
 
     const validateInputs = () => {
         const email = document.getElementById('email') as HTMLInputElement;
@@ -174,6 +154,26 @@ export default function SignIn(props: Props) {
             setPasswordErrorMessage('');
         }
         return isValid;
+    };
+
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        setIsLoading(true);
+        try {
+            if (emailError || passwordError) return;
+            if (!validateInputs()) return;
+
+            const data = new FormData(event.currentTarget);
+
+            await submitFn({
+                email: data.get("email") as string,
+                password: data.get("password") as string,
+            });
+        } catch (error) {
+            console.error("Login error:", error);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleGoogleLogin = () => {
