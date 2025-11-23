@@ -11,7 +11,7 @@ export default function GoogleSuccess() {
     useEffect(() => {
         async function checkAuth() {
             try {
-                await new Promise(res => setTimeout(res, 50));
+                await new Promise(res => setTimeout(res, 5000));
                 await dispatch(fetchCurrentUser()).unwrap();
                 console.log('✅ Google auth successful');
                 navigate(Paths.HOME);

@@ -9,9 +9,9 @@ interface PrivateRouteProps {
 
 const PrivateRoute = ({ children, allowedRoles }: PrivateRouteProps) => {
     const location = useLocation();
-    const { data, isLoading } = useAppSelector((state) => state.auth);
+    const { data, isLoading, initialized } = useAppSelector((state) => state.auth);
 
-    if (isLoading) {
+    if (!initialized || isLoading) {
         return (
             <div style={{
                 display: 'flex',

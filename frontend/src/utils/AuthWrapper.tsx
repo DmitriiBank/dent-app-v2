@@ -6,23 +6,29 @@ interface AuthWrapperProps {
     children: React.ReactNode;
 }
 
-export default function AuthWrapper({ children }: AuthWrapperProps) {
+export default function AuthWrapper({children}: AuthWrapperProps) {
     const dispatch = useAppDispatch();
-    const { data: isLoading,  initialized } = useAppSelector(
+    const {data: isLoading, initialized} = useAppSelector(
         (state) => state.auth
     );
 
     useEffect(() => {
-        // Делаем запрос ТОЛЬКО при первой загрузке
-        if (!initialized) {
-            dispatch(fetchCurrentUser());
-        }
-    }, [initialized]);
+            async function checkAuth() {
+                try {
+                    if (!initialized) {
+                        await dispatch(fetchCurrentUser()).unwrap();
+                    }
+                } catch (err) {
+                    console.error("❌ auth failed");
+                }
+            }
+        checkAuth()
+        }, [initialized]);
 
     // Ждем, пока authSlice полностью проверит куку
     if (!initialized || isLoading) {
         return (
-            <p style={{ color: "#fff", textAlign: "center" }}>
+            <p style={{color: "#fff", textAlign: "center"}}>
                 Checking authentication...
             </p>
         );
