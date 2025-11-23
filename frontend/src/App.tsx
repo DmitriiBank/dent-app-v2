@@ -2,14 +2,10 @@ import {Route, Routes} from "react-router-dom";
 import {routes} from './configurations/routeConfig.tsx'
 import {Layout} from "./Layout.tsx"
 import PrivateRoute from "./redux/PrivateRoute.tsx";
-import {useEffect} from "react";
-import {useAppDispatch} from "./redux/hooks.ts";
-import {fetchCurrentUser} from "./redux/slices/authSlice.ts";
-
 
 
 function App() {
-    const dispatch = useAppDispatch();
+    // const dispatch = useAppDispatch();
 
     // useEffect(() => {
     //     async function checkAuth() {
