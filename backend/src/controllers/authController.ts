@@ -108,36 +108,19 @@ export const updatePassword = asAuth(async (req: AuthRequest, res: Response, nex
 export const googleCallback = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const user = req.user as User | undefined;
-        // console.log("Google callback: ", user)
 
         if (!user) {
             throw new HttpError(401, 'Authentication failed');
         }
-        // console.log(user);
+
         const accessToken = signToken(user._id.toString());
-        // const refreshToken = signRefreshToken(user._id.toString());
+        const refreshToken = signRefreshToken(user._id.toString());
 
-        // await saveToken(user._id.toString(), refreshToken);
+        await saveToken(user._id.toString(), refreshToken);
 
-         await setAuthCookies(res, accessToken);
+         await setAuthCookies(res, accessToken, refreshToken);
 
-        // console.log("setAuthCookies: ", result, "res.redirect", res)
-        // await createSendToken(user, 200, res);
-        // res.send(
-        //     window.location.href = "${process.env.GOOGLE_CLIENT_URL}/auth/success"
-        // );
-        // res.status(200).json({
-        //     status: "success",
-        //     data: {
-        //         _id: user._id,
-        //         name: user.name,
-        //         email: user.email,
-        //         role: user.role,
-        //         avatar: user.avatar,
-        //         provider: user.provider,
-        //     }
-        // });
-        res.redirect(`${process.env.GOOGLE_CLIENT_URL}`)
+        res.redirect(`${process.env.GOOGLE_CLIENT_URL}/auth/success`)
 
     } catch (error) {
         next(error);
@@ -167,13 +150,20 @@ export const me = async (req: Request, res: Response, next: NextFunction) => {
 }
 export const logout = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        // const {refreshJwt} = req.cookies;
+        const {refreshJwt} = req.cookies;
         console.log("Coockies: ", req.cookies);
-        // const token = await service.logout(refreshJwt);
+        if (refreshJwt)  await service.logout(refreshJwt);
+
+        const client = process.env.GOOGLE_CLIENT_URL ? new URL(process.env.GOOGLE_CLIENT_URL) : null;
+        const server = process.env.SERVER_URL ? new URL(process.env.SERVER_URL) : null;
+        const crossSite = client && server ? client.hostname !== server.hostname : false;
+        const useSecure = process.env.NODE_ENV === 'production' || crossSite;
+        const sameSite: 'lax' | 'none' = crossSite ? 'none' : 'lax';
+
         const cookieOptions = {
             httpOnly: true,
-            sameSite: 'none' as const,
-            secure: true,
+            sameSite,
+            secure: useSecure,
             path: '/',
         };
 

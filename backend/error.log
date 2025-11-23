@@ -26,3 +26,7 @@
 {"level":"error","message":"2025-11-20T11:28:13.635Z => Document does not create"}
 {"level":"error","message":"2025-11-23T09:11:12.195Z => Document with id missing not found"}
 {"level":"error","message":"2025-11-23T09:11:12.243Z => Document does not create"}
+{"level":"error","message":"2025-11-23T14:28:21.234Z => Document with id missing not found"}
+{"level":"error","message":"2025-11-23T14:28:21.250Z => Document does not create"}
+{"level":"error","message":"2025-11-23T14:29:29.434Z => Document with id missing not found"}
+{"level":"error","message":"2025-11-23T14:29:29.438Z => Document does not create"}

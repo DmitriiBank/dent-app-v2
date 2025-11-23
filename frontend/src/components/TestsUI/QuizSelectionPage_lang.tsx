@@ -101,6 +101,10 @@ const QuizSelectionPageLang = () => {
     }, [_id, testResults, allQuizzes]);
 
     const handleSelect = async (id: string) => {
+        if (!_id) {
+            navigate(Paths.LOGIN, {replace: true});
+            return;
+        }
         navigate(`${Paths.HOME}/${id}`);
     };
 

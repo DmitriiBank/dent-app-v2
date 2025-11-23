@@ -8,7 +8,7 @@ interface AuthWrapperProps {
 
 export default function AuthWrapper({children}: AuthWrapperProps) {
     const dispatch = useAppDispatch();
-    const {data: isLoading, initialized} = useAppSelector(
+    const {isLoading, initialized} = useAppSelector(
         (state) => state.auth
     );
 
@@ -18,12 +18,12 @@ export default function AuthWrapper({children}: AuthWrapperProps) {
                     if (!initialized) {
                         await dispatch(fetchCurrentUser()).unwrap();
                     }
-                } catch (err) {
+                } catch {
                     console.error("❌ auth failed");
                 }
             }
         checkAuth()
-        }, [initialized]);
+        }, [dispatch, initialized]);
 
     // Ждем, пока authSlice полностью проверит куку
     if (!initialized || isLoading) {

@@ -10,8 +10,8 @@ export enum Paths {
     OPTIONS = '/options',
     LECTURES = '/lectures',
     ANATOMY = '/anatomy',
-    MY_PAGE = "users/me",
-    ALL_USERS = "users/users_list",
+    MY_PAGE = "/users/me",
+    ALL_USERS = "/users/users_list",
     RESTORE_PASS = "/users/forgotPassword",
     RESET_PASS = "/users/resetPassword/:token"
 }

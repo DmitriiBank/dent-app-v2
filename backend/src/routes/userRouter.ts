@@ -7,6 +7,8 @@ import passport from "passport";
 
 export const userRouter = express.Router()
 
+userRouter.post('/logout', authController.logout);
+userRouter.get('/refresh', authController.refresh);
 
 userRouter.use(authService.protect);
 
@@ -14,8 +16,6 @@ userRouter.patch('/updatePassword',  authController.updatePassword);
 userRouter.get('/me', authController.me);
 userRouter.patch('/updateMe',   userController.updateMe)
 userRouter.delete('/deleteMe',  userController.deleteMe)
-userRouter.post('/logout', authController.logout);
-userRouter.get('/refresh', authController.refresh);
 
 userRouter.use(authService.restrictTo(<Roles>'admin'));
 
