@@ -8,18 +8,25 @@ interface AuthWrapperProps {
 
 export default function AuthWrapper({ children }: AuthWrapperProps) {
     const dispatch = useAppDispatch();
-    const user = useAppSelector((state) => state.auth.data);
+    const { data: isLoading,  initialized } = useAppSelector(
+        (state) => state.auth
+    );
 
     useEffect(() => {
-        // Проверяем авторизацию только если пользователь не авторизован
-        if (!user ) {
-            console.log('🔍 Checking authentication...');
-            dispatch(fetchCurrentUser())
-                .unwrap()
-                .then(() => console.log('✅ User authenticated'))
-                .catch(() => console.log('❌ User not authenticated'));
+        // Делаем запрос ТОЛЬКО при первой загрузке
+        if (!initialized) {
+            dispatch(fetchCurrentUser());
         }
-    }, [dispatch, user]);
+    }, [initialized]);
+
+    // Ждем, пока authSlice полностью проверит куку
+    if (!initialized || isLoading) {
+        return (
+            <p style={{ color: "#fff", textAlign: "center" }}>
+                Checking authentication...
+            </p>
+        );
+    }
 
 
     return <>{children}</>;

@@ -172,8 +172,8 @@ export const logout = async (req: Request, res: Response, next: NextFunction) =>
         const token = await service.logout(refreshJwt);
         const cookieOptions = {
             httpOnly: true,
-            sameSite: 'strict' as const,
-            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'none' as const,
+            secure: true,
             path: '/',
         };
 

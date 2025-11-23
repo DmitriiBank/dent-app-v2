@@ -5,50 +5,27 @@ interface HttpOptions extends RequestInit {
     json?: unknown;
 }
 
-async function readText(res: Response) {
-    try {
-        return await res.text();
-    } catch {
-        return '';
-    }
-}
 
-export async function httpRequest<T = unknown>(path: string, options: HttpOptions = {}): Promise<T> {
-    const { json, headers, ...init} = options;
-
-    const finalHeaders: HeadersInit = {
-        'Content-Type': 'application/json',
-        ...headers,
+export async function httpRequest<T>(url: string, options: HttpOptions = {}) {
+    const requestOptions: RequestInit = {
+        method: options.method || "GET",
+        credentials: "include",
+        mode: "cors",
+        headers: {
+            "Content-Type": "application/json",
+            ...(options.headers || {})
+        }
     };
 
-    const body = json !== undefined ? JSON.stringify(json) : init.body;
+    if (options.json) requestOptions.body = JSON.stringify(options.json);
+    if (options.body) requestOptions.body = options.body;
 
-    const response = await fetch(`${API_BASE}${path}`, {
-        ...init,
-        headers: finalHeaders,
-        body,
-        credentials: 'include',
-    });
+    const res = await fetch(API_BASE + url, requestOptions);
 
-    if (response.status === 204) {
-        return {} as T;
+    if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || "Request failed");
     }
 
-    const text = await readText(response);
-    if (!response.ok) {
-        throw new Error(text || `HTTP ${response.status}`);
-    }
-
-    if (!text) {
-        return {} as T;
-    }
-
-    try {
-        return JSON.parse(text) as T;
-    } catch (err) {
-        console.error('Не удалось распарсить JSON', err);
-        throw new Error('Невозможно обработать ответ сервера');
-    }
+    return res.json() as Promise<T>;
 }
-
-// export {API_BASE as API};

@@ -8,6 +8,7 @@ export interface AuthState {
     isLoading: boolean;
     data: User | null;
     error: string | null;
+    initialized: boolean;
 }
 
 const initialState: AuthState = {
@@ -15,6 +16,8 @@ const initialState: AuthState = {
     isAuth: false,
     isLoading: false,
     error: null,
+    initialized: false,
+
 };
 
 export const signupUser = createAsyncThunk(
@@ -80,6 +83,7 @@ const authSlice = createSlice({
             state.data = null;
             state.isAuth = false;
             state.error = null;
+            state.initialized = true;
         },
         updateTestResults: (state, { payload }) => {
             if (state.data) {
@@ -101,11 +105,13 @@ const authSlice = createSlice({
                 state.isAuth = true;
                 state.data = payload;
                 state.error = null;
+                state.initialized = true;
             })
             .addCase(loginUser.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isAuth = false;
                 state.error = action.payload as string;
+                state.initialized = true;
             })
 
             .addCase(fetchCurrentUser.pending, (state) => {
@@ -116,12 +122,14 @@ const authSlice = createSlice({
                 state.isAuth = true;
                 state.data = payload;
                 state.error = null;
+                state.initialized = true;
             })
             .addCase(fetchCurrentUser.rejected, (state, action) => {
                 state.isLoading = false;
                 state.isAuth = false;
                 state.data = null;
                 state.error = action.payload as string;
+                state.initialized = true;
             })
 
 
@@ -130,6 +138,7 @@ const authSlice = createSlice({
                 state.data = null;
                 state.isAuth = false;
                 state.error = null;
+                    state.initialized = true;
             });
     },
 });

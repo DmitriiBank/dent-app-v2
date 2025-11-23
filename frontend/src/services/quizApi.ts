@@ -23,6 +23,7 @@ export async function saveTestResult(quizId: string, points: number, totalQuesti
     localStorage.setItem("forceRefreshTests", "true");
     return httpRequest(`/api/v1/quizzes/${quizId}/results`, {
         method: "POST",
+        credentials: "include",
         body: JSON.stringify({points, totalQuestions}),
     });
 }

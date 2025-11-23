@@ -7,7 +7,7 @@ import {httpRequest} from "./http.ts";
 export const login = async (data: LoginData) => {
     const res = await httpRequest<{ data: User}>(`/api/v1/auth/login`, {
         method: "POST",
-        auth: false,
+        credentials: "include",
         json: data,
     });
     return res.data as User;
@@ -17,7 +17,7 @@ export const register = async (data: UserDto) => {
     const newUser = await convertUserDtoToUser(data)
     const res = await httpRequest<{ data: User }>(`/api/v1/auth/signup`, {
         method: "POST",
-        auth: false,
+        credentials: "include",
         json: newUser,
     });
     return res.data as User;
@@ -25,7 +25,8 @@ export const register = async (data: UserDto) => {
 
 export const meRequest = async () =>  {
     const res = await httpRequest<{ data: User}>(`/api/v1/users/me`, {
-        method: "GET"
+        method: "GET",
+        credentials: "include",
     });
     return res.data as User;
 }

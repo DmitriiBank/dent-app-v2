@@ -14,7 +14,7 @@ import hpp from 'hpp';
 import qs from 'qs';
 import swaggerDoc from "../docs/openapi.json";
 import cors from "cors";
-import {baseUrl} from "./config/appConfig";
+import {baseUrl, PORT} from "./config/appConfig";
 import passport, {session} from 'passport';
 import cookieParser from 'cookie-parser';
 import './config/passportConfig';
@@ -26,6 +26,7 @@ export const createApp = () => {
 
     const __dirname = path.resolve();
     const app: Application = express();
+
 
     app.set('trust proxy', 1);
 
@@ -138,7 +139,7 @@ export const createApp = () => {
 
 export const launchServer = () => {
     const app = createApp();
-    app.listen(process.env.PORT, () => {
+    app.listen(PORT, () => {
         console.log(`🚀 App running at ${baseUrl}`);
         console.log(`🌍 SERVER_URL: ${process.env.SERVER_URL}`);
         console.log(`🔗 GOOGLE_CLIENT_URL: ${process.env.GOOGLE_CLIENT_URL}`);
