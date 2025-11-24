@@ -11,17 +11,17 @@ import {asAuth} from "../utils/tools";
 import {
     createSendToken,
     saveToken,
-    setAuthCookies,
     signRefreshToken,
     signToken
 } from "../utils/jwt";
 import {User} from "../model/User";
 import jwt from "jsonwebtoken";
 
+import axios from "axios";
 
 export const signup = async (req: Request, res: Response, next: NextFunction) => {
     const body = req.body;
-    if (body.length < 1) {
+    if (!body || Object.keys(body).length === 0) {
         return next(new HttpError(400, 'Invalid data'));
     }
     const newUser = await service.signup(body);
@@ -105,6 +105,7 @@ export const updatePassword = asAuth(async (req: AuthRequest, res: Response, nex
     await createSendToken(result, 200, res);
 });
 
+
 export const googleCallback = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const user = req.user as User | undefined;
@@ -118,9 +119,11 @@ export const googleCallback = async (req: Request, res: Response, next: NextFunc
 
         await saveToken(user._id.toString(), refreshToken);
 
-         await setAuthCookies(res, accessToken, refreshToken);
+        const redirectUrl = new URL(`${process.env.GOOGLE_CLIENT_URL}/auth/success`);
+        redirectUrl.searchParams.set('accessToken', accessToken);
+        redirectUrl.searchParams.set('refreshToken', refreshToken);
 
-        res.redirect(`${process.env.GOOGLE_CLIENT_URL}/auth/success`)
+        res.redirect(redirectUrl.toString());
 
     } catch (error) {
         next(error);
@@ -150,26 +153,14 @@ export const me = async (req: Request, res: Response, next: NextFunction) => {
 }
 export const logout = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const {refreshJwt} = req.cookies;
-        console.log("Coockies: ", req.cookies);
-        if (refreshJwt)  await service.logout(refreshJwt);
+        const refreshToken = req.body?.refreshToken || req.headers.authorization?.split(' ')[1];
 
-        const client = process.env.GOOGLE_CLIENT_URL ? new URL(process.env.GOOGLE_CLIENT_URL) : null;
-        const server = process.env.SERVER_URL ? new URL(process.env.SERVER_URL) : null;
-        const crossSite = client && server ? client.hostname !== server.hostname : false;
-        const useSecure = process.env.NODE_ENV === 'production' || crossSite;
-        const sameSite: 'lax' | 'none' = crossSite ? 'none' : 'lax';
+        if (!refreshToken) {
+            return next(new HttpError(400, 'No refresh token provided'));
+        }
 
-        const cookieOptions = {
-            httpOnly: true,
-            sameSite,
-            secure: useSecure,
-            path: '/',
-        };
+        await service.logout(refreshToken);
 
-        res.clearCookie('jwt', cookieOptions);
-        res.clearCookie('refreshJwt', cookieOptions);
-        console.log("logged out");
         res.status(200).json({
             status: 'success',
             message: 'Logged out successfully',
@@ -182,9 +173,9 @@ export const logout = async (req: Request, res: Response, next: NextFunction) =>
 };
 
 export const refresh = async (req: Request, res: Response, next: NextFunction) => {
-    const token = req.cookies?.refreshJwt;
+    const token = req.body?.refreshToken || req.headers.authorization?.split(' ')[1];
 
-    if (!token) return next(new HttpError(401, 'No refresh token'));
+    if (!token) return next(new HttpError(401, 'No refresh token provided'));
 
     try {
         const user = await service.refresh(token);

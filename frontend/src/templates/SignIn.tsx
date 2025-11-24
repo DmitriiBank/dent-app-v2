@@ -43,7 +43,11 @@ export const Card = styled(MuiCard)(({theme}) => ({
     [theme.breakpoints.up('sm')]: {maxWidth: 520},
 }));
 
-type Props = { submitFn: (loginData: LoginData) => void };
+type Props = {
+    submitFn: (loginData: LoginData) => void;
+    loginError?: string | null;
+    loading?: boolean;
+};
 
 export const SignInContainer = styled(Stack)(({theme}) => ({
     position: 'relative',
@@ -123,12 +127,11 @@ const OutlineButton = styled(Button)(({theme}) => ({
     },
 }));
 
-export default function SignIn({submitFn}: Props) {
+export default function SignIn({submitFn, loginError, loading}: Props) {
     const [emailError, setEmailError] = React.useState(false);
     const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
     const [passwordError, setPasswordError] = React.useState(false);
     const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
-    const [isLoading, setIsLoading] = React.useState(false);
 
 
     const validateInputs = () => {
@@ -158,7 +161,6 @@ export default function SignIn({submitFn}: Props) {
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        setIsLoading(true);
         try {
             if (emailError || passwordError) return;
             if (!validateInputs()) return;
@@ -171,8 +173,6 @@ export default function SignIn({submitFn}: Props) {
             });
         } catch (error) {
             console.error("Login error:", error);
-        } finally {
-            setIsLoading(false);
         }
     };
 
@@ -306,24 +306,37 @@ export default function SignIn({submitFn}: Props) {
                             })}
                         />
                     </FormControl>
-
-                    <NavLink
-                        to={Paths.RESTORE_PASS}
-                        style={{
-                            fontSize: 14,
-                            color: '#6ea8fe',
-                            fontWeight: 400
-                        }}
-                    >
-                        Forgot your password?
-                    </NavLink>
+                    {loginError && (
+                        <div>
+                            <Typography
+                                sx={{
+                                    color: "red",
+                                    mt: 2,
+                                    textAlign: "center",
+                                    fontSize: 14
+                                }}
+                            >
+                                {loginError}
+                            </Typography>
+                            <NavLink
+                                to={Paths.RESTORE_PASS}
+                                style={{
+                                    fontSize: 14,
+                                    color: '#6ea8fe',
+                                    fontWeight: 400
+                                }}
+                            >
+                                Forgot your password?
+                            </NavLink>
+                        </div>
+                    )}
 
                     <PrimaryButton
                         type="submit"
                         fullWidth
-                        disabled={isLoading}
+                        disabled={loading}
                         endIcon={
-                            isLoading ? null : (
+                            loading ? null : (
                                 <ArrowRight
                                     size={18}
                                     color="#E5E7EB"
@@ -332,7 +345,7 @@ export default function SignIn({submitFn}: Props) {
                         }
                         sx={{color: '#E5E7EB'}}
                     >
-                        {isLoading ? (
+                        {loading ? (
                             <CircularProgress
                                 size={24}
                                 color="inherit"

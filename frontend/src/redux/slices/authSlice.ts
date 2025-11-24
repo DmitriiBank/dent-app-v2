@@ -1,7 +1,13 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
-import type { User, UserDto} from "../../types/User.ts";
+import type {User, UserDto} from "../../types/User.ts";
 import type {LoginData} from "../../types/quiz-types.ts";
-import {exit, login, meRequest, register} from "../../services/authApi.ts";
+import {
+    exit,
+    login,
+    meRequest,
+    register
+} from "../../services/authApi.ts";
+import {clearTokens} from "../../services/tokenService.ts";
 
 export interface AuthState {
     isAuth: boolean;
@@ -47,7 +53,6 @@ export const loginUser = createAsyncThunk(
 );
 
 
-
 export const fetchCurrentUser = createAsyncThunk<User>(
     "auth/me",
     async (_, { rejectWithValue }) => {
@@ -56,6 +61,7 @@ export const fetchCurrentUser = createAsyncThunk<User>(
             console.log('Current user:', res);
             return res as User;
         } catch (error) {
+            clearTokens();
             return rejectWithValue(error || 'Unauthorized');
         }
     }
@@ -69,6 +75,7 @@ export const logoutUser = createAsyncThunk(
             console.log('✅ Logout successful');
             return;
         } catch (error) {
+            clearTokens()
             console.error('❌ Logout failed:', error);
             return rejectWithValue(error);
         }
@@ -143,5 +150,5 @@ const authSlice = createSlice({
     },
 });
 
-export const { logout, updateTestResults} = authSlice.actions;
+export const { logout,  updateTestResults } = authSlice.actions;
 export default authSlice.reducer;

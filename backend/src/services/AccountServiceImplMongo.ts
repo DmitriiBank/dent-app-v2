@@ -7,7 +7,7 @@ import {User} from "../model/User";
 import crypto from "crypto";
 import * as tokenService from "../utils/jwt"
 import jwt from "jsonwebtoken";
-import {createSendToken} from "../utils/jwt";
+
 
 
 export class AccountServiceImplMongo implements AccountService {

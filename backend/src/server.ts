@@ -15,8 +15,8 @@ import qs from 'qs';
 import swaggerDoc from "../docs/openapi.json";
 import cors from "cors";
 import {baseUrl, PORT} from "./config/appConfig";
-import passport, {session} from 'passport';
-import cookieParser from 'cookie-parser';
+import passport from 'passport';
+
 import './config/passportConfig';
 import {configurePassport} from "./config/passportConfig";
 import {authRouter} from "./routes/authRoutes";
@@ -40,6 +40,7 @@ export const createApp = () => {
             }
         },
         crossOriginEmbedderPolicy: false,
+        crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" },
     }));
 
     if (process.env.NODE_ENV === 'development') {
@@ -61,7 +62,7 @@ export const createApp = () => {
     //===============Middleware============
     app.use(express.json({limit: '10kb'}));
     app.set('query parser', (str: string) => qs.parse(str));
-    app.use(cookieParser());
+
 
 
     app.use(
@@ -69,12 +70,11 @@ export const createApp = () => {
             origin: [
                 "http://localhost:5173",
                 "https://dent-app-v2.vercel.app",
-                "https://dent-app-v2.onrender.com"
+                "https://dent-app-v2.onrender.com",
+               "dent-app-v2-production.up.railway.app"
             ].filter(Boolean) as string[],
-            credentials: true,
             methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
             allowedHeaders: ["Content-Type", "Authorization"],
-            exposedHeaders: ['Set-Cookie'],
         })
     );
 

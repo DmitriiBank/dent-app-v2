@@ -30,3 +30,15 @@
 {"level":"error","message":"2025-11-23T14:28:21.250Z => Document does not create"}
 {"level":"error","message":"2025-11-23T14:29:29.434Z => Document with id missing not found"}
 {"level":"error","message":"2025-11-23T14:29:29.438Z => Document does not create"}
+{"level":"error","message":"2025-11-23T15:20:03.765Z => Document with id missing not found"}
+{"level":"error","message":"2025-11-23T15:20:03.778Z => Document does not create"}
+{"level":"error","message":"2025-11-23T15:22:58.478Z => Document with id missing not found"}
+{"level":"error","message":"2025-11-23T15:22:58.545Z => Document does not create"}
+{"level":"error","message":"2025-11-23T15:23:19.989Z => Document with id missing not found"}
+{"level":"error","message":"2025-11-23T15:23:19.997Z => Document does not create"}
+{"level":"error","message":"2025-11-23T15:25:11.776Z => Document with id missing not found"}
+{"level":"error","message":"2025-11-23T15:25:11.780Z => Document does not create"}
+{"level":"error","message":"2025-11-23T15:26:54.688Z => Document with id missing not found"}
+{"level":"error","message":"2025-11-23T15:26:54.696Z => Document does not create"}
+{"level":"error","message":"2025-11-24T02:04:47.665Z => Document with id missing not found"}
+{"level":"error","message":"2025-11-24T02:04:47.679Z => Document does not create"}

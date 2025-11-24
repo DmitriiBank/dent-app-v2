@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 import passport from 'passport';
-import {Strategy as GoogleStrategy} from 'passport-google-oauth20';
+import {Profile, Strategy as GoogleStrategy} from 'passport-google-oauth20';
 import {UserDbModel} from '../schemas/user.schema';
 
 
@@ -69,3 +69,31 @@ export const configurePassport = () => {
 //         done(err as Error, null);
 //     }
 // });
+
+export const findOrCreateUser = async (profile: Profile) => {
+    try {
+        console.log("🔍 Strategy called with profile:", {
+            id: profile?.id,
+            email: profile?.emails?.[0]?.value,
+            name: profile?.displayName
+        });
+
+        let user = await UserDbModel.findOne({googleId: profile.id});
+
+        if (!user) {
+            console.log("📝 Creating new user");
+            user = await UserDbModel.create({
+                name: profile.displayName,
+                email: profile.emails?.[0].value,
+                googleId: profile.id,
+                avatar: profile.photos?.[0].value,
+                provider: "google",
+            });
+            console.log("✅ User created:", user._id);
+            console.log(user)
+        }
+        return user;
+    } catch (err) {
+        console.error("🔥 Google fetch user error:", err);
+    }
+};

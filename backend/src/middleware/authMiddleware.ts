@@ -4,7 +4,7 @@ import {HttpError} from "../errorHandler/HttpError";
 import jwt from "jsonwebtoken";
 import {AuthRequest, Roles} from "../utils/quizTypes";
 import {asAuth} from "../utils/tools";
-import {createSendToken} from "../utils/jwt";
+
 
 // ---- JWT Payload interface ----
 interface JWTPayload {
@@ -15,7 +15,10 @@ interface JWTPayload {
 
 export const protect: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
 
-    const token = req.cookies?.jwt;
+    const authHeader = req.headers.authorization;
+    const token = authHeader?.startsWith('Bearer ')
+        ? authHeader.split(' ')[1]
+        : null;
 
     if (!token) return next(new HttpError(401, 'You are not logged in'));
     try {

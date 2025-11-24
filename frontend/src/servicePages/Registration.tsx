@@ -3,7 +3,7 @@ import {useState} from "react";
 import type { UserDto} from "../types/User.ts";
 import {useAppDispatch} from "../redux/hooks.ts";
 import {useNavigate} from "react-router-dom";
-import {signupUser} from "../redux/slices/authSlice.ts";
+import {fetchCurrentUser, signupUser} from "../redux/slices/authSlice.ts";
 import {Paths} from "../types/quiz-types.ts";
 
 const Registration = () => {
@@ -15,8 +15,8 @@ const Registration = () => {
         try {
             const user = await dispatch(signupUser(data)).unwrap();
             if (!user.email) throw new Error('Ошибка регистрации');
-            // await dispatch(fetchCurrentUser()).unwrap();
-            navigate(Paths.LOGIN);
+            await dispatch(fetchCurrentUser()).unwrap();
+            navigate(Paths.HOME);
         } catch (err) {
             console.error(err);
             setErrorCode('default');

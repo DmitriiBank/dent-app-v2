@@ -32,7 +32,8 @@ const Login = () => {
                 } else {
                     setError("Ошибка авторизации. Проверь логин или пароль.");
                 }
-                console.error("Login error:", err.message);
+                console.error("Login error: ", err.message);
+                setError(`Login error: ${err.message}`);
             } else {
                 console.error("Неизвестная ошибка при входе:", err);
                 setError("Что-то пошло не так...");
@@ -45,7 +46,8 @@ const Login = () => {
 
     return (
         <div className={'login'}>
-            <SignIn submitFn={loginWithServer} />
+            <SignIn submitFn={loginWithServer} loginError={error}
+                    loading={loading} />
 
     {error && <p style={{ color: "red", marginTop: "8px" }}>{error}</p>}
         </div>

@@ -8,7 +8,7 @@ import passport from "passport";
 export const userRouter = express.Router()
 
 userRouter.post('/logout', authController.logout);
-userRouter.get('/refresh', authController.refresh);
+userRouter.post('/refresh', authController.refresh);
 
 userRouter.use(authService.protect);
 

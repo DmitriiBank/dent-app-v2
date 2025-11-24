@@ -25,7 +25,6 @@ export default function AuthWrapper({children}: AuthWrapperProps) {
         checkAuth()
         }, [dispatch, initialized]);
 
-    // Ждем, пока authSlice полностью проверит куку
     if (!initialized || isLoading) {
         return (
             <p style={{color: "#fff", textAlign: "center"}}>
