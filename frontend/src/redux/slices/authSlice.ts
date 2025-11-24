@@ -75,7 +75,6 @@ export const logoutUser = createAsyncThunk(
             console.log('✅ Logout successful');
             return;
         } catch (error) {
-            clearTokens()
             console.error('❌ Logout failed:', error);
             return rejectWithValue(error);
         }

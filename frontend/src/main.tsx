@@ -9,7 +9,7 @@ import {store, persistor} from './redux/store.ts';
 import {ThemeProvider, CssBaseline} from '@mui/material';
 import {getTheme} from './styles/theme';
 import {ColorModeContext} from './styles/ThemeContext';
-import AuthWrapper from "./utils/AuthWrapper.tsx";
+//import AuthWrapper from "./utils/AuthWrapper.tsx";
 
 // import { Sun, Moon } from 'lucide-react'; // для иконок переключателя
 
@@ -26,9 +26,9 @@ export function Root() {
             <ThemeProvider theme={theme}>
                 <CssBaseline />
                 <BrowserRouter>
-                    <AuthWrapper>
+                    {/*<AuthWrapper>*/}
                         <App />
-                    </AuthWrapper>
+                    {/*</AuthWrapper>*/}
                 </BrowserRouter>
             </ThemeProvider>
         </ColorModeContext.Provider>
