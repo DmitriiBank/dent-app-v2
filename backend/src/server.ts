@@ -83,18 +83,7 @@ const FRONT = process.env.GOOGLE_CLIENT_URL;
             credentials: true
         })
     );
-    app.options("*", cors({
-            origin: [
-                SERVER,
-                FRONT
-               //  "http://localhost:5173",
-               //  "https://dent-app-v2.vercel.app",
-               //  "https://dent-app-v2.onrender.com",
-               //  "dent-app-v2-production.up.railway.app",
-               // "https://dent-app-v2-git-dev-deploy-dmitrii-banks-projects.vercel.app"
-            ].filter(Boolean) as string[],
-        credentials: true
-        }));
+
 
     const limiter = rateLimit({
         max: 100,

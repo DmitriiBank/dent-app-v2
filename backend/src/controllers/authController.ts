@@ -18,6 +18,7 @@ import {User} from "../model/User";
 import jwt from "jsonwebtoken";
 
 import axios from "axios";
+import {CookieOptions} from "express";
 
 export const signup = async (req: Request, res: Response, next: NextFunction) => {
     const body = req.body;
@@ -117,15 +118,20 @@ export const googleCallback = async (req: Request, res: Response, next: NextFunc
         const refreshToken = signRefreshToken(user._id.toString());
         await saveToken(user._id.toString(), refreshToken);
 
-        const cookieOptions = {
-            expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        res.cookie("token", token, {
             httpOnly: true,
-            secure: false
-        };
-        if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+            secure: process.env.NODE_ENV === "production",
+            maxAge: 15 * 60 * 1000,
+        });
 
-        res.cookie('token', token, cookieOptions);
-        res.cookie('refreshToken', refreshToken, cookieOptions);
+
+        res.cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+            secure: process.env.NODE_ENV === "production",
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
         const redirectUrl = new URL(`${process.env.GOOGLE_CLIENT_URL}/auth/success`);
 
         res.redirect(redirectUrl.toString());
