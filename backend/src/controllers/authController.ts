@@ -201,7 +201,7 @@ export const logout = async (req: Request, res: Response, next: NextFunction) =>
         if (!refreshToken) {
             throw new HttpError(401,"No refresh token provided")
         }
-        const token = await service.logout(refreshToken);
+        await service.logout(refreshToken);
         res.clearCookie('token');
         res.clearCookie('refreshToken');
 

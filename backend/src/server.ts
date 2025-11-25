@@ -26,7 +26,8 @@ export const createApp = () => {
 
     const __dirname = path.resolve();
     const app: Application = express();
-
+const SERVER = process.env.SERVER_URL;
+const FRONT = process.env.GOOGLE_CLIENT_URL;
     app.use(cookieParser());
 
     app.set('trust proxy', 1);
@@ -69,10 +70,13 @@ export const createApp = () => {
     app.use(
         cors({
             origin: [
-                "http://localhost:5173",
-                "https://dent-app-v2.vercel.app",
-                "https://dent-app-v2.onrender.com",
-               "https://dent-app-v2-production.up.railway.app"
+                SERVER,
+                FRONT
+               //  "http://localhost:5173",
+               //  "https://dent-app-v2.vercel.app",
+               //  "https://dent-app-v2.onrender.com",
+               // "https://dent-app-v2-production.up.railway.app",
+               //  "https://dent-app-v2-git-dev-deploy-dmitrii-banks-projects.vercel.app"
             ].filter(Boolean) as string[],
             methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
             allowedHeaders: ["Content-Type", "Authorization", "Cookie", "Accept"],
@@ -81,10 +85,13 @@ export const createApp = () => {
     );
     app.options("*", cors({
             origin: [
-                "http://localhost:5173",
-                "https://dent-app-v2.vercel.app",
-                "https://dent-app-v2.onrender.com",
-                "dent-app-v2-production.up.railway.app"
+                SERVER,
+                FRONT
+               //  "http://localhost:5173",
+               //  "https://dent-app-v2.vercel.app",
+               //  "https://dent-app-v2.onrender.com",
+               //  "dent-app-v2-production.up.railway.app",
+               // "https://dent-app-v2-git-dev-deploy-dmitrii-banks-projects.vercel.app"
             ].filter(Boolean) as string[],
         credentials: true
         }));
