@@ -30,14 +30,13 @@ export const signup = async (req: Request, res: Response, next: NextFunction) =>
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
     const {email, password} = req.body;
-    if (!email || !password) {
-        return next(new HttpError(400, 'Please provide email and password'));
-    }
+    // if (!email || !password) {
+    //     return next(new HttpError(400, 'Please provide email and password'));
+    // }
     const user = await service.login(email, password);
 
     await createSendToken(user, 200, res);
 };
-
 
 export const forgotPassword = async (req: Request, res: Response, next: NextFunction) => {
     const user = await UserDbModel.findOne({email: req.body.email});
@@ -114,13 +113,21 @@ export const googleCallback = async (req: Request, res: Response, next: NextFunc
             throw new HttpError(401, 'Authentication failed');
         }
 
-        const accessToken = signToken(user._id.toString());
+        const token = signToken(user._id.toString());
         const refreshToken = signRefreshToken(user._id.toString());
-
         await saveToken(user._id.toString(), refreshToken);
 
+        const cookieOptions = {
+            expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+            httpOnly: true,
+            secure: false
+        };
+        if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+
+        res.cookie('token', token, cookieOptions);
+        res.cookie('refreshToken', refreshToken, cookieOptions);
         const redirectUrl = new URL(`${process.env.GOOGLE_CLIENT_URL}/auth/success`);
-        redirectUrl.searchParams.set('accessToken', accessToken);
+        redirectUrl.searchParams.set('token', token);
         redirectUrl.searchParams.set('refreshToken', refreshToken);
 
         res.redirect(redirectUrl.toString());
@@ -151,38 +158,58 @@ export const me = async (req: Request, res: Response, next: NextFunction) => {
            },
        })
 }
-export const logout = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const refreshToken = req.body?.refreshToken || req.headers.authorization?.split(' ')[1];
-
-        if (!refreshToken) {
-            return next(new HttpError(400, 'No refresh token provided'));
-        }
-
-        await service.logout(refreshToken);
-
-        res.status(200).json({
-            status: 'success',
-            message: 'Logged out successfully',
-            // removeToken: token,
-        });
-
-    } catch (error) {
-        next(error);
-    }
-};
+// export const logout = async (req: Request, res: Response, next: NextFunction) => {
+//     try {
+//         const token = req.body?.token || req.headers.authorization?.split(' ')[1];
+//
+//         console.log("logout token:", token);
+//         if (!token) {
+//             return next(new HttpError(400, 'No refresh token provided'));
+//         }
+//
+//        await service.logout(token);
+//         res.cookie('token', "");
+//
+//         res.status(200).json({
+//             status: 'success',
+//             message: 'Logged out successfully',
+//         });
+//
+//     } catch (error) {
+//         next(error);
+//     }
+// };
 
 export const refresh = async (req: Request, res: Response, next: NextFunction) => {
-    const token = req.body?.refreshToken || req.headers.authorization?.split(' ')[1];
+    const refreshToken = req.body?.refreshToken || req.headers.authorization?.split(' ')[1] || req.cookies?.refreshToken;
 
-    if (!token) return next(new HttpError(401, 'No refresh token provided'));
+    if (!refreshToken) return next(new HttpError(401, 'No refresh token provided'));
 
     try {
-        const user = await service.refresh(token);
+        const user = await service.refresh(refreshToken);
         if (!user) return next(new HttpError(401, 'User not found'));
 
         await createSendToken(user, 200, res);
     } catch (e) {
         next(new HttpError(401, 'Invalid refresh token'));
+    }
+};
+export const logout = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const refreshToken = req.cookies?.refreshToken;
+
+        if (!refreshToken) {
+            throw new HttpError(401,"No refresh token provided")
+        }
+        const token = await service.logout(refreshToken);
+        res.clearCookie('token');
+        res.clearCookie('refreshToken');
+
+        res.status(200).json({
+            status: 'success',
+            message: 'Logged out successfully',
+        });
+    } catch (error) {
+        next(error);
     }
 };

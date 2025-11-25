@@ -12,7 +12,6 @@ export interface User {
     email: string;
     role: string;
     avatar: string | null;
-    googleId?: string;
     provider?: string;
     testResults?: TestRecord[];
     passwordChangedAt?: string;

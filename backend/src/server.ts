@@ -16,7 +16,7 @@ import swaggerDoc from "../docs/openapi.json";
 import cors from "cors";
 import {baseUrl, PORT} from "./config/appConfig";
 import passport from 'passport';
-
+import cookieParser from "cookie-parser";
 import './config/passportConfig';
 import {configurePassport} from "./config/passportConfig";
 import {authRouter} from "./routes/authRoutes";
@@ -27,6 +27,7 @@ export const createApp = () => {
     const __dirname = path.resolve();
     const app: Application = express();
 
+    app.use(cookieParser());
 
     app.set('trust proxy', 1);
 
@@ -40,7 +41,7 @@ export const createApp = () => {
             }
         },
         crossOriginEmbedderPolicy: false,
-        crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" },
+        // crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" },
     }));
 
     if (process.env.NODE_ENV === 'development') {
@@ -71,14 +72,22 @@ export const createApp = () => {
                 "http://localhost:5173",
                 "https://dent-app-v2.vercel.app",
                 "https://dent-app-v2.onrender.com",
-               "dent-app-v2-production.up.railway.app"
+               "https://dent-app-v2-production.up.railway.app"
             ].filter(Boolean) as string[],
             methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
-            allowedHeaders: ["Content-Type", "Authorization"],
+            allowedHeaders: ["Content-Type", "Authorization", "Cookie", "Accept"],
+            credentials: true
         })
     );
-
-    app.options("*", cors());
+    app.options("*", cors({
+            origin: [
+                "http://localhost:5173",
+                "https://dent-app-v2.vercel.app",
+                "https://dent-app-v2.onrender.com",
+                "dent-app-v2-production.up.railway.app"
+            ].filter(Boolean) as string[],
+        credentials: true
+        }));
 
     const limiter = rateLimit({
         max: 100,

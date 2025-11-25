@@ -14,12 +14,17 @@ interface JWTPayload {
 }
 
 export const protect: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+    // console.log(req.headers.authorization)
+    // const authHeader = req.headers.authorization;
+    // const token = authHeader?.startsWith('Bearer ')
+    //     ? authHeader.split(' ')[1]
+    //     : null;
+    const token =
+        req.cookies?.token ||
+        (req.headers.authorization?.startsWith("Bearer") &&
+            req.headers.authorization.split(" ")[1]);
 
-    const authHeader = req.headers.authorization;
-    const token = authHeader?.startsWith('Bearer ')
-        ? authHeader.split(' ')[1]
-        : null;
-
+    console.log("protected ", token)
     if (!token) return next(new HttpError(401, 'You are not logged in'));
     try {
         const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET!) as JWTPayload;
@@ -34,6 +39,7 @@ export const protect: RequestHandler = async (req: Request, res: Response, next:
         }
 
         req.user = currentUser;
+
         next();
     } catch (e) {
         next(new HttpError(401, 'Invalid token'));

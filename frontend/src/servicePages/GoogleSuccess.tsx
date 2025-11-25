@@ -2,7 +2,7 @@ import {useEffect} from "react";
 import {useNavigate, useSearchParams} from "react-router-dom";
 import {useAppDispatch} from "../redux/hooks.ts";
 import {fetchCurrentUser} from "../redux/slices/authSlice.ts";
-import {setTokens} from "../services/tokenService.ts";
+//import {setTokens} from "../services/tokenService.ts";
 import {Paths} from "../types/quiz-types.ts";
 
 export default function GoogleSuccess() {
@@ -14,13 +14,13 @@ export default function GoogleSuccess() {
     useEffect(() => {
         async function checkAuth() {
             try {
-                const accessToken = searchParams.get('accessToken');
-                const refreshToken = searchParams.get('refreshToken');
-
-                if (accessToken && refreshToken) {
-                    console.log(accessToken, refreshToken);
-                    await setTokens({ accessToken, refreshToken });
-                }
+                // const token = searchParams.get('token');
+                // const refreshToken = searchParams.get('refreshToken');
+                //
+                // if (token && refreshToken) {
+                //     console.log(token, refreshToken);
+                //     await setTokens({ token, refreshToken });
+                // }
 
                 await dispatch(fetchCurrentUser()).unwrap();
                 console.log('✅ Google auth successful');

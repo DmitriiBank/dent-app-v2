@@ -21,7 +21,7 @@ export const configurePassport = () => {
                 callbackURL: `${process.env.SERVER_URL || 'http://localhost:3555'}/api/v1/auth/google/callback`,
                 passReqToCallback: false
             },
-            async (_accessToken, _refreshToken, profile, done) => {
+            async (_token, _refreshToken, profile, done) => {
                 try {
                     console.log("🔍 Strategy called with profile:", {
                         id: profile?.id,

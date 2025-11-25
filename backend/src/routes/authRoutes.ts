@@ -9,7 +9,8 @@ authRouter.post('/login', authController.login);
 authRouter.post('/forgotPassword', authController.forgotPassword);
 authRouter.post('/resetPassword/:token', authController.resetPassword);
 
-authRouter.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+authRouter.get('/google', passport.authenticate('google', { scope: ['profile', 'email'],accessType: "offline",
+    prompt: "consent", }));
 
 authRouter.get(
     '/google/callback',

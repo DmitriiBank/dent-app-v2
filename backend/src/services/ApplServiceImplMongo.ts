@@ -33,7 +33,7 @@ export class ApplServiceImplMongo implements ApplService {
     }
 
     async createOne<T extends Document>(dbModel: Model<T>, body: any): Promise<T> {
-        let doc = dbModel.create(body);
+        const doc = dbModel.create(body);
         if (!doc) {
             logger.error(`${new Date().toISOString()} => Document does not create`);
             throw new HttpError(404, `Document does not create`);
@@ -42,7 +42,7 @@ export class ApplServiceImplMongo implements ApplService {
     }
 
     async updateOne<T extends Document>(dbModel: Model<T>, id: string, body: any): Promise<T> {
-        let doc = await dbModel.findByIdAndUpdate(id, body, {
+        const doc = await dbModel.findByIdAndUpdate(id, body, {
             new: true,
             runValidators: true,
         });
@@ -51,7 +51,7 @@ export class ApplServiceImplMongo implements ApplService {
     }
 
     async deleteOne<T extends Document>(dbModel: Model<T>, id: string): Promise<T> {
-        let doc = await dbModel.findByIdAndDelete(id)
+        const doc = await dbModel.findByIdAndDelete(id)
         if (!doc) throw new HttpError(404, 'Document not found');
         return doc;
     }

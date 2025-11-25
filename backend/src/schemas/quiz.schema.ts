@@ -33,5 +33,12 @@ quizSchema.pre(/^findOne/, function (this: Query<any, any>, next) {
     next();
 });
 
+quizSchema.pre('findOneAndDelete', async function (next) {
+    const quiz = await this.model.findOne(this.getQuery());
+    if (quiz) {
+        await mongoose.model('QuestionModel').deleteMany({ quiz: quiz._id });
+    }
+    next();
+});
 
 export const QuizDbModel = mongoose.model('Quiz', quizSchema, 'quiz_collection')

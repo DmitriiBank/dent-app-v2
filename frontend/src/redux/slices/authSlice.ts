@@ -7,12 +7,11 @@ import {
     meRequest,
     register
 } from "../../services/authApi.ts";
-import {clearTokens} from "../../services/tokenService.ts";
 
 export interface AuthState {
     isAuth: boolean;
     isLoading: boolean;
-    data: User | null;
+    data: User| null;
     error: string | null;
     initialized: boolean;
 }
@@ -32,7 +31,7 @@ export const signupUser = createAsyncThunk(
         try {
             const res = await register(registerData);
             console.log('Register response:', res);
-            return res as User;
+            return res;
         } catch (error) {
             return rejectWithValue(error || 'Register failed');
         }
@@ -59,9 +58,8 @@ export const fetchCurrentUser = createAsyncThunk<User>(
         try {
             const res = await meRequest() ;
             console.log('Current user:', res);
-            return res as User;
+            return res;
         } catch (error) {
-            clearTokens();
             return rejectWithValue(error || 'Unauthorized');
         }
     }
@@ -106,10 +104,10 @@ const authSlice = createSlice({
                 state.isLoading = true;
                 state.error = null;
             })
-            .addCase(loginUser.fulfilled, (state, { payload }) => {
+            .addCase(loginUser.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isAuth = true;
-                state.data = payload;
+                state.data = action.payload;
                 state.error = null;
                 state.initialized = true;
             })
