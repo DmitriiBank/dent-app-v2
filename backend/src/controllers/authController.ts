@@ -127,8 +127,6 @@ export const googleCallback = async (req: Request, res: Response, next: NextFunc
         res.cookie('token', token, cookieOptions);
         res.cookie('refreshToken', refreshToken, cookieOptions);
         const redirectUrl = new URL(`${process.env.GOOGLE_CLIENT_URL}/auth/success`);
-        redirectUrl.searchParams.set('token', token);
-        redirectUrl.searchParams.set('refreshToken', refreshToken);
 
         res.redirect(redirectUrl.toString());
 
