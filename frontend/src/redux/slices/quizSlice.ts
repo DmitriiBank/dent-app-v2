@@ -46,11 +46,12 @@ const quizSlice = createSlice({
             state.lastResult = action.payload;
         },
         eraseResults(state) {
-            state.list = [];
-            state.data = null;
-            state.loading = false;
-            state.error = null;
-            state.lastResult = null;
+            state.list = state.list.map((question: Quiz) => ({
+                    ...question,
+                    canTake: false,
+                    score: ""
+                })
+        )
         }
     },
     extraReducers: (builder) => {

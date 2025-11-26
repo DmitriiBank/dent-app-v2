@@ -3,6 +3,12 @@ import {QuestionModel} from "../schemas/question.schema";
 import * as factory from './handlerFactory';
 import {APIFeatures} from "../utils/apiFeatures";
 
+export const getAllQuestions = factory.getAll(QuestionModel);
+export const getQuestionById = factory.getOne(QuestionModel);
+export const createQuestion = factory.createOne(QuestionModel);
+export const updateQuestion = factory.updateOne(QuestionModel);
+export const deleteQuestion = factory.deleteOne(QuestionModel);
+
 export const getQuizQuestions = async (req: Request, res: Response) => {
     const { quizId } = req.params;
 
@@ -23,8 +29,3 @@ export const getQuizQuestions = async (req: Request, res: Response) => {
     });
 };
 
-export const getAllQuestions = factory.getAll(QuestionModel);
-export const getQuestionById = factory.getOne(QuestionModel);
-export const createQuestion = factory.createOne(QuestionModel);
-export const updateQuestion = factory.updateOne(QuestionModel);
-export const deleteQuestion = factory.deleteOne(QuestionModel);

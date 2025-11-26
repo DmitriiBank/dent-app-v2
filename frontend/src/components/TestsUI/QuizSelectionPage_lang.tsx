@@ -11,7 +11,7 @@ import {Paths} from "../../types/quiz-types.ts";
 
 const QuizSelectionPageLang = () => {
     const navigate = useNavigate();
-    const user = useAppSelector((state: RootState) => state.auth.data);
+    const user = useAppSelector((state) => state.auth.data);
     const [loading, setLoading] = useState(false);
     const allQuizzes = useAppSelector((state: RootState) => state.quiz.list)
     const dispatch = useAppDispatch();
@@ -19,7 +19,7 @@ const QuizSelectionPageLang = () => {
         canTake: boolean,
         score?: string | null
     }>>({});
-
+    console.log("QuizSelectionPageLang", user?.name)
     const { _id, testResults } = useMemo(
         () => ({
             _id: user?._id,
@@ -28,6 +28,7 @@ const QuizSelectionPageLang = () => {
         [user]
     );
 
+    console.log(_id, testResults);
     useEffect(() => {
         const loadQuizzes = async () => {
             setLoading(true);
@@ -62,7 +63,7 @@ const QuizSelectionPageLang = () => {
                         let canTake = true;
                         if (testResults) canTake = await canTakeTest(quiz.id, testResults);
 
-                        const testResult = user?.testResults?.find((test: TestRecord) => test.quiz === quiz.id);
+                        const testResult = testResults?.find((test: TestRecord) => test.quiz === quiz.id);
 
 
                         results[quiz.id] = {

@@ -19,6 +19,7 @@ const Login = () => {
 
         try {
             const user = await dispatch(loginUser(loginData)).unwrap();
+            console.log("Logining: ", user);
             if (user) {
                 console.log("✅ Вход выполнен:", user.name);
                 navigate(Paths.HOME);

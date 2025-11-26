@@ -1,5 +1,5 @@
 import {httpRequest} from "./http.ts";
-import type {Quiz} from "../types/quiz-types.ts";
+import type {Quiz, SaveResultResponse} from "../types/quiz-types.ts";
 
 export const getAllQuizzes = async () => {
     const res = await httpRequest<{ data: Quiz[] }>(`/api/v1/quizzes`, { auth: false });
@@ -7,7 +7,10 @@ export const getAllQuizzes = async () => {
 };
 
 export const getQuiz = async (id: string) => {
-    const res = await httpRequest<{ data: Quiz }>(`/api/v1/quizzes/${id}`);
+    const res = await httpRequest<{ data: Quiz }>(`/api/v1/quizzes/${id}`,{
+        method: "GET",
+        credentials: "include"
+    });
     return res.data;
 };
 
@@ -20,9 +23,11 @@ export function canTakeTest(
 }
 
 export async function saveTestResult(quizId: string, points: number, totalQuestions: number) {
-    localStorage.setItem("forceRefreshTests", "true");
-    return httpRequest(`/api/v1/quizzes/${quizId}/results`, {
+    // localStorage.setItem("forceRefreshTests", "true");
+    const res = await httpRequest<SaveResultResponse>(`/api/v1/quizzes/${quizId}/results`, {
         method: "POST",
         json: {points, totalQuestions},
+        credentials: "include"
     });
+    return res.data;
 }

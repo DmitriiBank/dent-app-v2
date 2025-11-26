@@ -73,14 +73,13 @@ export class AccountServiceImplMongo implements AccountService {
         }
     }
 
-    async logout(refreshToken: string) {
-        const token = await tokenService.removeToken(refreshToken);
-        return token;
+    async logout(token: string) {
+        return await tokenService.removeToken(token);
     }
 
-    async refresh(token: any) {
-        const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET!) as { id: string };
-        const tokenFromDb = await tokenService.findToken(token);
+    async refresh(refreshToken: any) {
+        const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET!) as { id: string };
+        const tokenFromDb = await tokenService.findToken(refreshToken);
         if (!decoded || !tokenFromDb) {
             throw new HttpError(401, `Token with id ${tokenFromDb} not found`);
         }

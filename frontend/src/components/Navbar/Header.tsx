@@ -22,7 +22,7 @@ export const Header = () => {
     //     async function checkAuth() {
     //         try {
     //             if (!initialized) {
-    //                 await dispatch(fetchCurrentUser()).unwrap();
+    //                 await (fetchCurrentUser()).unwrap();
     //             }
     //         } catch {
     //             console.error("❌ auth failed");

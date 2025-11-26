@@ -15,10 +15,8 @@ const Logout = () => {
     const handleLogout = async () => {
         setIsLoading(true);
         try {
-
-           await dispatch(logoutUser()).unwrap();
-
-            navigate(Paths.HOME);
+            await dispatch(logoutUser()).unwrap();
+            navigate(Paths.LOGIN);
         } catch (error) {
             console.error('❌ Logout failed:', error);
             navigate(Paths.HOME);
@@ -37,7 +35,10 @@ const Logout = () => {
                 }}
                 onClick={handleLogout}
                 disabled={isLoading}
-                startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : null}
+                startIcon={isLoading ? <CircularProgress
+                    size={20}
+                    color="inherit"
+                /> : null}
             >
                 {isLoading ? 'Exit...' : 'Exit'}
             </Button>

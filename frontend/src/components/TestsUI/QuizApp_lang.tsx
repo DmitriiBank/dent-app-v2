@@ -2,7 +2,6 @@ import {useEffect, useState} from 'react';
 import {
     Paths,
     type Question,
-    type SaveResultResponse
 } from "../../types/quiz-types.ts";
 import {ProgressBar} from "../progressBar/ProgressBar.tsx";
 import {AnswersList} from "./AnswersList.tsx";
@@ -53,12 +52,13 @@ const QuizAppLang = ({ questions }: { questions: Question[] }) => {
             if (user?._id && quizId) {
                 setSaving(true);
                 try {
-                    const res = await saveTestResult(quizId, newScore, questions.length) as SaveResultResponse;
-                    const newResult = res.data.testResult;
+                    const res = await saveTestResult(quizId, newScore, questions.length);
+                    console.log("saveTestResult", res)
+                    const newResult = res.testResult;
 
                     dispatch(
                         updateTestResults([
-                            ...(user.testResults?.filter(t => t.quiz !== quizId) || []),
+                            ...(user?.testResults?.filter(t => t.quiz !== quizId) || []),
                                 newResult,
                             ])
                     );

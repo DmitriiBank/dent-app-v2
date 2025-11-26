@@ -113,6 +113,14 @@ userSchema.pre(/^find/, function (this: Query<any, any>, next) {
     next();
 });
 
+userSchema.pre('findOneAndDelete', async function (next) {
+    const user = await this.model.findOne(this.getQuery());
+    if (user) {
+        await mongoose.model('TestResult').deleteMany({ user: user._id });
+    }
+    next();
+});
+
 userSchema.methods.correctPassword = async function (candidatePassword: string, userPassword: string) {
     return await bcrypt.compare(candidatePassword, userPassword);
 
