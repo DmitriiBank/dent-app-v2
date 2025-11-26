@@ -45,19 +45,19 @@ export const createApp = () => {
         // crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" },
     }));
 
-    if (process.env.NODE_ENV === 'development') {
-        app.use(morgan('dev'));
-    }
+    // if (process.env.NODE_ENV === 'development') {
+    //     app.use(morgan('dev'));
+    // }
 
-    const logsDir = path.join(process.cwd(), 'logs');
-    if (!fs.existsSync(logsDir)) {
-        fs.mkdirSync(logsDir, {recursive: true});
-    }
+    // const logsDir = path.join(process.cwd(), 'logs');
+    // if (!fs.existsSync(logsDir)) {
+    //     fs.mkdirSync(logsDir, {recursive: true});
+    // }
 
-    const accessLogStream = fs.createWriteStream(path.join(logsDir, 'access.log'), {flags: 'a'});
-    const errorLogStream = fs.createWriteStream(path.join(logsDir, 'error.log'), {flags: 'a'});
+    // const accessLogStream = fs.createWriteStream(path.join(logsDir, 'access.log'), {flags: 'a'});
+    // const errorLogStream = fs.createWriteStream(path.join(logsDir, 'error.log'), {flags: 'a'});
 
-    app.use(morgan('combined', {stream: accessLogStream}))
+    // app.use(morgan('combined', {stream: accessLogStream}))
 
 
     //===============Middleware============
@@ -126,10 +126,10 @@ export const createApp = () => {
     });
 
 //=============Error===========
-    app.use(morgan('combined', {
-        stream: errorLogStream,
-        skip: (req, res) => res.statusCode < 400
-    }));
+//     app.use(morgan('combined', {
+//         stream: errorLogStream,
+//         skip: (req, res) => res.statusCode < 400
+//     }));
 
     app.use(errorHandler)
     return app;
