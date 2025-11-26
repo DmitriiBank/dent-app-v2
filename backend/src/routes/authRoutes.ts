@@ -11,7 +11,7 @@ authRouter.post('/resetPassword/:token', authController.resetPassword);
 
 authRouter.get('/google', passport.authenticate('google', { scope: ['profile', 'email'],accessType: "offline",
     prompt: "consent", }));
-
+authRouter.post('/google', authController.googleLogin);
 authRouter.get(
     '/google/callback',
     passport.authenticate('google', { session: false }),

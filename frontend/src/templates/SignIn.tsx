@@ -176,9 +176,23 @@ export default function SignIn({submitFn, loginError, loading}: Props) {
         }
     };
 
+    // const handleGoogleLogin = () => {
+    //     window.location.href = `${import.meta.env.VITE_API_BASE_URL}/api/v1/auth/google`;
+    // };
+
     const handleGoogleLogin = () => {
-        window.location.href = `${import.meta.env.VITE_API_BASE_URL}/api/v1/auth/google`;
+        const googleAuthUrl =
+            `https://accounts.google.com/o/oauth2/v2/auth` +
+            `?client_id=${import.meta.env.VITE_GOOGLE_CLIENT_ID}` +
+            `&redirect_uri=${import.meta.env.VITE_GOOGLE_REDIRECT_URL}` +
+            `&response_type=code` +
+            `&scope=openid email profile` +
+            `&prompt=consent` +
+            `&access_type=offline`;
+
+        window.location.href = googleAuthUrl;
     };
+
 
     return (
         <SignInContainer

@@ -6,7 +6,7 @@ import {logger} from "../Logger/winston";
 import {
     accountServiceImplMongo as service
 } from "../services/AccountServiceImplMongo";
-import {AuthRequest} from "../utils/quizTypes";
+import {AuthRequest, GoogleJwtPayload} from "../utils/quizTypes";
 import {asAuth} from "../utils/tools";
 import {
     createSendToken,
@@ -18,7 +18,49 @@ import {User} from "../model/User";
 import jwt from "jsonwebtoken";
 
 import axios from "axios";
-import {CookieOptions} from "express";
+import {
+    findOrCreateGoogleUser
+} from "../config/passportConfig";
+
+
+
+export const googleLogin = async (req: Request, res: Response) => {
+    const { code } = req.body;
+    if (!code) return res.status(400).json({ message: "No code provided" });
+    console.log("googleLogin", code)
+    const { data } = await axios.post("https://oauth2.googleapis.com/token", {
+        client_id: process.env.GOOGLE_CLIENT_ID,
+        client_secret: process.env.GOOGLE_CLIENT_SECRET,
+        redirect_uri: process.env.GOOGLE_REDIRECT_URL,
+        code,
+        grant_type: "authorization_code",
+    });
+
+
+    const googleUser = jwt.decode(data.id_token) as GoogleJwtPayload;
+
+    const user = await findOrCreateGoogleUser(googleUser);
+    console.log("googleLogin", user)
+    const access = signToken(user._id);
+    const refresh = signRefreshToken(user._id);
+
+    res.cookie("token", access, {
+        httpOnly: true,
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 15 * 60 * 1000,
+    });
+
+    res.cookie("refreshToken", refresh, {
+        httpOnly: true,
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    return res.json({ status: "success", user });
+};
+
 
 export const signup = async (req: Request, res: Response, next: NextFunction) => {
     const body = req.body;
@@ -162,27 +204,7 @@ export const me = async (req: Request, res: Response, next: NextFunction) => {
            },
        })
 }
-// export const logout = async (req: Request, res: Response, next: NextFunction) => {
-//     try {
-//         const token = req.body?.token || req.headers.authorization?.split(' ')[1];
-//
-//         console.log("logout token:", token);
-//         if (!token) {
-//             return next(new HttpError(400, 'No refresh token provided'));
-//         }
-//
-//        await service.logout(token);
-//         res.cookie('token', "");
-//
-//         res.status(200).json({
-//             status: 'success',
-//             message: 'Logged out successfully',
-//         });
-//
-//     } catch (error) {
-//         next(error);
-//     }
-// };
+
 
 export const refresh = async (req: Request, res: Response, next: NextFunction) => {
     const refreshToken = req.body?.refreshToken || req.headers.authorization?.split(' ')[1] || req.cookies?.refreshToken;

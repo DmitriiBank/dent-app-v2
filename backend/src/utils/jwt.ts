@@ -2,7 +2,6 @@ import jwt, {Secret} from "jsonwebtoken";
 import {Response} from "express";
 import {User} from "../model/User";
 import {TokenDbModel} from "../schemas/token.schema";
-import {refresh} from "../controllers/authController";
 
 const ACCESS_EXPIRES_MS = 15 * 60 * 1000; // 15 minutes
 const REFRESH_EXPIRES_MS = 7; // 7 days
@@ -42,8 +41,7 @@ export const removeToken = async (token: string) => {
 
 }
 export const findToken = async (refreshToken: string) => {
-    const tokenData = await TokenDbModel.findOne({refreshToken});
-    return tokenData;
+    return await TokenDbModel.findOne({refreshToken});
 }
 
 export const createSendToken = async (user: User,
