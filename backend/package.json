@@ -1,7 +1,7 @@
 {
   "name": "ts-template",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "./build/app.js",
   "scripts": {
     "test": "jest --runInBand",
     "test:watch": "jest --watch",

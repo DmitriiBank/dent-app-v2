@@ -6,7 +6,7 @@ dotenv.config();
 
 export const PORT= process.env.PORT;
 export const baseUrl = `http://localhost:${PORT}`;
-export const db = process.env.DATABASE!.replace('<PASSWORD>', process.env.DATABASE_PASSWORD!);
+export const db = process.env.DATABASE!;
 
 const jsonPath = path.resolve(process.cwd(), "app-config", "app-config.json");
 const appConf = JSON.parse(readFileSync(jsonPath, "utf-8"));

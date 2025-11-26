@@ -26,8 +26,8 @@ export const createApp = () => {
 
     const __dirname = path.resolve();
     const app: Application = express();
-const SERVER = process.env.SERVER_URL;
-const FRONT = process.env.GOOGLE_CLIENT_URL;
+    const SERVER = process.env.SERVER_URL;
+    const FRONT = process.env.GOOGLE_CLIENT_URL;
     app.use(cookieParser());
 
     app.set('trust proxy', 1);
@@ -60,11 +60,9 @@ const FRONT = process.env.GOOGLE_CLIENT_URL;
     app.use(morgan('combined', {stream: accessLogStream}))
 
 
-
     //===============Middleware============
     app.use(express.json({limit: '10kb'}));
     app.set('query parser', (str: string) => qs.parse(str));
-
 
 
     app.use(
@@ -72,11 +70,6 @@ const FRONT = process.env.GOOGLE_CLIENT_URL;
             origin: [
                 SERVER,
                 FRONT
-               //  "http://localhost:5173",
-               //  "https://dent-app-v2.vercel.app",
-               //  "https://dent-app-v2.onrender.com",
-               // "https://dent-app-v2-production.up.railway.app",
-               //  "https://dent-app-v2-git-dev-deploy-dmitrii-banks-projects.vercel.app"
             ].filter(Boolean) as string[],
             methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
             allowedHeaders: ["Content-Type", "Authorization", "Cookie", "Accept"],
