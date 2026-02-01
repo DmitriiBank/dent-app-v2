@@ -42,7 +42,7 @@ This is a full-stack Quiz Application built with the MERN stack (MongoDB, Expres
       ```env
       PORT=3555
       DATABASE=mongodb://localhost:27017/quiz-app
-      JWT_SECRET=your-very-secure-secret-key-min-32-chars
+      JWT_ACCESS_SECRET=your-very-secure-secret-key-min-32-chars
       JWT_EXPIRES_IN=90d
       JWT_COOKIE_EXPIRES_IN=90
       NODE_ENV=development

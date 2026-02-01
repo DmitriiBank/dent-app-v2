@@ -52,6 +52,14 @@ export const createSendToken = async (user: User,
         maxAge: 15 * 60 * 1000,
     });
 
+
+    res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        sameSite:env.NODE_ENV === "production" ? "none" : "lax",
+        secure:env.NODE_ENV === "production",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
     await saveToken(user._id, refreshToken);
 
     res.status(statusCode).json({

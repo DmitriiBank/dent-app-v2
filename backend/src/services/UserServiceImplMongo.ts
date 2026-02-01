@@ -1,7 +1,7 @@
 
-import {UserDbModel} from "../schemas/user.schema";
 import {HttpError} from "../errorHandler/HttpError";
 import {User} from "../model/User";
+import {UserDbModel} from "../schemas/user.schema";
 
 
 export interface UserService {

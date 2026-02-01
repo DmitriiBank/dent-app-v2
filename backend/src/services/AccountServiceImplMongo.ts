@@ -1,12 +1,17 @@
-import {AccountService} from "./accountService";
-import {HttpError} from "../errorHandler/HttpError";
-import bcrypt from "bcryptjs";
-import {logger} from "../Logger/winston";
-import {UserDbModel} from "../schemas/user.schema";
-import {User} from "../model/User";
+
 import crypto from "crypto";
-import * as tokenService from "../utils/jwt"
+
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+
+import {HttpError} from "../errorHandler/HttpError";
+import {logger} from "../Logger/winston";
+import {User} from "../model/User";
+import {UserDbModel} from "../schemas/user.schema";
+import * as tokenService from "../utils/jwt"
+
+
+import {AccountService} from "./accountService";
 
 
 

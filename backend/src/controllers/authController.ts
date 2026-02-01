@@ -161,27 +161,7 @@ export const me = async (req: Request, res: Response, next: NextFunction) => {
         },
     })
 }
-// export const logout = async (req: Request, res: Response, next: NextFunction) => {
-//     try {
-//         const token = req.body?.token || req.headers.authorization?.split(' ')[1];
-//
-//         console.log("logout token:", token);
-//         if (!token) {
-//             return next(new HttpError(400, 'No refresh token provided'));
-//         }
-//
-//        await service.logout(token);
-//         res.cookie('token', "");
-//
-//         res.status(200).json({
-//             status: 'success',
-//             message: 'Logged out successfully',
-//         });
-//
-//     } catch (error) {
-//         next(error);
-//     }
-// };
+
 
 export const refresh = async (req: Request, res: Response, next: NextFunction) => {
     const refreshToken = req.body?.refreshToken || req.headers.authorization?.split(' ')[1] || req.cookies?.refreshToken;
