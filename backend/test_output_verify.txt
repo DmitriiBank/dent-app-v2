@@ -1,4 +1,0 @@
-
-> ts-template@1.0.0 test
-> jest --runInBand tests/quizResult.test.ts
-

@@ -3,5 +3,14 @@ node_modules/
 dist/
 build/
 coverage/
-.DS_Store
 *.log
+
+# system files
+.DS_Store
+
+# test outputs
+test_output.txt
+test_output_verify.txt
+
+# env
+.env
