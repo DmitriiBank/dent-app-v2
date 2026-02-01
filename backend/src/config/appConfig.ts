@@ -1,34 +1,33 @@
-
-import dotenv from "dotenv";
-import path from "node:path";
 import {readFileSync} from "node:fs";
-dotenv.config();
+import path from "node:path";
 
-export const PORT= process.env.PORT;
+import {env} from "./env";
+
+export const PORT = env.PORT;
 export const baseUrl = `http://localhost:${PORT}`;
-export const db = process.env.DATABASE!;
+export const db = env.DATABASE!;
 
 const jsonPath = path.resolve(__dirname, "./app-config", "app-config.json");
 const appConf = JSON.parse(readFileSync(jsonPath, "utf-8"));
 
 export interface AppConfig {
-    port:number,
-    skipRoutes:string[],
+    port: number,
+    skipRoutes: string[],
     pathRoles: Record<string, string[]>,
-    checkIdRoutes:string[],
-    mongoUri:string,
-    jwt:{
-        secret:string,
-        exp:string|number
+    checkIdRoutes: string[],
+    mongoUri: string,
+    jwt: {
+        secret: string,
+        exp: string | number
     },
-    logLevel:string
+    logLevel: string
 }
 
-export const configuration:AppConfig = {
+export const configuration: AppConfig = {
     ...appConf,
     mongoUri: db || "dev db address",
-    jwt:{
-        secret: process.env.JWT_SECRET || "super-secret",
-        exp: process.env.JWT_EXPIRES_IN || "90d"
+    jwt: {
+        secret: env.JWT_ACCESS_SECRET || "super-secret",
+        exp: env.JWT_EXPIRES_IN || "90d"
     }
 }

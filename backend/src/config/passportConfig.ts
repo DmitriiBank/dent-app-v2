@@ -1,9 +1,11 @@
-import dotenv from 'dotenv';
 
-dotenv.config();
 import passport from 'passport';
 import {Profile, Strategy as GoogleStrategy} from 'passport-google-oauth20';
+
+import { logger } from "../Logger/winston";
 import {UserDbModel} from '../schemas/user.schema';
+
+import { env } from "./env";
 
 
 // console.log('🔧 GOOGLE OAuth Config:', {
@@ -13,38 +15,28 @@ import {UserDbModel} from '../schemas/user.schema';
 //     CALLBACK_URL: `${process.env.SERVER_URL || 'http://localhost:3555'}/api/v1/users/login/google/callback`
 // });
 export const configurePassport = () => {
+    if (!env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET) {
+        logger.warn("Google OAuth not configured. Skipping Google strategy.");
+        return;
+    }
     passport.use(
         new GoogleStrategy(
             {
-                clientID: process.env.GOOGLE_CLIENT_ID!,
-                clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-                callbackURL: `${process.env.SERVER_URL || 'http://localhost:3555'}/api/v1/auth/google/callback`,
+                clientID: env.GOOGLE_CLIENT_ID!,
+                clientSecret: env.GOOGLE_CLIENT_SECRET!,
+                callbackURL: `${env.SERVER_URL || 'http://localhost:3555'}/api/v1/auth/google/callback`,
                 passReqToCallback: false
             },
             async (_token, _refreshToken, profile, done) => {
                 try {
-                    console.log("🔍 Strategy called with profile:", {
+                    logger.info("Google OAuth profile received", {
                         id: profile?.id,
                         email: profile?.emails?.[0]?.value,
                         name: profile?.displayName
                     });
 
-                    let user = await UserDbModel.findOne({googleId: profile.id});
+                    const user = await findOrCreateUser(profile)
 
-                    if (!user) {
-                        console.log("📝 Creating new user");
-                        user = await UserDbModel.create({
-                            name: profile.displayName,
-                            email: profile.emails?.[0].value,
-                            googleId: profile.id,
-                            avatar: profile.photos?.[0].value,
-                            provider: "google",
-                        });
-                        console.log("✅ User created:", user._id);
-                        console.log(user)
-                    } else {
-                        console.log("✅ Existing user found:", user._id);
-                    }
                     done(null, user);
                 } catch (err) {
                     console.error("🔥 GoogleStrategy error:", err);
@@ -72,7 +64,7 @@ export const configurePassport = () => {
 
 export const findOrCreateUser = async (profile: Profile) => {
     try {
-        console.log("🔍 Strategy called with profile:", {
+        logger.info("Google OAuth profile received", {
             id: profile?.id,
             email: profile?.emails?.[0]?.value,
             name: profile?.displayName
@@ -81,7 +73,7 @@ export const findOrCreateUser = async (profile: Profile) => {
         let user = await UserDbModel.findOne({googleId: profile.id});
 
         if (!user) {
-            console.log("📝 Creating new user");
+            logger.info("Creating new Google user");
             user = await UserDbModel.create({
                 name: profile.displayName,
                 email: profile.emails?.[0].value,
@@ -89,11 +81,10 @@ export const findOrCreateUser = async (profile: Profile) => {
                 avatar: profile.photos?.[0].value,
                 provider: "google",
             });
-            console.log("✅ User created:", user._id);
-            console.log(user)
+            logger.info("Google user created", { userId: user._id });
         }
         return user;
     } catch (err) {
-        console.error("🔥 Google fetch user error:", err);
+        logger.error("Google fetch user error", err as Error);
     }
 };

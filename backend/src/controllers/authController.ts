@@ -1,24 +1,23 @@
-import {UserDbModel} from '../schemas/user.schema';
-import {HttpError} from '../errorHandler/HttpError';
-import {sendEmail} from '../utils/email';
 import {NextFunction, Request, Response} from "express";
+
+import {env} from "../config/env";
+import {HttpError} from '../errorHandler/HttpError';
 import {logger} from "../Logger/winston";
+import {User} from "../model/User";
+import {UserDbModel} from '../schemas/user.schema';
 import {
     accountServiceImplMongo as service
 } from "../services/AccountServiceImplMongo";
-import {AuthRequest} from "../utils/quizTypes";
-import {asAuth} from "../utils/tools";
+import {sendEmail} from '../utils/email';
 import {
     createSendToken,
     saveToken,
     signRefreshToken,
     signToken
 } from "../utils/jwt";
-import {User} from "../model/User";
-import jwt from "jsonwebtoken";
+import {AuthRequest} from "../utils/quizTypes";
+import {asAuth} from "../utils/tools";
 
-import axios from "axios";
-import {CookieOptions} from "express";
 
 export const signup = async (req: Request, res: Response, next: NextFunction) => {
     const body = req.body;
@@ -47,7 +46,7 @@ export const forgotPassword = async (req: Request, res: Response, next: NextFunc
 
     const resetToken = user.createPasswordResetToken();
     await user.save({validateBeforeSave: false});
-    const frontendUrl = process.env.NODE_ENV === 'development'
+    const frontendUrl = env.NODE_ENV === 'development'
         ? 'http://localhost:5173'
         : 'https://dent-app-v2.vercel.app';
     const resetURL = `${frontendUrl}/users/resetPassword/${resetToken}`;
@@ -78,12 +77,12 @@ export const forgotPassword = async (req: Request, res: Response, next: NextFunc
 export const resetPassword = async (req: Request, res: Response, next: NextFunction) => {
     const token = req.params.token;
     if (!token) {
-        logger.error(`${new Date().toISOString()} => Token is empty`);
+        logger.error("Token is empty");
         throw new HttpError(400, "Token is empty");
     }
     const {password, passwordConfirm} = req.body;
     if (!password || !passwordConfirm) {
-        logger.error(`${new Date().toISOString()} => Password invalid`);
+        logger.error("Password invalid");
         throw new HttpError(400, "Password invalid");
     }
     const result = await service.resetPassword(token, password, passwordConfirm);
@@ -96,7 +95,7 @@ export const updatePassword = asAuth(async (req: AuthRequest, res: Response, nex
     const userId = req.user._id;
     const {newPassword, newPasswordConfirm, passwordCurrent} = req.body;
     if (!newPassword || !newPasswordConfirm) {
-        logger.error(`${new Date().toISOString()} => New password invalid`);
+        logger.error("New password invalid");
         throw new HttpError(400, "New password invalid");
     }
 
@@ -120,19 +119,19 @@ export const googleCallback = async (req: Request, res: Response, next: NextFunc
 
         res.cookie("token", token, {
             httpOnly: true,
-            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-            secure: process.env.NODE_ENV === "production",
+            sameSite: env.NODE_ENV === "production" ? "none" : "lax",
+            secure: env.NODE_ENV === "production",
             maxAge: 15 * 60 * 1000,
         });
 
 
         res.cookie("refreshToken", refreshToken, {
             httpOnly: true,
-            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-            secure: process.env.NODE_ENV === "production",
+            sameSite: env.NODE_ENV === "production" ? "none" : "lax",
+            secure: env.NODE_ENV === "production",
             maxAge: 7 * 24 * 60 * 60 * 1000,
         });
-        const redirectUrl = new URL(`${process.env.GOOGLE_CLIENT_URL}/auth/success`);
+        const redirectUrl = new URL(`${env.GOOGLE_CLIENT_URL}/auth/success`);
 
         res.redirect(redirectUrl.toString());
 
@@ -143,24 +142,24 @@ export const googleCallback = async (req: Request, res: Response, next: NextFunc
 
 export const me = async (req: Request, res: Response, next: NextFunction) => {
     const user = req.user as User;
-   if(!user) {
-       return res.status(401).json({
-           status: 'error',
-           message: 'User does not exist'
-       })
-   }
-       res.status(200).json({
-           status: 'success',
-           data: {
-               _id: user._id,
-               name: user.name,
-               email: user.email,
-               role: user.role,
-               avatar: user.avatar || null,
-               provider: user.provider || "local",
-               testResults: user.testResults || [],
-           },
-       })
+    if (!user) {
+        return res.status(401).json({
+            status: 'error',
+            message: 'User does not exist'
+        })
+    }
+    res.status(200).json({
+        status: 'success',
+        data: {
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            avatar: user.avatar || null,
+            provider: user.provider || "local",
+            testResults: user.testResults || [],
+        },
+    })
 }
 // export const logout = async (req: Request, res: Response, next: NextFunction) => {
 //     try {
@@ -203,7 +202,7 @@ export const logout = async (req: Request, res: Response, next: NextFunction) =>
         const refreshToken = req.cookies?.refreshToken;
 
         if (!refreshToken) {
-            throw new HttpError(401,"No refresh token provided")
+            throw new HttpError(401, "No refresh token provided")
         }
         await service.logout(refreshToken);
         res.clearCookie('token');

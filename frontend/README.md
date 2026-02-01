@@ -1,4 +1,4 @@
-# Quiz App Frontend
+# Dent App Frontend
 
 React application for the Quiz App, built with Vite and TypeScript.
 

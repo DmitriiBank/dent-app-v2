@@ -1,33 +1,36 @@
 import 'express-async-errors';
-import express, {Application, NextFunction, Request, Response} from 'express'
-import {errorHandler} from "./errorHandler/errorHandler";
-import morgan from "morgan";
-import * as fs from "node:fs";
-import helmet from 'helmet';
-import rateLimit from 'express-rate-limit';
-import {userRouter} from "./routes/userRouter";
-import {quizRouter} from "./routes/quizRouter";
-import swaggerUi from "swagger-ui-express"
 import path from "node:path";
-import {sanitize} from "express-mongo-sanitize";
-import hpp from 'hpp';
-import qs from 'qs';
-import swaggerDoc from "../docs/openapi.json";
-import cors from "cors";
-import {baseUrl, PORT} from "./config/appConfig";
-import passport from 'passport';
+
 import cookieParser from "cookie-parser";
-import './config/passportConfig';
-import {configurePassport} from "./config/passportConfig";
+import cors from "cors";
+import express, {Application, NextFunction, Request, Response} from 'express'
+import {sanitize} from "express-mongo-sanitize";
+import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
+import hpp from 'hpp';
+import morgan from "morgan";
+import passport from 'passport';
+import qs from 'qs';
+import swaggerUi from "swagger-ui-express"
+
+import swaggerDoc from "../docs/openapi.json";
+
+import {baseUrl, PORT} from "./config/appConfig";
+import {env} from "./config/env";
+import {configurePassport} from './config/passportConfig';
+import {errorHandler} from "./errorHandler/errorHandler";
+import {logger} from "./Logger/winston";
 import {authRouter} from "./routes/authRoutes";
+import {quizRouter} from "./routes/quizRouter";
+import {userRouter} from "./routes/userRouter";
 
 export const createApp = () => {
     //=======load environment=====
 
     const __dirname = path.resolve();
     const app: Application = express();
-    const SERVER = process.env.SERVER_URL;
-    const FRONT = process.env.GOOGLE_CLIENT_URL;
+    const SERVER = env.SERVER_URL;
+    const FRONT = env.GOOGLE_CLIENT_URL;
     app.use(cookieParser());
 
     app.set('trust proxy', 1);
@@ -45,20 +48,13 @@ export const createApp = () => {
         // crossOriginOpenerPolicy: { policy: "same-origin-allow-popups" },
     }));
 
-    // if (process.env.NODE_ENV === 'development') {
-    //     app.use(morgan('dev'));
-    // }
-
-    // const logsDir = path.join(process.cwd(), 'logs');
-    // if (!fs.existsSync(logsDir)) {
-    //     fs.mkdirSync(logsDir, {recursive: true});
-    // }
-
-    // const accessLogStream = fs.createWriteStream(path.join(logsDir, 'access.log'), {flags: 'a'});
-    // const errorLogStream = fs.createWriteStream(path.join(logsDir, 'error.log'), {flags: 'a'});
-
-    // app.use(morgan('combined', {stream: accessLogStream}))
-
+    app.use(
+        morgan("combined", {
+            stream: {
+                write: (message) => logger.info(message.trim()),
+            },
+        })
+    );
 
     //===============Middleware============
     app.use(express.json({limit: '10kb'}));
@@ -138,8 +134,8 @@ export const createApp = () => {
 export const launchServer = () => {
     const app = createApp();
     app.listen(PORT, () => {
-        console.log(`🚀 App running at ${baseUrl}`);
-        console.log(`🌍 SERVER_URL: ${process.env.SERVER_URL}`);
-        console.log(`🔗 GOOGLE_CLIENT_URL: ${process.env.GOOGLE_CLIENT_URL}`);
+        logger.info(`App running at ${baseUrl}`);
+        logger.info(`SERVER_URL: ${env.SERVER_URL ?? "not set"}`);
+        logger.info(`GOOGLE_CLIENT_URL: ${env.GOOGLE_CLIENT_URL ?? "not set"}`);
     });
 };

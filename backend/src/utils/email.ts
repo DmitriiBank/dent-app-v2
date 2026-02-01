@@ -1,5 +1,8 @@
 import nodemailer, { TransportOptions } from 'nodemailer';
 
+import { env } from "../config/env";
+import { logger } from "../Logger/winston";
+
 interface EmailOptions {
   email: string;
   subject: string;
@@ -19,21 +22,21 @@ export const sendEmail = async (options: EmailOptions): Promise<void> => {
 // });
 
   const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST,
-    port: Number(process.env.EMAIL_PORT) || 587,
+    host: env.EMAIL_HOST,
+    port: Number(env.EMAIL_PORT) || 587,
     auth: {
-      user: process.env.EMAIL_USERNAME,
-      pass: process.env.EMAIL_PASSWORD,
+      user: env.EMAIL_USERNAME,
+      pass: env.EMAIL_PASSWORD,
     },
   } as TransportOptions);
 
   const mailOptions = {
-    from: process.env.EMAIL_FROM,
+    from: env.EMAIL_FROM,
     to: options.email,
     subject: options.subject,
     text: options.message,
   };
 
   await transporter.sendMail(mailOptions);
-  console.log(`📨 Email sent to ${options.email}`);
+  logger.info(`Email sent to ${options.email}`);
 };

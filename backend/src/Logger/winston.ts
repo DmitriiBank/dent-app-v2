@@ -1,12 +1,13 @@
 import winston from 'winston';
-import {configuration} from "../config/appConfig";
+
+import {env} from "../config/env";
 
 export const logger = winston.createLogger({
-    level: configuration.logLevel,
-    format: winston.format.json(),
-    transports: [
-        new winston.transports.Console(),
-        new winston.transports.File({filename: 'error.log', level: "error"}),
-        new winston.transports.File({filename: 'combine.log'}),
-    ]
-})
+    level: env.LOG_LEVEL,
+    format: winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.errors({stack: true}),
+        winston.format.json()
+    ),
+    transports: [new winston.transports.Console()],
+});

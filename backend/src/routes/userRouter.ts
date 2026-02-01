@@ -1,21 +1,22 @@
 import express from "express";
-import * as userController from '../controllers/userController';
-import * as authController from '../controllers/authController';
-import * as authService from '../middleware/authMiddleware';
-import {Roles} from "../utils/quizTypes";
-import passport from "passport";
 
+import * as authController from '../controllers/authController';
+import * as userController from '../controllers/userController';
+import * as authService from '../middleware/authMiddleware';
+import { validateRequest } from "../middleware/validateRequest";
+import {Roles} from "../utils/quizTypes";
+import { refreshSchema, updatePasswordSchema } from "../validation/authSchemas";
+import { updateMeSchema } from "../validation/userSchemas";
 export const userRouter = express.Router()
 
-userRouter.post('/refresh', authController.refresh);
-
+userRouter.post('/refresh', validateRequest(refreshSchema), authController.refresh);
  userRouter.use(authService.protect);
 
 userRouter.get('/me', authController.me);
 userRouter.post('/logout', authController.logout);
 
-userRouter.patch('/updatePassword',  authController.updatePassword);
-userRouter.patch('/updateMe',   userController.updateMe)
+userRouter.patch('/updatePassword', validateRequest(updatePasswordSchema), authController.updatePassword);
+userRouter.patch('/updateMe', validateRequest(updateMeSchema), userController.updateMe)
 userRouter.delete('/deleteMe',  userController.deleteMe)
 
 userRouter.use(authService.restrictTo(<Roles>'admin'));

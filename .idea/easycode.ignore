@@ -4,7 +4,7 @@ node_modules/
 dist/
 vendor/
 cache/
-.*/
+.gitignore/
 *.min.*
 *.test.*
 *.spec.*

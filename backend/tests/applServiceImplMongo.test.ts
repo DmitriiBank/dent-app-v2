@@ -2,6 +2,8 @@ import { beforeAll, describe, expect, it } from '@jest/globals';
 
 process.env.DATABASE ??= 'mongodb://user:<PASSWORD>@localhost/test';
 process.env.DATABASE_PASSWORD ??= 'secret';
+process.env.JWT_ACCESS_SECRET ??= 'test-access-secret';
+process.env.JWT_REFRESH_SECRET ??= 'test-refresh-secret';
 
 let ApplServiceImplMongoClass: typeof import('../src/services/ApplServiceImplMongo').ApplServiceImplMongo;
 let HttpErrorClass: typeof import('../src/errorHandler/HttpError').HttpError;

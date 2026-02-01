@@ -1,27 +1,18 @@
-import jwt, {Secret} from "jsonwebtoken";
 import {Response} from "express";
+import jwt from "jsonwebtoken";
+
+import { env } from "../config/env";
 import {User} from "../model/User";
 import {TokenDbModel} from "../schemas/token.schema";
-import {refresh} from "../controllers/authController";
 
-const ACCESS_EXPIRES_MS = 15 * 60 * 1000; // 15 minutes
-const REFRESH_EXPIRES_MS = 7; // 7 days
-
-const validateEnv = () => {
-    if (!process.env.JWT_ACCESS_SECRET || !process.env.JWT_REFRESH_SECRET) {
-        throw new Error("JWT secrets are missing");
-    }
-};
-
-validateEnv();
 
 export const signToken = (id: string) =>
-    jwt.sign({id}, process.env.JWT_ACCESS_SECRET as Secret, {
+    jwt.sign({id}, env.JWT_ACCESS_SECRET, {
         expiresIn: "15m",
     });
 
 export const signRefreshToken = (id: string) =>
-    jwt.sign({id}, process.env.JWT_REFRESH_SECRET as Secret, {
+    jwt.sign({id},env.JWT_REFRESH_SECRET, {
         expiresIn: "7d",
     });
 
@@ -56,17 +47,9 @@ export const createSendToken = async (user: User,
 
     res.cookie("token", token, {
        httpOnly: true,
-        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-        secure: process.env.NODE_ENV === "production",
+        sameSite:env.NODE_ENV === "production" ? "none" : "lax",
+        secure:env.NODE_ENV === "production",
         maxAge: 15 * 60 * 1000,
-    });
-
-
-    res.cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-        secure: process.env.NODE_ENV === "production",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     await saveToken(user._id, refreshToken);

@@ -1,10 +1,12 @@
 import {NextFunction, Request, RequestHandler, Response} from "express";
-import {UserDbModel} from "../schemas/user.schema";
-import {HttpError} from "../errorHandler/HttpError";
 import jwt from "jsonwebtoken";
+
+import { env } from "../config/env";
+import {HttpError} from "../errorHandler/HttpError";
+import { logger } from "../Logger/winston";
+import {UserDbModel} from "../schemas/user.schema";
 import {AuthRequest, Roles} from "../utils/quizTypes";
 import {asAuth} from "../utils/tools";
-
 
 // ---- JWT Payload interface ----
 interface JWTPayload {
@@ -24,10 +26,9 @@ export const protect: RequestHandler = async (req: Request, res: Response, next:
         (req.headers.authorization?.startsWith("Bearer") &&
             req.headers.authorization.split(" ")[1]);
 
-    console.log("protected ", token)
     if (!token) return next(new HttpError(401, 'You are not logged in'));
     try {
-        const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET!) as JWTPayload;
+        const decoded = jwt.verify(token, env.JWT_ACCESS_SECRET!) as JWTPayload;
 
         const currentUser = await UserDbModel.findById(decoded.id);
         if (!currentUser) {
@@ -42,6 +43,7 @@ export const protect: RequestHandler = async (req: Request, res: Response, next:
 
         next();
     } catch (e) {
+        logger.warn("Invalid auth token");
         next(new HttpError(401, 'Invalid token'));
     }
 };
