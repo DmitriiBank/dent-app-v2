@@ -7,7 +7,7 @@
     "test": "jest --runInBand",
     "test:watch": "jest --watch",
     "test:e2e": "jest --runInBand --testPathPattern=e2e",
-    "build": "tsc",
+    "build": "tsc && node ./scripts/copy-app-config.js",
     "start": "node ./build/app.js",
     "start-server-dev": "tsx watch src/app.ts dev",
     "start:dev": "tsx watch src/app.ts dev",
