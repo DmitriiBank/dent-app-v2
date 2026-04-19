@@ -1,85 +1,179 @@
-# Dent App Project
+# Dent App
 
-This is a full-stack Quiz Application built with the MERN stack (MongoDB, Express, React, Node.js).
+Full-stack educational quiz platform for dentistry topics. The project consists of a TypeScript/Express/MongoDB backend and a React/Vite frontend.
+
+The current codebase supports:
+- authentication with email/password and Google OAuth
+- role-based access for `user`, `teacher`, and `admin`
+- quiz passing and result storage
+- unlimited quiz retakes for teachers and admins
+- admin CRUD for users, quizzes, and quiz questions
+- question images by URL, local path, or uploaded file encoded as `data:image`
+- audit logging for admin CRUD actions
 
 ## Project Structure
 
-- **backend**: Node.js/Express server with MongoDB connection. Handles authentication, quiz management, and user results.
-- **frontend**: React application (Vite) with Redux for state management. Provides UI for taking quizzes, viewing results, and admin management.
+```text
+quiz-app/
+  backend/   Express + TypeScript + MongoDB API
+  frontend/  React + Vite client
+```
 
-## Getting Started
+## Tech Stack
 
-### Prerequisites
+- Backend: Node.js, TypeScript, Express, MongoDB, Mongoose, Zod, Passport, JWT, Winston, Jest
+- Frontend: React 19, TypeScript, Vite, Redux Toolkit, React Router, MUI
 
-- Node.js (v16 or higher)
-- MongoDB (local or Atlas URI)
+## Roles
 
-### Installation
+- `user`: can log in, take quizzes once, and view personal results
+- `teacher`: can browse student results and retake quizzes without limit
+- `admin`: can manage users, quizzes, questions, and view audit logs
 
-1.  **Clone the repository:**
-    ```bash
-    git clone <repository-url>
-    cd quiz-app
-    ```
+## Local Development
 
-2.  **Install Backend Dependencies:**
-    ```bash
-    cd backend
-    npm install
-    ```
+### 1. Install dependencies
 
-3.  **Install Frontend Dependencies:**
-    ```bash
-    cd ../frontend
-    npm install
-    ```
+```bash
+cd backend
+npm install
 
-### Configuration
+cd ../frontend
+npm install
+```
 
-1.  **Backend:**
-    - Create a `.env` file in the `backend` directory.
-    - Add the following variables:
-      ```env
-      PORT=3555
-      DATABASE=mongodb://localhost:27017/quiz-app
-      JWT_ACCESS_SECRET=your-very-secure-secret-key-min-32-chars
-      JWT_EXPIRES_IN=90d
-      JWT_COOKIE_EXPIRES_IN=90
-      NODE_ENV=development
-      ```
+### 2. Configure environment
 
-2.  **Frontend:**
-    - Create a `.env` file in the `frontend` directory (optional if using default localhost:5173).
-    - Add:
-      ```env
-      VITE_API_URL=http://localhost:5173
-      ```
+Backend requires a `.env` file in `backend/`.
 
-### Running the Application
+Minimum required variables:
 
-1.  **Start Backend:**
-    ```bash
-    cd backend
-    npm start
-    # OR for development with watch mode:
-    npm run start-server-dev
-    ```
+```env
+NODE_ENV=development
+PORT=3555
+DATABASE=mongodb://localhost:27017/dent_app
+JWT_ACCESS_SECRET=replace-with-a-secure-secret
+JWT_REFRESH_SECRET=replace-with-another-secure-secret
+JWT_EXPIRES_IN=90d
+SERVER_URL=http://localhost:3555
+GOOGLE_CLIENT_URL=http://localhost:5173
+```
 
-2.  **Start Frontend:**
-    ```bash
-    cd frontend
-    npm run start-dev
-    ```
+Optional email/OAuth variables:
 
-3.  Open your browser at `http://localhost:5173`.
+```env
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+EMAIL_HOST=
+EMAIL_PORT=
+EMAIL_USERNAME=
+EMAIL_PASSWORD=
+EMAIL_FROM=
+LOG_LEVEL=info
+```
 
-## Features
+Frontend optionally supports a `.env` file in `frontend/`:
 
-- **Authentication**: User signup, login, and Google OAuth.
-- **Quizzes**: Browse and take quizzes.
-- **Results**: View your test history and scores.
-- **Admin Panel**: Manage quizzes and view all user results (requires 'admin' role).
+```env
+VITE_API_BASE_URL=http://localhost:3555
+```
 
-## API Documentation
+If `VITE_API_BASE_URL` is omitted, the frontend defaults to `http://localhost:3555`.
 
-The backend provides Swagger documentation at `http://localhost:3555/docs` when the server is running.
+### 3. Start services
+
+Backend:
+
+```bash
+cd backend
+npm run start:dev
+```
+
+Frontend:
+
+```bash
+cd frontend
+npm run start-dev
+```
+
+Open the app at `http://localhost:5173`.
+
+## Main Routes
+
+Frontend routes:
+
+- `/quizzes`
+- `/quizzes/:quizId`
+- `/quizzes/:quizId/results`
+- `/users/login`
+- `/users/signup`
+- `/users/me`
+- `/teacher/results`
+- `/admin/users`
+- `/admin/content`
+- `/lectures`
+- `/anatomy`
+
+Backend API base:
+
+- `http://localhost:3555/api/v1`
+
+Swagger/OpenAPI UI:
+
+- `http://localhost:3555/docs`
+
+## Backend Capabilities
+
+- `POST /api/v1/auth/signup`
+- `POST /api/v1/auth/login`
+- `POST /api/v1/auth/forgotPassword`
+- `POST /api/v1/auth/resetPassword/:token`
+- `POST /api/v1/auth/refresh`
+- `GET /api/v1/users/me`
+- `PATCH /api/v1/users/updateMe`
+- `PATCH /api/v1/users/updatePassword`
+- `DELETE /api/v1/users/deleteMe`
+- `GET /api/v1/users`
+- `POST /api/v1/users`
+- `PATCH /api/v1/users/:id`
+- `DELETE /api/v1/users/:id`
+- `GET /api/v1/users/audit-logs`
+- `GET /api/v1/quizzes`
+- `GET /api/v1/quizzes/:id`
+- `POST /api/v1/quizzes`
+- `PATCH /api/v1/quizzes/:id`
+- `DELETE /api/v1/quizzes/:id`
+- `GET /api/v1/quizzes/:id/questions`
+- `POST /api/v1/quizzes/:id/questions`
+- `PATCH /api/v1/quizzes/:id/questions/:questionId`
+- `DELETE /api/v1/quizzes/:id/questions/:questionId`
+- `POST /api/v1/quizzes/:id/results`
+
+## Testing
+
+Backend build:
+
+```bash
+cd backend
+npm run build
+```
+
+Frontend build:
+
+```bash
+cd frontend
+npm run build
+```
+
+Backend tests:
+
+```bash
+cd backend
+npm test
+```
+
+## Notes
+
+- Teachers and admins can retake quizzes without duplicate-result rejection.
+- Admin content management supports question images from external URLs, local asset paths, and uploaded files converted to `data:image`.
+- Admin CRUD actions are written to the audit log collection.

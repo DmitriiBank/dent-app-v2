@@ -1,93 +1,170 @@
-# Dent App API (Backend)
+# Dent App Backend
 
-Production-ready REST API for a dentistry learning platform. The backend is built with **TypeScript + Express**, uses **MongoDB** for persistence, and provides authentication (JWT + Google OAuth), quizzes, and user management endpoints. The project is structured with clear configuration, validation, logging, and testing to be portfolio-ready.
+TypeScript + Express API for the Dent App platform.
 
-## ✨ Features
+## What The Backend Does
 
-- RESTful endpoints for users, quizzes, and questions
-- JWT authentication with refresh tokens
-- Google OAuth 2.0 sign-in
-- Request validation with Zod
-- Centralized error handling and structured logging
-- Swagger/OpenAPI docs
-- Dockerized API + MongoDB
-- Unit and e2e tests with Jest + Supertest
+- authenticates users with local credentials and Google OAuth
+- issues JWT-based sessions
+- manages users with `user`, `teacher`, and `admin` roles
+- stores quizzes, questions, and quiz results in MongoDB
+- allows admin CRUD for quizzes, questions, and users
+- lets teachers and admins retake quizzes without one-attempt restriction
+- records admin CRUD actions in audit logs
+- exposes Swagger documentation at `/docs`
 
-## 🧰 Tech Stack
+## Stack
 
-- **Node.js**, **TypeScript**, **Express**
-- **MongoDB + Mongoose**
-- **JWT**, **Passport.js**
-- **Zod** for validation
-- **Winston** for logging
-- **Jest**, **Supertest**
+- Node.js
+- TypeScript
+- Express
+- MongoDB + Mongoose
+- Passport Google OAuth
+- Zod validation
+- Winston logging
+- Jest + Supertest
 
-## ✅ Getting Started (Local)
+## Environment Variables
+
+Create `backend/.env` with at least:
+
+```env
+NODE_ENV=development
+PORT=3555
+DATABASE=mongodb://localhost:27017/dent_app
+JWT_ACCESS_SECRET=replace-with-a-secure-secret
+JWT_REFRESH_SECRET=replace-with-another-secure-secret
+JWT_EXPIRES_IN=90d
+SERVER_URL=http://localhost:3555
+GOOGLE_CLIENT_URL=http://localhost:5173
+LOG_LEVEL=info
+```
+
+Optional:
+
+```env
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+EMAIL_HOST=
+EMAIL_PORT=
+EMAIL_USERNAME=
+EMAIL_PASSWORD=
+EMAIL_FROM=
+```
+
+## Run Locally
 
 ```bash
 cd backend
-cp .env.example .env
 npm install
-npm run dev
+npm run start:dev
 ```
 
-API will be available at `http://localhost:3555`  
-Swagger docs: `http://localhost:3555/docs`
+Server:
 
-## 🐳 Run with Docker
+- API: `http://localhost:3555`
+- Swagger: `http://localhost:3555/docs`
+
+## Scripts
 
 ```bash
-cd backend
-cp .env.example .env
-docker compose up --build
+npm run start:dev    # development server with watch mode
+npm run build        # compile TypeScript and copy app config
+npm start            # run compiled app
+npm test             # full Jest suite
+npm run test:unit    # selected unit tests
+npm run test:e2e     # e2e tests
 ```
 
-## 📬 API Examples
+## Main API Routes
 
-### Health Check
+### Auth
 
-```bash
-curl http://localhost:3555/
-```
+- `POST /api/v1/auth/signup`
+- `POST /api/v1/auth/login`
+- `POST /api/v1/auth/forgotPassword`
+- `POST /api/v1/auth/resetPassword/:token`
+- `POST /api/v1/auth/refresh`
+- `GET /api/v1/auth/google`
+- `GET /api/v1/auth/google/callback`
 
-### Sign Up
+### User Self-Service
 
-```bash
-curl -X POST http://localhost:3555/api/v1/auth/signup \
-  -H "Content-Type: application/json" \
-  -d '{"name":"Alex","email":"alex@example.com","password":"password123","passwordConfirm":"password123"}'
-```
+- `POST /api/v1/users/logout`
+- `POST /api/v1/users/refresh`
+- `GET /api/v1/users/me`
+- `PATCH /api/v1/users/updateMe`
+- `PATCH /api/v1/users/updatePassword`
+- `DELETE /api/v1/users/deleteMe`
 
-### Login
+### Admin / Teacher
 
-```bash
-curl -X POST http://localhost:3555/api/v1/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"alex@example.com","password":"password123"}'
-```
+- `GET /api/v1/users`
+  - admin and teacher
+- `GET /api/v1/users/:id`
+  - admin and teacher
+- `POST /api/v1/users`
+  - admin only
+- `PATCH /api/v1/users/:id`
+  - admin only
+- `DELETE /api/v1/users/:id`
+  - admin only
+- `GET /api/v1/users/audit-logs`
+  - admin only
 
-## 📂 Backend Structure (high level)
+### Quizzes
 
-```
-backend/
-  src/
-    config/        # app + env config
-    controllers/   # route handlers
-    middleware/    # auth + validation
-    routes/        # route definitions
-    services/      # domain services
-    utils/         # helpers (JWT, email, etc.)
-    validation/    # Zod request schemas
-    errorHandler/  # centralized error handling
-```
+- `GET /api/v1/quizzes`
+- `GET /api/v1/quizzes/:id`
+- `POST /api/v1/quizzes`
+  - admin only
+- `PATCH /api/v1/quizzes/:id`
+  - admin only
+- `DELETE /api/v1/quizzes/:id`
+  - admin only
+- `POST /api/v1/quizzes/:id/results`
+  - authenticated users
 
-## 🧪 Testing
+### Questions
 
-```bash
-cd backend
-npm test
-```
+- `GET /api/v1/quizzes/:id/questions`
+  - authenticated users
+- `GET /api/v1/quizzes/:id/questions/:questionId`
+  - authenticated users
+- `POST /api/v1/quizzes/:id/questions`
+  - admin only
+- `PATCH /api/v1/quizzes/:id/questions/:questionId`
+  - admin only
+- `DELETE /api/v1/quizzes/:id/questions/:questionId`
+  - admin only
 
-## 📝 Notes
+## Validation Rules Worth Knowing
 
-- The backend currently uses **MongoDB** to avoid breaking existing functionality. If you want a PostgreSQL version, treat it as a separate migration task.
+- quiz title: minimum 3 characters
+- quiz description: minimum 10 characters
+- question text: minimum 5 characters
+- question options: between 2 and 10 items
+- `answer` must point to an existing option index
+- image/icon fields may be:
+  - `http://...`
+  - `https://...`
+  - `data:image/...`
+  - `blob:...`
+  - local asset path
+
+## Audit Logs
+
+The backend stores admin actions for:
+
+- user create/update/delete
+- quiz create/update/delete
+- question create/update/delete
+
+Audit log endpoint:
+
+- `GET /api/v1/users/audit-logs`
+
+## Notes
+
+- The backend uses `express.json({ limit: "5mb" })` to support data URL image payloads.
+- Current OpenAPI source file is stored in [docs/openapi.json](/Users/dmitrii/Desktop/BackEnd/quiz-app/backend/docs/openapi.json:1).
