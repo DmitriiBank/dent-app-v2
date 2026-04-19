@@ -14,6 +14,15 @@ export default defineConfig({
       open: true
     })],
   base: "/",
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3555',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
+  },
   build: {
     rollupOptions: {
       output: {

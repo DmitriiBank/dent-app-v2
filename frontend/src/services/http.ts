@@ -1,5 +1,5 @@
 
-const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3555').replace(/\/+$/, '');
+const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '');
 interface HttpOptions extends RequestInit {
     auth?: boolean;
     json?: unknown;
@@ -38,7 +38,11 @@ async function extractErrorMessage(res: Response) {
 
 
 export async function httpRequest<T>(url: string, options: HttpOptions = {}): Promise<T> {
-    const res = await fetch(API_BASE + url, {
+    const requestUrl = url.startsWith('http://') || url.startsWith('https://')
+        ? url
+        : `${API_BASE}${url}`;
+
+    const res = await fetch(requestUrl, {
         ...options,
         credentials: "include",
         headers: {

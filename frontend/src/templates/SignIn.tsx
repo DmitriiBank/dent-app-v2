@@ -175,7 +175,8 @@ export default function SignIn({submitFn, loginError, loading}: Props) {
     };
 
     const handleGoogleLogin = () => {
-        window.location.href = `${import.meta.env.VITE_API_BASE_URL}/api/v1/auth/google`;
+        const apiBase = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/+$/, '');
+        window.location.href = `${apiBase}/api/v1/auth/google`;
     };
 
     return (
