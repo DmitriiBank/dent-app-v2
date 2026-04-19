@@ -8,6 +8,7 @@ export interface AuthRequest extends Request {
 
 export enum Roles {
     USER = 'user',
+    TEACHER = 'teacher',
     ADMIN = 'admin',
     GUEST = 'guest'
 }

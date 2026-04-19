@@ -19,7 +19,6 @@ export class AccountServiceImplMongo implements AccountService {
 
 
     async signup(body: User): Promise<User>  {
-        console.log(body)
         const isExists = await UserDbModel.findOne({email: body.email})
         if(isExists){
             throw new HttpError(400, `User with email ${body.email} already exists`);
@@ -31,7 +30,6 @@ export class AccountServiceImplMongo implements AccountService {
         const user = await UserDbModel.findOne({email}).select('+password');
         if (!user || !(await user.correctPassword(password, user.password)))
             throw new HttpError(401, "Incorrect email or password");
-        console.log(user)
         return user;
     }
 

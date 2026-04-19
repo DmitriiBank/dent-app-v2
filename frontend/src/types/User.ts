@@ -33,3 +33,12 @@ export interface GetUsersResponseData  {
     status: string;
     data: User[];
 }
+
+export type AdminUserFormData = {
+    name: string;
+    email: string;
+    role: string;
+    password?: string;
+    passwordConfirm?: string;
+    avatar?: string;
+};

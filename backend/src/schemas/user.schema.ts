@@ -37,7 +37,6 @@ export const userSchema = new Schema<User>(
         password: {
             type: String,
             required: function () {
-                console.log('Please provide a password')
                 return this.provider !== 'google';
             },
             minlength: [8, 'Password must be more or equal then 8 characters'],
@@ -46,7 +45,6 @@ export const userSchema = new Schema<User>(
         passwordConfirm: {
             type: String,
             required: function () {
-                console.log('Please confirm your a password')
                 return this.provider !== 'google';
             },
             validate: {
@@ -128,9 +126,8 @@ userSchema.methods.correctPassword = async function (candidatePassword: string, 
 
 userSchema.methods.changedPasswordAfter = function (JWTTimestamp: number) {
     if (this.passwordChangedAt) {
-        const changedTimeStamp = ((this.passwordChangedAt.getTime() / 1000), 10);
+        const changedTimeStamp = Math.floor(this.passwordChangedAt.getTime() / 1000);
 
-        //console.log('Password changed at:', changedTimeStamp, 'JWT issued at:', JWTTimestamp);
         return JWTTimestamp < changedTimeStamp;
     }
     return false
@@ -140,7 +137,6 @@ userSchema.methods.createPasswordResetToken = function () {
     const resetToken = crypto.randomBytes(32).toString('hex');
     this.passwordResetToken = crypto.createHash('sha256').update(resetToken).digest('hex');
 
-    console.log({resetToken}, this.passwordResetToken);
     this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
     return resetToken;
 }

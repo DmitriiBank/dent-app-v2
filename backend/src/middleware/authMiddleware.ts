@@ -16,11 +16,7 @@ interface JWTPayload {
 }
 
 export const protect: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-    // console.log(req.headers.authorization)
-    // const authHeader = req.headers.authorization;
-    // const token = authHeader?.startsWith('Bearer ')
-    //     ? authHeader.split(' ')[1]
-    //     : null;
+
     const token =
         req.cookies?.token ||
         (req.headers.authorization?.startsWith("Bearer") &&
@@ -47,7 +43,7 @@ export const protect: RequestHandler = async (req: Request, res: Response, next:
         next(new HttpError(401, 'Invalid token'));
     }
 };
-;
+
 
 export const restrictTo = (...roles: Roles[]) => {
     return asAuth((req: AuthRequest, res: Response, next: NextFunction) => {

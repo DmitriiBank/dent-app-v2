@@ -17,15 +17,15 @@ import GoogleSuccess from "../servicePages/GoogleSuccess.tsx";
 import type {ReactNode} from "react";
 import RestorePass from "../servicePages/RestorePass.tsx";
 import ResetPass from "../servicePages/ResetPass.tsx";
+import AdminContentPage from "../servicePages/AdminContentPage.tsx";
+import { accessGroups } from "./access.ts";
 
 
 type AppRoute = {
     path: string;
     element: ReactNode;
-    allowedRoles?: Roles[];
+    allowedRoles?: readonly Roles[];
 };
-
-const protectedRoles = [Roles.USER, Roles.ADMIN];
 
 export const routes: AppRoute[]  = [
     {path: Paths.HOME, element:
@@ -34,16 +34,16 @@ export const routes: AppRoute[]  = [
     {
         path: `${Paths.HOME}/:quizId`,
         element: <QuizPage_lang />,
-        allowedRoles: protectedRoles,
+        allowedRoles: accessGroups.quizParticipants,
     },
     {
         path: `${Paths.HOME}/:quizId/results`,
         element: <ScorePageLang />,
-        allowedRoles: protectedRoles,
+        allowedRoles: accessGroups.resultViewers,
     },
     {path: Paths.LOGIN, element: <Login />},
     { path: Paths.GOOGLE, element: <GoogleSuccess />},
-    {path: Paths.LOGOUT, element: <Logout />, allowedRoles: protectedRoles,},
+    {path: Paths.LOGOUT, element: <Logout />, allowedRoles: accessGroups.quizParticipants,},
     {path: Paths.REGISTER, element: <Registration />},
     {path: Paths.RESTORE_PASS, element: <RestorePass />},
     {path: Paths.RESET_PASS, element: <ResetPass />},
@@ -52,12 +52,14 @@ export const routes: AppRoute[]  = [
     {
         path: `${Paths.ANATOMY}/:id`,
         element: <ToothPage />,
-       allowedRoles: protectedRoles,
+       allowedRoles: accessGroups.quizParticipants,
     },
 
     {path: Paths.OPTIONS, element: <Options />},
-    {path: Paths.MY_PAGE, element: <ScoreTable />,allowedRoles: protectedRoles,},
-    {path: Paths.ALL_USERS, element: <ScoreTable />,allowedRoles: protectedRoles,},
+    {path: Paths.MY_PAGE, element: <ScoreTable />,allowedRoles: accessGroups.quizParticipants,},
+    {path: Paths.ADMIN_USERS, element: <ScoreTable />,allowedRoles: accessGroups.adminOnly,},
+    {path: Paths.ADMIN_CONTENT, element: <AdminContentPage />,allowedRoles: accessGroups.adminOnly,},
+    {path: Paths.TEACHER_RESULTS, element: <ScoreTable />,allowedRoles: accessGroups.teacherOrAdmin,},
     {path: '/*', element: <ErrorPage />},
     {path: Paths.ERROR, element: <ErrorPage />},
 ] as const;

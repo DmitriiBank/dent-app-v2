@@ -9,38 +9,12 @@ import { useNavigate } from "react-router-dom";
 import {useState, useCallback} from "react";
 import { MenuIcon } from "lucide-react";
 import { MobileNavbar } from "./Navbar";
-// import {fetchCurrentUser} from "../../redux/slices/authSlice.ts";
+import { isAdmin, isTeacher } from "../../utils/permissions.ts";
 
 export const Header = () => {
-    // const dispatch = useAppDispatch();
     const { data} = useAppSelector((state) => state.auth);
     const navigate = useNavigate();
     const [open, setOpen] = useState(false);
-    console.log(data);
-
-    // useEffect(() => {
-    //     async function checkAuth() {
-    //         try {
-    //             if (!initialized) {
-    //                 await (fetchCurrentUser()).unwrap();
-    //             }
-    //         } catch {
-    //             console.error("❌ auth failed");
-    //         }
-    //     }
-    //     checkAuth()
-    // }, [initialized]);
-
-    // const { email, name, role, avatar } = useMemo(
-    //     () => ({
-    //         email: user?.email,
-    //         name: user?.name,
-    //         role: user?.role,
-    //         avatar: user?.avatar,
-    //
-    //     }),
-    //     []
-    // );
 
     const openMenu = useCallback(() => setOpen(true), []);
     const closeMenu = useCallback(() => setOpen(false), []);
@@ -73,24 +47,42 @@ export const Header = () => {
                     sx={{
                         display: "flex",
                         alignItems: "center",
+                        minWidth: 0,
+                        gap: 1,
                         ml: "auto",
-                        mr: "15px",
+                        mr: { xs: 0, sm: "15px" },
                     }}
                 >
                     {/*<Avatar sx={{ m: "3px" }}>{(name || email)?.[0]?.toUpperCase()}</Avatar>*/}
-                    <Avatar src={data?.avatar ?? undefined} sx={{ m: "7px" }} imgProps={{ referrerPolicy: "no-referrer" }}>{!data?.avatar &&  data?.name?.[0]?.toUpperCase()}</Avatar>
+                    <Avatar
+                        src={data?.avatar ?? undefined}
+                        sx={{ m: 0, width: { xs: 36, sm: 40 }, height: { xs: 36, sm: 40 }, flexShrink: 0 }}
+                        imgProps={{ referrerPolicy: "no-referrer" }}
+                    >
+                        {!data?.avatar &&  data?.name?.[0]?.toUpperCase()}
+                    </Avatar>
 
                     <Typography
                         className="nickName"
                         sx={{
                             color: "#E5E7EB",
-                            mr: 3,
-                            fontSize: 20,
+                            mr: { sm: 1, md: 3 },
+                            fontSize: { sm: 18, md: 20 },
                             cursor: "pointer",
+                            maxWidth: { sm: 160, md: 220, lg: 320 },
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
                             "&:hover": { textDecoration: "underline" },
                         }}
                         onClick={() =>
-                            navigate(data?.role === "admin" ? Paths.ALL_USERS : Paths.MY_PAGE)
+                            navigate(
+                                isAdmin(data?.role)
+                                    ? Paths.ADMIN_CONTENT
+                                    : isTeacher(data?.role)
+                                        ? Paths.TEACHER_RESULTS
+                                        : Paths.MY_PAGE
+                            )
                         }
                     >
                         {data?.name || data?.email}

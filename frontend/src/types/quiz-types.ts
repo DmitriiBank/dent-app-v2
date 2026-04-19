@@ -11,13 +11,16 @@ export enum Paths {
     LECTURES = '/lectures',
     ANATOMY = '/anatomy',
     MY_PAGE = "/users/me",
-    ALL_USERS = "/users/users_list",
+    ADMIN_USERS = "/admin/users",
+    ADMIN_CONTENT = "/admin/content",
+    TEACHER_RESULTS = "/teacher/results",
     RESTORE_PASS = "/users/forgotPassword",
     RESET_PASS = "/users/resetPassword/:token"
 }
 
 export enum Roles {
     USER = 'user',
+    TEACHER = 'teacher',
     ADMIN = 'admin',
     GUEST = 'guest'
 }
@@ -35,14 +38,18 @@ export type LoginData = {
 
 
 export interface Question {
+    _id?: string;
+    id?: string;
     question: string;
     options: string[];
     answer: number;
     image?: string;
     iframe?: string;
+    quiz?: string;
 }
 
 export interface Quiz {
+    _id?: string;
     id: string;
     title: string;
     description: string;
