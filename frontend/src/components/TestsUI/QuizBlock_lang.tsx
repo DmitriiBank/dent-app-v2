@@ -1,4 +1,5 @@
 import type {Quiz} from "../../types/quiz-types.ts";
+import { resolveAssetUrl } from "../../utils/resolveAssetUrl.ts";
 
 type Props = {
     quiz: Quiz,
@@ -15,7 +16,7 @@ export const QuizBlockLang = ({ quiz, onClick, isCompleted, score }: Props) => {
             onClick={() => onClick(quiz.id)}
         >
             <img
-                src={`${import.meta.env.BASE_URL}${quiz.icon}`}
+                src={resolveAssetUrl(quiz.icon)}
                 alt={quiz.title}
                 loading="lazy"
                 className="quiz-icon"

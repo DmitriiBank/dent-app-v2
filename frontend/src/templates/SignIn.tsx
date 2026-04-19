@@ -171,9 +171,7 @@ export default function SignIn({submitFn, loginError, loading}: Props) {
                 email: data.get("email") as string,
                 password: data.get("password") as string,
             });
-        } catch (error) {
-            console.error("Login error:", error);
-        }
+        } catch {}
     };
 
     const handleGoogleLogin = () => {

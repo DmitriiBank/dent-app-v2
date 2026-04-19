@@ -18,12 +18,12 @@ type Props = {
 export default function LectureViewerDialog({ open, title, src, images = [], onClose }: Props) {
     const [numPages, setNumPages] = React.useState(0);
     const [containerWidth, setContainerWidth] = React.useState(
-        window.innerWidth < 600 ? window.innerWidth : Math.min(1000, Math.floor(window.innerWidth * 0.85))
+        window.innerWidth < 600 ? Math.floor(window.innerWidth - 32) : Math.min(1000, Math.floor(window.innerWidth * 0.85))
     );
 
     React.useEffect(() => {
         const onResize = () =>
-            setContainerWidth(window.innerWidth < 600 ? window.innerWidth : Math.min(1000, Math.floor(window.innerWidth * 0.85)));
+            setContainerWidth(window.innerWidth < 600 ? Math.floor(window.innerWidth - 32) : Math.min(1000, Math.floor(window.innerWidth * 0.85)));
         window.addEventListener('resize', onResize);
         return () => window.removeEventListener('resize', onResize);
     }, []);
@@ -52,14 +52,13 @@ export default function LectureViewerDialog({ open, title, src, images = [], onC
                 sx={{ p: 0, pb: 2, maxHeight: '85vh' }}
             >
                 <Box
-                    sx={{
-                        mx: 'auto',
-                        width: '100%',
-                        maxWidth: containerWidth,
-                        // display: 'grid',
-                        gap: 2,              
-                    }}
-                >
+                sx={{
+                    mx: 'auto',
+                    width: '100%',
+                    maxWidth: containerWidth,
+                    gap: 2,              
+                }}
+            >
                     {isImagesMode ? (
                         images.map((url, idx) => (
                             <Box
@@ -76,7 +75,13 @@ export default function LectureViewerDialog({ open, title, src, images = [], onC
                                     src={url}
                                     alt={`${title} ${idx + 1}/${images.length}`}
                                     loading="lazy"
-                                    style={{ width: '100%', height: 'auto', display: 'block' }}
+                                    style={{
+                                        width: '100%',
+                                        maxHeight: '70vh',
+                                        height: 'auto',
+                                        objectFit: 'contain',
+                                        display: 'block'
+                                    }}
                                 />
                             </Box>
                         ))

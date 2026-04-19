@@ -19,16 +19,15 @@ const QuizSelectionPageLang = () => {
         canTake: boolean,
         score?: string | null
     }>>({});
-    console.log("QuizSelectionPageLang", user?.name)
-    const { _id, testResults } = useMemo(
+    const { _id, testResults, role } = useMemo(
         () => ({
             _id: user?._id,
             testResults: user?.testResults ?? [],
+            role: user?.role,
         }),
         [user]
     );
 
-    console.log(_id, testResults);
     useEffect(() => {
         const loadQuizzes = async () => {
             setLoading(true);
@@ -44,8 +43,6 @@ const QuizSelectionPageLang = () => {
     useEffect(() => {
         const loadTestStatus = async () => {
             if (!_id) {
-                console.log('Гостевой режим - все тесты не доступны');
-                // navigate(Paths.LOGIN, {replace: true});
                 return;
             }
 
@@ -61,7 +58,7 @@ const QuizSelectionPageLang = () => {
                 await Promise.all(allQuizzes.map(async (quiz) => {
                     try {
                         let canTake = true;
-                        if (testResults) canTake = await canTakeTest(quiz.id, testResults);
+                        if (testResults) canTake = await canTakeTest(quiz.id, testResults, role);
 
                         const testResult = testResults?.find((test: TestRecord) => test.quiz === quiz.id);
 
@@ -74,17 +71,13 @@ const QuizSelectionPageLang = () => {
                                     : undefined,
                         };
 
-                        // console.log(`Тест ${quiz.id}: canTake=${canTake}, score=${testResult?.points}/${testResult?.totalQuestions}`);
-                    } catch (error) {
-                        console.error(`Ошибка при проверке теста ${quiz.id}:`, error);
+                    } catch {
                         results[quiz.id] = {canTake: true};
                     }
                 }));
 
                 setTestStatus(results);
-                // console.log('Финальный статус тестов:', results);
-            } catch (error) {
-                console.error('Ошибка при загрузке статуса тестов:', error);
+            } catch {
                 const fallbackStatus: Record<string, {
                     canTake: boolean,
                     score?: string
@@ -99,7 +92,7 @@ const QuizSelectionPageLang = () => {
         };
 
         if (allQuizzes.length) loadTestStatus();
-    }, [_id, testResults, allQuizzes]);
+    }, [_id, testResults, allQuizzes, role]);
 
     const handleSelect = async (id: string) => {
         if (!_id) {

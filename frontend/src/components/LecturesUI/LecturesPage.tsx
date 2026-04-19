@@ -1,6 +1,6 @@
 // pages/LecturesPage.tsx
 import * as React from 'react';
-import { Container, Grid, Typography } from '@mui/material';
+import { Box, Container, Typography } from '@mui/material';
 import LectureCard from './LectureCard';
 const LectureViewerDialog = React.lazy(() => import('./LectureViewerDialog'));
 import { LECTURES } from '../../types/lecture.ts';
@@ -22,7 +22,17 @@ const LecturesPage= () =>  {
                 Выберите лекцию
             </Typography>
 
-            <Grid container spacing={3}>
+            <Box
+                sx={{
+                    display: 'grid',
+                    gap: 3,
+                    gridTemplateColumns: {
+                        xs: '1fr',
+                        sm: 'repeat(auto-fit, minmax(260px, 1fr))',
+                    },
+                    justifyItems: 'center',
+                }}
+            >
                 {LECTURES.map((lec) => (
                     <LectureCard
                         key={lec.id}
@@ -30,7 +40,7 @@ const LecturesPage= () =>  {
                         onOpen={handleOpen}
                     />
                 ))}
-            </Grid>
+            </Box>
 
             {active && (
                 <React.Suspense

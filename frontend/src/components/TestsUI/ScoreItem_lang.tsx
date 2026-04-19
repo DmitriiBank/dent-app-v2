@@ -26,7 +26,7 @@ export const ScoreItemLang = ({quiz, answer}: Props) => {
                     {statusLabel}
                 </span>
             </div>
-            {quiz.image && <ImageItem image={quiz.image} />}
+            {quiz.image && <ImageItem image={quiz.image} alt={quiz.question} />}
             <ul className="quiz-score__options">
                 {quiz.options.map((opt: string, idx) => {
                     let optionClass = 'quiz-score__option';

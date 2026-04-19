@@ -2,13 +2,15 @@
 
 import { Card, CardActionArea, CardContent, Box, Typography } from '@mui/material';
 import { styled, alpha } from '@mui/material/styles';
+import { useState } from 'react';
 import type {Tooth} from "../../types/tooth-types.ts";
 
 
 const Root = styled(Card)(({ theme }) => ({
-    height: 260,
-    width: 280,
-    margin: 20,
+    height: '100%',
+    width: '100%',
+    maxWidth: 320,
+    margin: 0,
     borderRadius: 20,
     backgroundColor: theme.palette.mode === 'dark' ? alpha('#0f172a', 0.6) : '#fff',
     border: `1px solid ${alpha(theme.palette.primary.main, 0.15)}`,
@@ -30,6 +32,7 @@ type Props = {
 };
 
 export default function ToothCard({ tooth, onClick }: Props) {
+    const [imageError, setImageError] = useState(false);
 
     return (
         <Root>
@@ -51,19 +54,28 @@ export default function ToothCard({ tooth, onClick }: Props) {
                             overflow: 'hidden',
                         }}
                     >
-                        <img
-                            src={tooth.icon}
-                            alt=""
-                            style={{
-                                width: '100%',
-                                height: '100%',
-                                objectFit: 'cover',
-                            }}
-                        />
+                        {imageError ? (
+                            <Typography variant="caption" color="text.secondary" textAlign="center" sx={{ px: 1 }}>
+                                Нет изображения
+                            </Typography>
+                        ) : (
+                            <img
+                                src={tooth.icon}
+                                alt={tooth.title}
+                                loading="lazy"
+                                style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    objectFit: 'cover',
+                                    display: 'block',
+                                }}
+                                onError={() => setImageError(true)}
+                            />
+                        )}
                     </Box>
 
-                    <CardContent sx={{ p: 0, display: 'grid', alignContent: 'start', gap: 0.5 }}>
-                        <Typography variant="h5" fontWeight={800}>
+                    <CardContent sx={{ p: 0, display: 'grid', alignContent: 'start', gap: 0.5, minWidth: 0 }}>
+                        <Typography variant="h5" fontWeight={800} sx={{ fontSize: { xs: '1.1rem', sm: '1.4rem' } }}>
                             {tooth.title}
                         </Typography>
                     </CardContent>

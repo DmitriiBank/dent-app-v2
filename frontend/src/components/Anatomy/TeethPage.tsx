@@ -21,7 +21,7 @@ const TeethPage = () => {
                     Анатомия зубов
                 </Typography>
 
-                <div className="quiz-categories">
+                <div className="quiz-categories" style={{ alignItems: 'stretch' }}>
                     {TEETH.map((tooth) => (
                         <ToothCard
                             key={tooth.id}

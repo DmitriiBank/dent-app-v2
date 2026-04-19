@@ -30,9 +30,13 @@ const QuizAppLang = ({ questions }: { questions: Question[] }) => {
 
     useEffect(() => {
         if (!questions?.length) {
-            console.warn("⚠️ Нет вопросов для теста");
+            return;
         }
     }, [questions]);
+
+    useEffect(() => {
+        setImgLoading(Boolean(questions[current]?.image));
+    }, [current, questions]);
 
     const handleAnswer = (index: number) => {
         setSelected(index);
@@ -53,7 +57,6 @@ const QuizAppLang = ({ questions }: { questions: Question[] }) => {
                 setSaving(true);
                 try {
                     const res = await saveTestResult(quizId, newScore, questions.length);
-                    console.log("saveTestResult", res)
                     const newResult = res.testResult;
 
                     dispatch(
@@ -62,10 +65,8 @@ const QuizAppLang = ({ questions }: { questions: Question[] }) => {
                                 newResult,
                             ])
                     );
-
-                    console.log("🔄 Пользователь обновлён после теста");
-                } catch (e) {
-                    console.error("❌ Ошибка при сохранении результата:", e);
+                } catch {
+                    return;
                 } finally {
                     setSaving(false);
                 }
@@ -135,7 +136,12 @@ const QuizAppLang = ({ questions }: { questions: Question[] }) => {
                                 <CircularProgress size={32} color="inherit" />
                             </div>
                         )}
-                        <ImageItem image={q.image} onLoad={() => setImgLoading(false)} />
+                        <ImageItem
+                            image={q.image}
+                            alt={q.question}
+                            onLoad={() => setImgLoading(false)}
+                            onError={() => setImgLoading(false)}
+                        />
                     </div>
                 )}
                 <AnswersList

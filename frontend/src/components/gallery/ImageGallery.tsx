@@ -63,15 +63,24 @@ export default function ImageGallery({ images, alt = 'image', initialIndex = 0 }
                     bgcolor: 'background.paper',
                     border: '1px solid',
                     borderColor: 'divider',
-                    // aspectRatio: '16 / 9',
+                    minHeight: { xs: 240, sm: 320, md: 420 },
+                    maxHeight: { xs: '60vh', md: '70vh' },
                     display: 'grid',
                     placeItems: 'center',
+                    p: { xs: 1, sm: 2 },
                 }}
             >
                 <img
                     src={images[current]}
                     alt={`${alt} ${current + 1}/${total}`}
-                    // style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                    style={{
+                        display: 'block',
+                        width: '100%',
+                        maxWidth: '100%',
+                        maxHeight: 'calc(70vh - 32px)',
+                        height: 'auto',
+                        objectFit: 'contain',
+                    }}
                 />
 
                 {total > 1 && (
