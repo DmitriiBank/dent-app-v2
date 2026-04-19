@@ -8,12 +8,6 @@ import {UserDbModel} from '../schemas/user.schema';
 import { env } from "./env";
 
 
-// console.log('🔧 GOOGLE OAuth Config:', {
-//     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID ? 'OK' : 'MISSING',
-//     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET ? 'OK' : 'MISSING',
-//     SERVER_URL: process.env.SERVER_URL,
-//     CALLBACK_URL: `${process.env.SERVER_URL || 'http://localhost:3555'}/api/v1/users/login/google/callback`
-// });
 export const configurePassport = () => {
     if (!env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET) {
         logger.warn("Google OAuth not configured. Skipping Google strategy.");
@@ -39,52 +33,54 @@ export const configurePassport = () => {
 
                     done(null, user);
                 } catch (err) {
-                    console.error("🔥 GoogleStrategy error:", err);
+                    logger.error("GoogleStrategy error", err as Error);
                     done(err as Error, undefined);
                 }
             }
         )
     );
 }
-// passport.serializeUser((user: any, done) => {
-//     console.log("📦 Serializing user:", user._id);
-//     done(null, user._id);
-// });
-//
-// passport.deserializeUser(async (id: string, done) => {
-//     try {
-//         console.log("📤 Deserializing user:", id);
-//         const user = await UserDbModel.findById(id);
-//         done(null, user);
-//     } catch (err) {
-//         console.error("🔥 Deserialize error:", err);
-//         done(err as Error, null);
-//     }
-// });
 
 export const findOrCreateUser = async (profile: Profile) => {
     try {
+        const email = profile.emails?.[0]?.value;
+
         logger.info("Google OAuth profile received", {
             id: profile?.id,
-            email: profile?.emails?.[0]?.value,
+            email,
             name: profile?.displayName
         });
 
         let user = await UserDbModel.findOne({googleId: profile.id});
 
         if (!user) {
-            logger.info("Creating new Google user");
-            user = await UserDbModel.create({
-                name: profile.displayName,
-                email: profile.emails?.[0].value,
-                googleId: profile.id,
-                avatar: profile.photos?.[0].value,
-                provider: "google",
-            });
-            logger.info("Google user created", { userId: user._id });
+            if (!email) {
+                throw new Error('Google profile does not contain an email');
+            }
+
+            user = await UserDbModel.findOne({email});
+
+            if (user) {
+                user.googleId = profile.id;
+                user.avatar = user.avatar || profile.photos?.[0]?.value;
+                user.provider = user.provider || "google";
+                await user.save({ validateBeforeSave: false });
+                logger.info("Linked Google account to existing user", { userId: user._id });
+            } else {
+                logger.info("Creating new Google user");
+                user = await UserDbModel.create({
+                    name: profile.displayName,
+                    email,
+                    googleId: profile.id,
+                    avatar: profile.photos?.[0]?.value,
+                    provider: "google",
+                });
+                logger.info("Google user created", { userId: user._id });
+            }
         }
         return user;
     } catch (err) {
         logger.error("Google fetch user error", err as Error);
+        throw err;
     }
 };

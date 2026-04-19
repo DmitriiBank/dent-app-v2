@@ -10,7 +10,6 @@ export const login = async (data: LoginData) => {
         json: data,
         credentials: "include"
     });
-    console.log(res)
     return res.data;
 }
 
@@ -22,8 +21,6 @@ export const register = async (data: UserDto) => {
         json: newUser,
         credentials: "include"
     });
-    console.log(res)
-    // await setTokens(res.token, res.refreshToken);
     return res.data;
 }
 
@@ -33,12 +30,10 @@ export const meRequest = async () =>  {
         credentials: "include",
         auth: true,
     });
-    console.log("meRequest: ", res)
-    // await setTokens(res.tokens);
     return res.data;
 }
 export const forgotPassword = async (email: string) => {
-    return httpRequest(`/api/v1/users/forgotPassword`, {
+    return httpRequest(`/api/v1/auth/forgotPassword`, {
         method: "POST",
         auth: false,
         json: {email},
@@ -48,14 +43,13 @@ export const forgotPassword = async (email: string) => {
 
 
 export const resetPassword = async (token: string, password: string, passwordConfirm: string) => {
-    const res = await httpRequest<{ data: User;  token: string, refreshToken: string  }>(`/api/v1/users/resetPassword/${token}`, {
+    const res = await httpRequest<{ data: User;  token: string, refreshToken: string  }>(`/api/v1/auth/resetPassword/${token}`, {
         method: "POST",
         auth: false,
         json: {password, passwordConfirm},
         credentials: "include"
     });
 
-    // await setTokens(res.token, res.refreshToken);
     return res;
 }
 

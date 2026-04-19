@@ -18,9 +18,7 @@ export default function AuthWrapper({children}: AuthWrapperProps) {
                     if (!initialized) {
                         await dispatch(fetchCurrentUser()).unwrap();
                     }
-                } catch {
-                    console.error("❌ auth failed");
-                }
+                } catch {}
             }
         checkAuth()
         }, [dispatch, initialized]);

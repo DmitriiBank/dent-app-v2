@@ -12,8 +12,7 @@ const ResetPass = () => {
         try {
             const res = await resetPassword(token, password, passwordConfirm);
             if (!res) throw new Error('Данные почты не переданы');
-        } catch (err) {
-            console.error(err);
+        } catch {
             setErrorCode('default');
         }
     };

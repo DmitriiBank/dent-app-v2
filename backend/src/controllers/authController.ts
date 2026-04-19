@@ -10,11 +10,12 @@ import {
 } from "../services/AccountServiceImplMongo";
 import {sendEmail} from '../utils/email';
 import {
-    createSendToken,
-    saveToken,
-    signRefreshToken,
-    signToken
-} from "../utils/jwt";
+  cookieTokens,
+  createSendToken,
+  saveToken,
+  signRefreshToken,
+  signToken,
+} from '../utils/jwt';
 import {AuthRequest} from "../utils/quizTypes";
 import {asAuth} from "../utils/tools";
 
@@ -116,21 +117,8 @@ export const googleCallback = async (req: Request, res: Response, next: NextFunc
         const token = signToken(user._id.toString());
         const refreshToken = signRefreshToken(user._id.toString());
         await saveToken(user._id.toString(), refreshToken);
+      cookieTokens(token, refreshToken, res);
 
-        res.cookie("token", token, {
-            httpOnly: true,
-            sameSite: env.NODE_ENV === "production" ? "none" : "lax",
-            secure: env.NODE_ENV === "production",
-            maxAge: 15 * 60 * 1000,
-        });
-
-
-        res.cookie("refreshToken", refreshToken, {
-            httpOnly: true,
-            sameSite: env.NODE_ENV === "production" ? "none" : "lax",
-            secure: env.NODE_ENV === "production",
-            maxAge: 7 * 24 * 60 * 60 * 1000,
-        });
         const redirectUrl = new URL(`${env.GOOGLE_CLIENT_URL}/auth/success`);
 
         res.redirect(redirectUrl.toString());
@@ -164,7 +152,7 @@ export const me = async (req: Request, res: Response, next: NextFunction) => {
 
 
 export const refresh = async (req: Request, res: Response, next: NextFunction) => {
-    const refreshToken = req.body?.refreshToken || req.headers.authorization?.split(' ')[1] || req.cookies?.refreshToken;
+    const refreshToken =  req.cookies?.refreshToken;
 
     if (!refreshToken) return next(new HttpError(401, 'No refresh token provided'));
 

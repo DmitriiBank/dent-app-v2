@@ -17,8 +17,7 @@ const Registration = () => {
             if (!user.email) throw new Error('Ошибка регистрации');
             await dispatch(fetchCurrentUser()).unwrap();
             navigate(Paths.HOME);
-        } catch (err) {
-            console.error(err);
+        } catch {
             setErrorCode('default');
         }
     };

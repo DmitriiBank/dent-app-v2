@@ -10,8 +10,7 @@ const RestorePass = () => {
         try {
             const res = await forgotPassword(email);
             if (!res) throw new Error('Данные почты не переданы');
-        } catch (err) {
-            console.error(err);
+        } catch {
             setErrorCode('default');
         }
     };

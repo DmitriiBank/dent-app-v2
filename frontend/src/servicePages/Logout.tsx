@@ -17,8 +17,7 @@ const Logout = () => {
         try {
             await dispatch(logoutUser()).unwrap();
             navigate(Paths.LOGIN);
-        } catch (error) {
-            console.error('❌ Logout failed:', error);
+        } catch {
             navigate(Paths.HOME);
         } finally {
             setIsLoading(false);

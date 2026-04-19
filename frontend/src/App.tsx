@@ -15,7 +15,7 @@ function App() {
                             path={path}
                             element={
                                allowedRoles?.length
-                                    ? <PrivateRoute>{element}</PrivateRoute>
+                                    ? <PrivateRoute allowedRoles={allowedRoles}>{element}</PrivateRoute>
                                     : element
                             }
                         />

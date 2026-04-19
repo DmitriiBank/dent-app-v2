@@ -48,7 +48,9 @@ describe('ApplServiceImplMongo', () => {
                     flags.paginate += 1;
                     return this;
                 },
-                query: Promise.resolve(expectedDocs),
+                query: {
+                    exec: () => Promise.resolve(expectedDocs),
+                },
             } as any;
         });
 
@@ -63,7 +65,9 @@ describe('ApplServiceImplMongo', () => {
     it('getOne returns the document when found', async () => {
         const doc = { id: 'abc' };
         const model: any = {
-            findById: () => Promise.resolve(doc),
+            findById: () => ({
+                exec: () => Promise.resolve(doc),
+            }),
         };
 
         const service = new ApplServiceImplMongoClass();
@@ -79,8 +83,11 @@ describe('ApplServiceImplMongo', () => {
             findById: () => ({
                 populate: (options: unknown) => {
                     populateCalls.push(options);
-                    return Promise.resolve(doc);
+                    return {
+                        exec: () => Promise.resolve(doc),
+                    };
                 },
+                exec: () => Promise.resolve(doc),
             }),
         };
 
@@ -93,7 +100,9 @@ describe('ApplServiceImplMongo', () => {
 
     it('getOne throws HttpError when document not found', async () => {
         const model: any = {
-            findById: () => Promise.resolve(null),
+            findById: () => ({
+                exec: () => Promise.resolve(null),
+            }),
         };
 
         const service = new ApplServiceImplMongoClass();

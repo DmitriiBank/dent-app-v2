@@ -4,9 +4,10 @@
   "main": "./build/app.js",
   "scripts": {
     "dev": "tsx watch src/app.ts dev",
-    "test": "jest --runInBand",
-    "test:watch": "jest --watch",
-    "test:e2e": "jest --runInBand --testPathPattern=e2e",
+    "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --runInBand",
+    "test:watch": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --watch",
+    "test:e2e": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --runInBand --testPathPattern=e2e",
+    "test:unit": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --runInBand --runTestsByPath tests/authLogic.test.ts tests/applServiceImplMongo.test.ts",
     "build": "tsc && node ./scripts/copy-app-config.js",
     "start": "node ./build/app.js",
     "start-server-dev": "tsx watch src/app.ts dev",
@@ -57,6 +58,7 @@
   },
   "dependencies": {
     "@types/express": "^4.17.25",
+    "@unrs/resolver-binding-darwin-x64": "^1.11.1",
     "axios": "^1.13.2",
     "bcryptjs": "^3.0.2",
     "cookie-parser": "^1.4.7",

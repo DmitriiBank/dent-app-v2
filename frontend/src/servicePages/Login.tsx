@@ -19,9 +19,7 @@ const Login = () => {
 
         try {
             const user = await dispatch(loginUser(loginData)).unwrap();
-            console.log("Logining: ", user);
             if (user) {
-                console.log("✅ Вход выполнен:", user.name);
                 navigate(Paths.HOME);
             } else {
                 setError("Ошибка авторизации");
@@ -34,10 +32,7 @@ const Login = () => {
                 } else {
                     setError("Ошибка авторизации. Проверь логин или пароль.");
                 }
-                console.error("Login error: ", err.message);
-                setError(err.message);
             } else {
-                console.error("Неизвестная ошибка при входе:", err);
                 setError("Что-то пошло не так...");
             }
         } finally {

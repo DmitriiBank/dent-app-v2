@@ -29,9 +29,7 @@ export const signupUser = createAsyncThunk(
     "auth/signup",
     async (registerData: UserDto, { rejectWithValue }) => {
         try {
-            const res = await register(registerData);
-            console.log('Register response:', res);
-            return res;
+            return await register(registerData);
         } catch (error) {
             return rejectWithValue(error || 'Register failed');
         }
@@ -42,9 +40,7 @@ export const loginUser = createAsyncThunk(
     "auth/login",
     async (loginData: LoginData, { rejectWithValue }) => {
         try {
-            const res = await login(loginData) ;
-            console.log('Login response:', res);
-            return res;
+            return await login(loginData);
         } catch (error) {
             return rejectWithValue(error || 'Login failed');
         }
@@ -56,9 +52,7 @@ export const fetchCurrentUser = createAsyncThunk<User>(
     "auth/me",
     async (_, { rejectWithValue }) => {
         try {
-            const res = await meRequest() ;
-            console.log('Current user:', res);
-            return res;
+            return await meRequest();
         } catch (error) {
             return rejectWithValue(error || 'Unauthorized');
         }
@@ -70,10 +64,8 @@ export const logoutUser = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             await exit();
-            console.log('✅ Logout successful');
             return;
         } catch (error) {
-            console.error('❌ Logout failed:', error);
             return rejectWithValue(error);
         }
     }

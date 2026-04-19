@@ -6,7 +6,7 @@ import {fetchCurrentUser} from "./slices/authSlice.ts";
 
 interface PrivateRouteProps {
     children: React.ReactNode;
-    allowedRoles?: Roles[];
+    allowedRoles?: readonly Roles[];
 }
 
 const PrivateRoute = ({children, allowedRoles}: PrivateRouteProps) => {
@@ -23,9 +23,7 @@ const PrivateRoute = ({children, allowedRoles}: PrivateRouteProps) => {
                 if (!initialized) {
                     await dispatch(fetchCurrentUser()).unwrap();
                 }
-            } catch {
-                console.error("❌ auth failed");
-            }
+            } catch {}
         }
 
         checkAuth()

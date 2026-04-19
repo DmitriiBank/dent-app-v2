@@ -196,11 +196,20 @@ const config: Config = {
 
   // Whether to use watchman for file crawling
   // watchman: true,
-  extensionsToTreatAsEsm: ['.ts', '.json'],
+  extensionsToTreatAsEsm: ['.ts'],
   transform: {
     '^.+\\.(ts|tsx)$': [
       'ts-jest',
-      { useESM: true, tsconfig: './tsconfig.json' }
+      {
+        useESM: true,
+        tsconfig: {
+          module: 'ESNext',
+          target: 'ES2020',
+          moduleResolution: 'node',
+          esModuleInterop: true,
+          resolveJsonModule: true,
+        }
+      }
     ]
   },
   moduleNameMapper: {
