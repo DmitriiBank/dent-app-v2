@@ -1,4 +1,4 @@
-import {readFileSync} from "node:fs";
+import {existsSync, readFileSync} from "node:fs";
 import path from "node:path";
 
 import {env} from "./env";
@@ -7,7 +7,9 @@ export const PORT = env.PORT;
 export const baseUrl = `http://localhost:${PORT}`;
 export const db = env.DATABASE!;
 
-const jsonPath = path.resolve(__dirname, "./app-config", "app-config.json");
+const srcJsonPath = path.resolve(process.cwd(), "src/config/app-config/app-config.json");
+const buildJsonPath = path.resolve(process.cwd(), "build/config/app-config/app-config.json");
+const jsonPath = existsSync(srcJsonPath) ? srcJsonPath : buildJsonPath;
 const appConf = JSON.parse(readFileSync(jsonPath, "utf-8"));
 
 export interface AppConfig {

@@ -25,7 +25,7 @@ describe('Quiz Integration Tests', () => {
         
         const cookies = userRes.headers['set-cookie'] as unknown as string[];
         if (cookies) {
-            token = cookies.find((c: string) => c.startsWith('jwt')) || '';
+            token = cookies.find((c: string) => c.startsWith('token=')) || '';
         }
 
         // Seed a quiz

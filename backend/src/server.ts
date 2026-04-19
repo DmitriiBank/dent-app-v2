@@ -57,7 +57,7 @@ export const createApp = () => {
     );
 
     //===============Middleware============
-    app.use(express.json({limit: '10kb'}));
+    app.use(express.json({limit: '5mb'}));
     app.set('query parser', (str: string) => qs.parse(str));
 
 
