@@ -27,6 +27,12 @@ const QuizSelectionPageLang = () => {
         }),
         [user]
     );
+    const sortedQuizzes = useMemo(
+        () => [...allQuizzes].sort((left, right) =>
+            left.title.localeCompare(right.title, 'ru', { sensitivity: 'base' })
+        ),
+        [allQuizzes]
+    );
 
     useEffect(() => {
         const loadQuizzes = async () => {
@@ -55,7 +61,7 @@ const QuizSelectionPageLang = () => {
                 }> = {};
 
 
-                await Promise.all(allQuizzes.map(async (quiz) => {
+                await Promise.all(sortedQuizzes.map(async (quiz) => {
                     try {
                         let canTake = true;
                         if (testResults) canTake = await canTakeTest(quiz.id, testResults, role);
@@ -82,7 +88,7 @@ const QuizSelectionPageLang = () => {
                     canTake: boolean,
                     score?: string
                 }> = {};
-                allQuizzes.forEach(quiz => {
+                sortedQuizzes.forEach(quiz => {
                     fallbackStatus[quiz.id] = {canTake: true};
                 });
                 setTestStatus(fallbackStatus);
@@ -91,8 +97,8 @@ const QuizSelectionPageLang = () => {
             }
         };
 
-        if (allQuizzes.length) loadTestStatus();
-    }, [_id, testResults, allQuizzes, role]);
+        if (sortedQuizzes.length) loadTestStatus();
+    }, [_id, testResults, sortedQuizzes, role]);
 
     const handleSelect = async (id: string) => {
         if (!_id) {
@@ -123,7 +129,7 @@ const QuizSelectionPageLang = () => {
                 )}
             </div>
             <div className="quiz-categories">
-                {allQuizzes.map((quiz) => {
+                {sortedQuizzes.map((quiz) => {
                     const status = testStatus[quiz.id]; // может быть undefined, и это ок
                     const isCompleted = status ? !status.canTake : false;
                     return (

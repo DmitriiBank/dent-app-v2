@@ -6,17 +6,25 @@ import {QuizDbModel} from "../../schemas/quiz.schema";
 import {Question} from "../../model/Quiz";
 import {QuestionModel} from "../../schemas/question.schema";
 
-const __dirname = path.resolve();
-// console.log(process.env)
+const scriptDir = path.resolve(path.dirname(process.argv[1] ?? 'src/dev-data/data/import-dev-data.ts'));
+const dataDir = scriptDir;
+
 dotenv.config();
-const DB = process.env.DATABASE!.replace('<PASSWORD>', process.env.DATABASE_PASSWORD!);
+const database = process.env.DATABASE;
+const databasePassword = process.env.DATABASE_PASSWORD;
 
-(async () => {
-  await mongoose.connect(DB).then(() => console.log('DB Connected'));
-})();
+if (!database) {
+  throw new Error('DATABASE environment variable is required');
+}
 
-const quizzesPath = path.join(__dirname, 'quizzes.json');
-const questionsDir = path.join(__dirname, 'questions-data');
+const DB = database.includes('<PASSWORD>')
+    ? database.replace('<PASSWORD>', databasePassword ?? '')
+    : database;
+
+const quizzesPath = path.join(dataDir, 'quizzes.json');
+const questionsDir = path.join(dataDir, 'questions-data');
+
+type ImportQuestion = Pick<Question, 'quiz' | 'question' | 'image' | 'options' | 'answer'>;
 
 const quizzes = JSON.parse(fs.readFileSync(quizzesPath, 'utf-8'));
 
@@ -25,13 +33,18 @@ const questionFiles = fs
     .readdirSync(questionsDir)
     .filter((file) => file.startsWith('lesson') && file.endsWith('.json'));
 
-const allQuestions: any[] = [];
+const allQuestions: ImportQuestion[] = [];
+const knownQuizIds = new Set(quizzes.map((quiz: {_id: string}) => String(quiz._id)));
 
 for (const file of questionFiles) {
   const filePath = path.join(questionsDir, file);
   const content = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
   if (Array.isArray(content.questions)) {
-    const quizId = content.quiz;
+    const quizId = String(content.quiz);
+    if (!knownQuizIds.has(quizId)) {
+      throw new Error(`Question file ${file} references unknown quiz ${quizId}`);
+    }
+
     const formattedQuestions = content.questions.map((q:  Question) => ({
       quiz: quizId,
       question: q.question,
@@ -49,11 +62,17 @@ for (const file of questionFiles) {
 
 const importData = async () => {
   try {
-    await QuizDbModel.create(quizzes);
-    await QuestionModel.create(allQuestions);
-    console.log('Data successfully loaded');
+    await QuestionModel.deleteMany();
+    await QuizDbModel.deleteMany();
+
+    await QuizDbModel.insertMany(quizzes);
+    await QuestionModel.insertMany(allQuestions);
+
+    console.log(`Imported ${quizzes.length} quizzes and ${allQuestions.length} questions`);
   } catch (err) {
     console.log(err);
+  } finally {
+    await mongoose.connection.close();
   }
   process.exit();
 };
@@ -66,14 +85,32 @@ const deleteData = async () => {
     console.log('Data successfully deleted');
   } catch (err) {
     console.log(err);
+  } finally {
+    await mongoose.connection.close();
   }
   process.exit();
 };
 
-if (process.argv[2] === '--import') {
-  importData();
-} else if (process.argv[2] === '--delete') {
-  deleteData();
-}
+const main = async () => {
+  await mongoose.connect(DB);
+  console.log('DB Connected');
 
-console.log(process.argv);
+  if (process.argv[2] === '--import') {
+    await importData();
+    return;
+  }
+
+  if (process.argv[2] === '--delete') {
+    await deleteData();
+    return;
+  }
+
+  console.log('Use --import or --delete');
+  await mongoose.connection.close();
+};
+
+main().catch(async (error) => {
+  console.error(error);
+  await mongoose.connection.close().catch(() => undefined);
+  process.exit(1);
+});
